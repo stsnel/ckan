@@ -122,7 +122,8 @@ def get_table_and_function_names_from_sql(context: Context, sql: str):
     return table_names, function_names
 
 
-def _parse_query_plan(plan: Dict[str, Any]) -> Tuple[List[str], List[str], List[str]]:
+def _parse_query_plan(
+        plan: Dict[str, Any]) -> Tuple[List[str], List[str], List[str]]:
     '''
     Given a Postgres Query Plan object (parsed from the output of an EXPLAIN
     query), returns a tuple with three items:

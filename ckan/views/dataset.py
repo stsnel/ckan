@@ -794,11 +794,10 @@ class EditView(MethodView):
         context = self._prepare()
         package_type = _get_package_type(id) or package_type
         try:
+            view_context = context.copy()
+            view_context['for_view'] = True
             pkg_dict = get_action(u'package_show')(
-                cast(Context, dict(**context, for_view=True)), {
-                    u'id': id
-                }
-            )
+                view_context, {u'id': id})
             context[u'for_edit'] = True
             old_data = get_action(u'package_show')(context, {u'id': id})
             # old data is from the database and data is passed from the

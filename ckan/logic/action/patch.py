@@ -111,8 +111,10 @@ def group_patch(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     patched = dict(group_dict)
     patched.pop('display_name', None)
     patched.update(data_dict)
-    return _update.group_update(
-        Context(**context, allow_partial_update=True), patched)
+
+    patch_context = context.copy()
+    patch_context['allow_partial_update'] = True
+    return _update.group_update(patch_context, patched)
 
 
 def organization_patch(
@@ -143,8 +145,10 @@ def organization_patch(
     patched = dict(organization_dict)
     patched.pop('display_name', None)
     patched.update(data_dict)
-    return _update.organization_update(
-        Context(**context, allow_partial_update=True), patched)
+
+    patch_context = context.copy()
+    patch_context['allow_partial_update'] = True
+    return _update.organization_update(patch_context, patched)
 
 
 def user_patch(context: Context, data_dict: DataDict) -> Dict[str, Any]:

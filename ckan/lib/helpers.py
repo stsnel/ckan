@@ -1670,7 +1670,7 @@ _PLAUSIBLE_HOST_IDNA = re.compile(r'^[-\w.:\[\]]*$')
 
 
 @core_helper
-def sanitize_url(url):
+def sanitize_url(url: str):
     '''
     Return a sanitized version of a user-provided url for use in an
     <a href> or <img src> attribute, e.g.:

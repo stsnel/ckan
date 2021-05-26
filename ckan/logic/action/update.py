@@ -694,9 +694,10 @@ def _group_or_org_update(
     data, errors = lib_plugins.plugin_validate(
         group_plugin, context, data_dict, schema,
         'organization_update' if is_org else 'group_update')
+
+    group = context.get('group')
     log.debug('group_update validate_errs=%r user=%s group=%s data_dict=%r',
-              errors, context.get('user'),
-              context['group'].name if context.get('group') else '',
+              errors, context.get('user'), group.name if group else '',
               data_dict)
 
     if errors:
