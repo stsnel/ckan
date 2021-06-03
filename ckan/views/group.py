@@ -529,6 +529,8 @@ def changes(id: str, group_type: str, is_organization: bool) -> str:
     Shows the changes to an organization in one particular activity stream
     item.
     '''
+    set_org(is_organization)
+    extra_vars = {}
     activity_id = id
     context = cast(Context, {
         u'model': model, u'session': model.Session,
@@ -557,14 +559,14 @@ def changes(id: str, group_type: str, is_organization: bool) -> str:
         }
     )
 
-    return base.render(
-        u'organization/changes.html', {
-            u'activity_diffs': [activity_diff],
-            u'group_dict': current_group_dict,
-            u'group_activity_list': group_activity_list,
-            u'group_type': current_group_dict[u'type'],
-        }
-    )
+    extra_vars = {
+        u'activity_diffs': [activity_diff],
+        u'group_dict': current_group_dict,
+        u'group_activity_list': group_activity_list,
+        u'group_type': current_group_dict[u'type'],
+    }
+
+    return base.render(_replace_group_org(u'group/changes.html'), extra_vars)
 
 
 def changes_multiple(is_organization: bool, group_type: str) -> str:
@@ -574,7 +576,8 @@ def changes_multiple(is_organization: bool, group_type: str) -> str:
     activity diffs for the changes in the given version range, then
     re-renders changes.html with the list.
     '''
-
+    set_org(is_organization)
+    extra_vars = {}
     new_id = h.get_request_param(u'new_id')
     old_id = h.get_request_param(u'old_id')
 
@@ -642,14 +645,14 @@ def changes_multiple(is_organization: bool, group_type: str) -> str:
         u'id': group_id,
         u'limit': 100})
 
-    return base.render(
-        u'organization/changes.html', {
-            u'activity_diffs': diff_list,
-            u'group_dict': current_group_dict,
-            u'group_activity_list': group_activity_list,
-            u'group_type': current_group_dict[u'type'],
-        }
-    )
+    extra_vars = {
+        u'activity_diffs': diff_list,
+        u'group_dict': current_group_dict,
+        u'group_activity_list': group_activity_list,
+        u'group_type': current_group_dict[u'type'],
+    }
+
+    return base.render(_replace_group_org(u'group/changes.html'), extra_vars)
 
 
 def about(id: str, group_type: str, is_organization: bool) -> str:
@@ -1381,7 +1384,7 @@ def register_group_plugin_rules(blueprint: Blueprint) -> None:
             view_func=globals()[action])
     blueprint.add_url_rule(u'/changes/<id>', view_func=changes)
     blueprint.add_url_rule(
-        u'/organization.changes_multiple',
+        u'/changes_multiple',
         view_func=changes_multiple)
 
 
