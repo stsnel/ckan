@@ -209,7 +209,9 @@ def _package_activity_query(package_id: str) -> 'Query[Activity]':
 
 def package_activity_list(
         package_id: str, limit: int, offset: int,
-        include_hidden_activity: bool=False) -> List[Activity]:
+        include_hidden_activity: bool = False,
+        activity_types: Optional[List[str]] = None,
+        exclude_activity_types: Optional[List[str]] = None) -> List[Activity]:
     '''Return the given dataset (package)'s public activity stream.
 
     Returns all activities about the given dataset, i.e. where the given
@@ -224,6 +226,13 @@ def package_activity_list(
 
     if not include_hidden_activity:
         q = _filter_activitites_from_users(q)
+
+    if activity_types:
+        q = _filter_activitites_from_type(
+            q, include=True, types=activity_types)
+    elif exclude_activity_types:
+        q = _filter_activitites_from_type(
+            q, include=False, types=exclude_activity_types)
 
     return _activities_at_offset(q, limit, offset)
 
@@ -491,7 +500,7 @@ def recently_changed_packages_activity_list(
 
 def _filter_activitites_from_users(q: 'Query[Activity]') -> 'Query[Activity]':
     '''
-    Adds a filter to an existing query object ot avoid activities from users
+    Adds a filter to an existing query object to avoid activities from users
     defined in :ref:`ckan.hide_activity_from_users` (defaults to the site user)
     '''
     users_to_avoid = _activity_stream_get_filtered_users()
@@ -502,6 +511,21 @@ def _filter_activitites_from_users(q: 'Query[Activity]') -> 'Query[Activity]':
 
     return q
 
+def _filter_activitites_from_type(
+        q: "Query[Activity]", types: List[str], include: bool = True):
+    '''Adds a filter to an existing query object to include or exclude
+    (include=False) activities based on a list of types.
+
+    '''
+    if include:
+        q = q.filter(
+            ckan.model.Activity.activity_type.in_(types)  # type: ignore
+        )
+    else:
+        q = q.filter(
+            ckan.model.Activity.activity_type.notin_(types)  # type: ignore
+        )
+    return q
 
 def _activity_stream_get_filtered_users() -> List[str]:
     '''

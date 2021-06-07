@@ -3,7 +3,9 @@
 from ckan.types import Context
 import json
 import logging
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, overload
+from typing import (
+    Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union, overload
+)
 
 import ckan.common as converters
 import sqlparse
@@ -39,6 +41,17 @@ def is_valid_table_name(name: str):
     if '%' in name:
         return False
     return is_valid_field_name(name)
+
+
+@overload
+def get_list(input: Literal[None], strip_values: bool = ...) -> Literal[None]:
+    ...
+
+
+@overload
+def get_list(input: Union[str, "Sequence[Any]"],
+             strip_values: bool = ...) -> List[str]:
+    ...
 
 
 def get_list(input: Any, strip_values: bool = True) -> Optional[List[str]]:

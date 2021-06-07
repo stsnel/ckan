@@ -74,7 +74,7 @@ def load_environment(conf: Union[Config, CKANConfig]):
 
                 self.controller_classes[controller] = mycontroller
                 return mycontroller
-            return fcg(self, controller)
+            return fcg(self, controller)  # type: ignore
         # type_ignore_reason: rely on implementation details
         find_controller._old_find_controller = fcg  # type: ignore
         PylonsApp.find_controller = find_controller

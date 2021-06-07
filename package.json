@@ -15,7 +15,7 @@
     "jquery": "^3.5.0",
     "less": "^3.11.2",
     "moment": "^2.24.0",
-    "pyright": "^1.1.130",
+    "pyright": "^1.1.147",
     "qs": "^6.9.4"
   },
   "devDependencies": {

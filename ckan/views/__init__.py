@@ -25,6 +25,7 @@ APIKEY_HEADER_NAME_DEFAULT = u'X-CKAN-API-Key'
 
 
 class LazyView(object):
+    __name__: str
 
     def __init__(self,
                  import_name: str,

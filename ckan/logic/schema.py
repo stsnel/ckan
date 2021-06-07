@@ -660,7 +660,8 @@ def default_activity_list_schema(
         natural_number_validator: Validator,
         limit_to_configured_maximum: Callable[[str, Any], Validator],
         ignore_missing: Validator, boolean_validator: Validator,
-        ignore_not_sysadmin: Validator):
+        ignore_not_sysadmin: Validator, list_of_strings: Validator):
+
     schema = default_pagination_schema()
     schema['id'] = [not_missing, unicode_safe]
     schema['limit'] = [
@@ -669,6 +670,8 @@ def default_activity_list_schema(
         limit_to_configured_maximum('ckan.activity_list_limit_max', 100)]
     schema['include_hidden_activity'] = [
         ignore_missing, ignore_not_sysadmin, boolean_validator]
+    schema['activity_types'] = [ignore_missing, list_of_strings]
+    schema['exclude_activity_types'] = [ignore_missing, list_of_strings]
     return schema
 
 

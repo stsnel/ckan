@@ -2173,9 +2173,9 @@ def _create_url_with_params(params: Optional[Iterable[Tuple[str, Any]]] = None,
                             extras: Optional[Dict[str, Any]] = None):
     ''' internal function for building urls with parameters. '''
     if not controller:
-        controller = getattr(c, 'controller', False) or request.blueprint
+        controller = getattr(c, 'controller', None) or request.blueprint
     if not action:
-        action = getattr(c, 'action', False) or p.toolkit.get_endpoint()[1]
+        action = getattr(c, 'action', None) or p.toolkit.get_endpoint()[1]
     if not extras:
         extras = {}
 
