@@ -138,22 +138,13 @@ def load_config(config: Any, load_site_user: bool = True):
 
     registry = Registry()
     registry.prepare()
-    import pylons
-    registry.register(pylons.translator, MockTranslator())
 
     site_user = None
     if model.user_table.exists() and load_site_user:
         # If the DB has already been initialized, create and register
         # a pylons context object, and add the site user to it, so the
         # auth works as in a normal web request
-        c = pylons.util.AttribSafeContextObj()
-
-        registry.register(pylons.c, c)
-
         site_user = logic.get_action('get_site_user')({'ignore_auth': True}, {})
-
-        pylons.c.user = site_user['name']
-        pylons.c.userobj = model.User.get(site_user['name'])
 
     ## give routes enough information to run url_for
     parsed = urlparse(

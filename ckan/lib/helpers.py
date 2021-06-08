@@ -59,12 +59,6 @@ from markupsafe import Markup, escape
 from ckan.types import Context
 from flask.wrappers import Response
 
-if six.PY2:
-    from pylons import url as _pylons_default_url
-    from routes import redirect_to as _routes_redirect_to
-    from routes import url_for as _routes_default_url_for
-
-
 T = TypeVar("T")
 Helper = TypeVar("Helper", bound=Callable[..., Any])
 
@@ -239,9 +233,7 @@ def redirect_to(*args: Any, **kw: Any) -> Response:
         _url = str(config['ckan.site_url'].rstrip('/') + _url)
 
     if is_flask_request():
-        return cast(Response, _flask_redirect(_url))
-    else:
-        return _routes_redirect_to(_url)
+        return _flask_redirect(_url)
 
 
 @maintain.deprecated('h.url is deprecated please use h.url_for', since='2.6.0')
@@ -269,13 +261,7 @@ def get_site_protocol_and_host() -> Union[Tuple[str, str], Tuple[None, None]]:
     site_url = config.get('ckan.site_url', None)
     if site_url is not None:
         parsed_url = urlparse(site_url)
-        if six.PY2:
-            return (  # type: ignore
-                parsed_url.scheme.encode('utf-8'),
-                parsed_url.netloc.encode('utf-8')
-            )
-        else:
-            return (parsed_url.scheme, parsed_url.netloc)
+        return (parsed_url.scheme, parsed_url.netloc)
     return (None, None)
 
 
@@ -299,15 +285,6 @@ def _get_auto_flask_context():
     from ckan.tests.pytest_ckan.ckan_setup import _tests_test_request_context
     if _tests_test_request_context:
         return _tests_test_request_context
-
-    if six.PY2:
-
-        from ckan.lib.cli import _cli_test_request_context
-
-        # We are outside a web request. This is a CLI command. A test request
-        # context was created when setting it up
-        if _cli_test_request_context:
-            return _cli_test_request_context
 
 
 @core_helper
@@ -374,11 +351,7 @@ def url_for(*args: Any, **kw: Any) -> str:
         my_url = _url_for_flask(*args, **kw)
 
     except FlaskRouteBuildError:
-        if six.PY2:
-            # If it doesn't succeed, fallback to the Pylons router
-            my_url = _url_for_pylons(*args, **kw)
-        else:
-            raise
+        raise
     finally:
         if _auto_flask_context:
             _auto_flask_context.pop()
@@ -471,32 +444,6 @@ def _url_for_flask(*args: Any, **kw: Any) -> str:
                              parts.query, parts.fragment))
 
     return my_url
-
-
-def _url_for_pylons(*args: Any, **kw: Any) -> str:
-    '''Build a URL using the Pylons (Routes) router
-
-    This function should not be called directly, use ``url_for`` instead
-    '''
-
-    # We need to provide protocol and host to get full URLs, get them from
-    # ckan.site_url
-    if kw.pop('_external', None):
-        kw['qualified'] = True
-    if kw.get('qualified'):
-        kw['protocol'], kw['host'] = get_site_protocol_and_host()
-
-    # The Pylons API routes require a slask on the version number for some
-    # reason
-    if kw.get('controller') == 'api' and kw.get('ver'):
-        if (isinstance(kw['ver'], int) or
-                not kw['ver'].startswith('/')):
-            kw['ver'] = '/%s' % kw['ver']
-
-    if args:
-        args = (six.ensure_str(args[0]), ) + args[1:]
-    # Try to build the URL with routes.url_for
-    return _routes_default_url_for(*args, **kw)
 
 
 @core_helper
@@ -1735,14 +1682,6 @@ def pager_url(page: int, partial: Optional[str] = None, **kwargs: Any) -> str:
     pargs = []
     if is_flask_request():
         pargs.append(request.endpoint)
-        # FIXME: add `id` param to kwargs if it really required somewhere
-    else:
-        routes_dict = _pylons_default_url.environ[
-            'pylons.routes_dict']
-        kwargs['controller'] = routes_dict['controller']
-        kwargs['action'] = routes_dict['action']
-        if routes_dict.get('id'):
-            kwargs['id'] = routes_dict['id']
     kwargs['page'] = page
     return url_for(*pargs, **kwargs)
 

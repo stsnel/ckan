@@ -204,10 +204,7 @@ class CKANTestApp(object):
     @property
     def flask_app(self):
         if not self._flask_app:
-            if six.PY2:
-                self._flask_app = self.app.apps["flask_app"]._wsgi_app
-            else:
-                self._flask_app = self.app._wsgi_app
+            self._flask_app = self.app._wsgi_app
         return self._flask_app
 
     def __init__(self, app):
@@ -292,10 +289,7 @@ def _get_test_app():
     """
     config["ckan.legacy_templates"] = False
     config["testing"] = True
-    if six.PY2:
-        app = ckan.config.middleware.make_app(config)
-    else:
-        app = ckan.config.middleware.make_app(config)
+    app = ckan.config.middleware.make_app(config)
     app = CKANTestApp(app)
 
     return app

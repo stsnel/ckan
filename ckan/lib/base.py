@@ -31,14 +31,6 @@ from ckan.views import (identify_user,
 from ckan.common import (c, request, config,
                          session, is_flask_request, asbool)
 
-if six.PY2:
-    from pylons.controllers import WSGIController
-    from pylons.controllers.util import abort as _abort
-    from pylons.templating import (
-        cached_template, pylons_globals
-    )
-    from ckan.common import response  # type: ignore
-
 
 log = logging.getLogger(__name__)
 
@@ -69,17 +61,6 @@ def abort(status_code: int,
 
     if is_flask_request():
         flask_abort(status_code, detail)
-
-    # Satisfy type-checker
-    assert False, 'Drop it and rest of the function during pylons clean-up'
-    # #1267 Convert detail to plain text, since WebOb 0.9.7.1 (which comes
-    # with Lucid) causes an exception when unicode is received.
-    detail = detail.encode('utf8')
-
-    return _abort(status_code=status_code,
-                  detail=detail,
-                  headers=headers,
-                  comment=comment)
 
 
 def render_snippet(*template_names: str, **kw: Any) -> str:
@@ -152,94 +133,8 @@ def render(template_name: str,
     if extra_vars is None:
         extra_vars = {}
 
-    if not is_flask_request():
-        renderer = _pylons_prepare_renderer(template_name, extra_vars,
-                                            *pargs, **kwargs)
-        return cached_template(template_name, renderer)
-
     _allow_caching()
     return flask_render_template(template_name, **extra_vars)
-
-
-def _pylons_prepare_renderer(
-        template_name: str, extra_vars: Any, cache_key: Any = None,
-        cache_type: Any = None, cache_expire: Any = None,
-        cache_force: Any = None, renderer: Any = None):
-    def render_template():
-        globs = extra_vars or {}
-        globs.update(pylons_globals())
-
-        # Using pylons.url() directly destroys the localisation stuff so
-        # we remove it so any bad templates crash and burn
-        del globs['url']
-
-        try:
-            template_path, template_type = render_.template_info(template_name)
-        except render_.TemplateNotFound:
-            raise
-
-        log.debug('rendering %s [%s]' % (template_path, template_type))
-        if config.get('debug'):
-            context_vars = globs.get('c')
-            if context_vars:
-                context_vars = dir(context_vars)
-            debug_info = {'template_name': template_name,
-                          'template_path': template_path,
-                          'template_type': template_type,
-                          'vars': globs,
-                          'c_vars': context_vars,
-                          'renderer': renderer}
-            if 'CKAN_DEBUG_INFO' not in request.environ:
-                request.environ['CKAN_DEBUG_INFO'] = []
-            request.environ['CKAN_DEBUG_INFO'].append(debug_info)
-
-        del globs['config']
-        return render_jinja2(template_name, globs)
-
-    def set_pylons_response_headers(allow_cache: bool):
-        if 'Pragma' in response.headers:
-            del response.headers["Pragma"]
-        if allow_cache:
-            response.headers["Cache-Control"] = "public"
-            try:
-                cache_expire = int(config.get('ckan.cache_expires', 0))
-                response.headers["Cache-Control"] += \
-                    ", max-age=%s, must-revalidate" % cache_expire
-            except ValueError:
-                pass
-        else:
-            # We do not want caching.
-            response.headers["Cache-Control"] = "private"
-
-    # Caching Logic
-
-    allow_cache = True
-    # Force cache or not if explicit.
-    if cache_force is not None:
-        allow_cache = cache_force
-    # Do not allow caching of pages for logged in users/flash messages etc.
-    elif session.last_accessed:
-        allow_cache = False
-    # Tests etc.
-    elif 'REMOTE_USER' in request.environ:
-        allow_cache = False
-    # Don't cache if based on a non-cachable template used in this.
-    elif request.environ.get('__no_cache__'):
-        allow_cache = False
-    # Don't cache if we have set the __no_cache__ param in the query string.
-    elif request.params.get('__no_cache__'):
-        allow_cache = False
-    # Don't cache if caching is not enabled in config
-    elif not asbool(config.get('ckan.cache_enabled', False)):
-        allow_cache = False
-
-    set_pylons_response_headers(allow_cache)
-
-    if not allow_cache:
-        # Prevent any further rendering from being cached.
-        request.environ['__no_cache__'] = True
-
-    return render_template
 
 
 def _allow_caching(cache_force: Optional[bool] = None):
@@ -282,43 +177,3 @@ def _is_valid_session_cookie_data() -> bool:
 
 class ValidationException(Exception):
     pass
-
-
-if six.PY2:
-    class BaseController(WSGIController):  # type: ignore
-        '''Base class for CKAN controller classes to inherit from.
-
-        '''
-        repo = model.repo
-        log = logging.getLogger(__name__)
-
-        def __before__(self, action: str, **params: Any):
-            c.__timer = time.time()
-            app_globals.app_globals._check_uptodate()
-
-            identify_user()
-
-            i18n.handle_request(request, c)  # type: ignore
-
-        def __call__(self, environ: Any, start_response: Any) -> Any:
-            """Invoke the Controller"""
-            # WSGIController.__call__ dispatches to the Controller method
-            # the request is routed to. This routing information is
-            # available in environ['pylons.routes_dict']
-
-            try:
-                res = WSGIController.__call__(self, environ, start_response)
-            finally:
-                model.Session.remove()
-
-            check_session_cookie(response)
-
-            return res
-
-        def __after__(self, action: str, **params: Any):
-
-            set_cors_headers_for_response(response)
-
-            r_time = time.time() - c.__timer
-            url = request.environ['CKAN_CURRENT_URL'].split('?')[0]
-            log.info(' %s render time %.3f seconds' % (url, r_time))

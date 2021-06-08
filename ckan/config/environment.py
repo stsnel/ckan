@@ -31,12 +31,7 @@ from ckan.common import CKANConfig, _, ungettext, config
 from ckan.exceptions import CkanConfigurationException
 from ckan.types import Config
 
-if six.PY2:
-    from pylons import config as pylons_config
-
-
 log = logging.getLogger(__name__)
-
 
 # Suppress benign warning 'Unbuilt egg for setuptools'
 warnings.simplefilter('ignore', UserWarning)
@@ -47,38 +42,6 @@ def load_environment(conf: Union[Config, CKANConfig]):
     Configure the Pylons environment via the ``pylons.config`` object. This
     code should only need to be run once.
     """
-    if six.PY2:
-        # this must be run at a time when the env is semi-setup, thus inlined
-        # here. Required by the deliverance plugin and iATI
-        from pylons.wsgiapp import PylonsApp
-        import pkg_resources
-        fcg = getattr(
-            PylonsApp.find_controller,
-            '_old_find_controller',
-            PylonsApp.find_controller)
-
-        # This is from pylons 1.0 source, will monkey-patch into 0.9.7
-        def find_controller(self: Any, controller: str) -> Optional[Any]:
-            if controller in self.controller_classes:
-                return self.controller_classes[controller]
-            # Check to see if its a dotted name
-            if '.' in controller or ':' in controller:
-                ep = pkg_resources.EntryPoint.parse('x={0}'.format(controller))
-
-                if hasattr(ep, 'resolve'):
-                    # setuptools >= 10.2
-                    mycontroller = ep.resolve()
-                else:
-                    # setuptools >= 11.3
-                    mycontroller = ep.load(False)
-
-                self.controller_classes[controller] = mycontroller
-                return mycontroller
-            return fcg(self, controller)  # type: ignore
-        # type_ignore_reason: rely on implementation details
-        find_controller._old_find_controller = fcg  # type: ignore
-        PylonsApp.find_controller = find_controller
-
     os.environ['CKAN_CONFIG'] = cast(str, conf['__file__'])
 
     # Pylons paths
@@ -103,16 +66,6 @@ def load_environment(conf: Union[Config, CKANConfig]):
 
     # Initialize main CKAN config object
     config.update(conf)
-
-    if six.PY2:
-        # Initialize Pylons own config object
-        pylons_config.init_app(
-            conf['global_conf'], conf, package='ckan', paths=paths)
-
-        # Update the main CKAN config object with the Pylons specific stuff,
-        # as it is quite hard to keep them separated. This should be removed
-        # once Pylons support is dropped
-        config.update(pylons_config)
 
     # Setup the SQLAlchemy database engine
     # Suppress a couple of sqlalchemy warnings
@@ -276,24 +229,12 @@ def update_config() -> None:
     # root logger.
     logging.getLogger("MARKDOWN").setLevel(logging.getLogger().level)
 
-    if six.PY2:
-        # Create Jinja2 environment
-        env = jinja_extensions.Environment(
-            **jinja_extensions.get_jinja_env_options())
-        env.install_gettext_callables(_, ungettext, newstyle=True)
-        # custom filters
-        # type_ignore_reason: attribute is missing from type declarations
-        env.policies['ext.i18n.trimmed'] = True  # type: ignore
-        env.filters['empty_and_escape'] = jinja_extensions.empty_and_escape
-        config['pylons.app_globals'].jinja_env = env
-
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
 
     # Enable pessimistic disconnect handling (added in SQLAlchemy 1.2)
     # to eliminate database errors due to stale pooled connections
     config.setdefault('sqlalchemy.pool_pre_ping', True)
-
     # Initialize SQLAlchemy
     engine = sqlalchemy.engine_from_config(config)
     model.init_model(engine)

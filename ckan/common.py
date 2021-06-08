@@ -24,10 +24,6 @@ from flask_babel import (gettext as flask_ugettext,
                          ngettext as flask_ungettext)
 
 import simplejson as json
-if six.PY2:
-    import pylons
-    from pylons.i18n import ungettext as pylons_ungettext
-    from pylons import response
 
 current_app = flask.current_app
 
@@ -39,16 +35,6 @@ def is_flask_request() -> Literal[True]:
     '''
     if six.PY3:
         return True
-    try:
-        pylons.request.environ
-        pylons_request_available = True
-    except TypeError:
-        pylons_request_available = False
-
-    return cast(Literal[True], (
-        flask.request and
-        (flask.request.environ.get(u'ckan.app') == u'flask_app' or
-         not pylons_request_available)))
 
 
 def streaming_response(data: Iterable[Any],
@@ -64,10 +50,7 @@ def streaming_response(data: Iterable[Any],
         if with_context:
             iter_data: Iterator[Any] = flask.stream_with_context(iter_data)
         resp = flask.Response(iter_data, mimetype=mimetype)
-    else:
-        response.app_iter = iter_data
-        resp = response.headers['Content-type'] = mimetype
-        assert False
+
     return resp
 
 
@@ -81,8 +64,6 @@ _ = ugettext
 def ungettext(*args: Any, **kwargs: Any) -> str:
     if is_flask_request():
         return flask_ungettext(*args, **kwargs)
-    else:
-        return pylons_ungettext(*args, **kwargs)
 
 
 class CKANConfig(MutableMapping):
@@ -118,19 +99,10 @@ class CKANConfig(MutableMapping):
 
     def clear(self) -> None:
         self.store.clear()
-
         try:
             flask.current_app.config.clear()
         except RuntimeError:
             pass
-
-        if six.PY2:
-            try:
-                pylons.config.clear()
-                # Pylons set this default itself
-                pylons.config[u'lang'] = None
-            except TypeError:
-                pass
 
     def __setitem__(self, key: str, value: Any):
         self.store[key] = value
@@ -139,12 +111,6 @@ class CKANConfig(MutableMapping):
         except RuntimeError:
             pass
 
-        if six.PY2:
-            try:
-                pylons.config[key] = value
-            except TypeError:
-                pass
-
     def __delitem__(self, key: str):
         del self.store[key]
         try:
@@ -152,18 +118,10 @@ class CKANConfig(MutableMapping):
         except RuntimeError:
             pass
 
-        if six.PY2:
-            try:
-                del pylons.config[key]
-            except TypeError:
-                pass
-
 
 def _get_request() -> flask.Request:
     if is_flask_request():
         return flask.request
-    else:
-        return pylons.request
 
 
 class CKANRequest(LocalProxy):
@@ -196,15 +154,11 @@ class CKANRequest(LocalProxy):
 def _get_c() -> Any:
     if is_flask_request():
         return flask.g
-    else:
-        return pylons.c
 
 
 def _get_session() -> Any:
     if is_flask_request():
         return flask.session
-    else:
-        return pylons.session
 
 
 local = Local()

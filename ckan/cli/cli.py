@@ -106,10 +106,7 @@ def _init_ckan_config(ctx: Any, param: str, value: str):
         p.toolkit.error_shout(e)
         raise click.Abort()
 
-    if six.PY2:
-        ctx.meta["flask_app"] = ctx.obj.app.apps["flask_app"]._wsgi_app
-    else:
-        ctx.meta["flask_app"] = ctx.obj.app._wsgi_app
+    ctx.meta["flask_app"] = ctx.obj.app._wsgi_app
 
     for cmd in _get_commands_from_entry_point():
         ctx.command.add_command(cmd)
