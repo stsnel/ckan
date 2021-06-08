@@ -49,6 +49,8 @@ from babel.core import (LOCALE_ALIASES,
                         get_locale_identifier,
                         UnknownLocaleError)
 from babel.support import Translations
+from flask import Request
+
 import polib
 
 from ckan.common import config, is_flask_request, aslist

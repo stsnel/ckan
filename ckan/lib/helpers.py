@@ -26,7 +26,7 @@ import dominate.tags as dom_tags
 from markdown import markdown
 from bleach import clean as bleach_clean, ALLOWED_TAGS, ALLOWED_ATTRIBUTES
 from ckan.common import asbool, config, is_flask_request
-from flask import redirect as _flask_redirect
+from flask import redirect as _flask_redirect, Response
 from flask import _request_ctx_stack  # type: ignore
 from flask import url_for as _flask_default_url_for
 from werkzeug.routing import BuildError as FlaskRouteBuildError
@@ -57,7 +57,6 @@ from ckan.common import _, ungettext, c, g, request, session, json
 from ckan.lib.webassets_tools import include_asset, render_assets
 from markupsafe import Markup, escape
 from ckan.types import Context
-from flask.wrappers import Response
 
 T = TypeVar("T")
 Helper = TypeVar("Helper", bound=Callable[..., Any])
@@ -232,8 +231,7 @@ def redirect_to(*args: Any, **kw: Any) -> Response:
     if _url.startswith('/'):
         _url = str(config['ckan.site_url'].rstrip('/') + _url)
 
-    if is_flask_request():
-        return _flask_redirect(_url)
+    return cast(Response, _flask_redirect(_url))
 
 
 @maintain.deprecated('h.url is deprecated please use h.url_for', since='2.6.0')

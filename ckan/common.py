@@ -33,25 +33,16 @@ def is_flask_request() -> Literal[True]:
     A centralized way to determine whether we are in the context of a
     request being served by Flask or Pylons
     '''
-    if six.PY3:
-        return True
+    return True
 
 
 def streaming_response(data: Iterable[Any],
                        mimetype: str = u'application/octet-stream',
                        with_context: bool = False) -> flask.Response:
     iter_data = iter(data)
-    if is_flask_request():
-        # Removal of context variables for pylon's app is prevented
-        # inside `pylons_app.py`. It would be better to decide on the fly
-        # whether we need to preserve context, but it won't affect performance
-        # in any visible way and we are going to get rid of pylons anyway.
-        # Flask allows to do this in easy way.
-        if with_context:
-            iter_data: Iterator[Any] = flask.stream_with_context(iter_data)
-        resp = flask.Response(iter_data, mimetype=mimetype)
-
-    return resp
+    if with_context:
+        iter_data: Iterator[Any] = flask.stream_with_context(iter_data)
+    return flask.Response(iter_data, mimetype=mimetype)
 
 
 def ugettext(*args: Any, **kwargs: Any) -> str:
@@ -62,8 +53,7 @@ _ = ugettext
 
 
 def ungettext(*args: Any, **kwargs: Any) -> str:
-    if is_flask_request():
-        return flask_ungettext(*args, **kwargs)
+    return flask_ungettext(*args, **kwargs)
 
 
 class CKANConfig(MutableMapping):
@@ -120,8 +110,7 @@ class CKANConfig(MutableMapping):
 
 
 def _get_request() -> flask.Request:
-    if is_flask_request():
-        return flask.request
+    return flask.request
 
 
 class CKANRequest(LocalProxy):
