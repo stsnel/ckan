@@ -573,6 +573,7 @@ if TYPE_CHECKING:
     import ckan.logic.validators as logic_validators
     import ckan.lib.navl.dictization_functions as dictization_functions
     import ckan.lib.helpers as _helpers
+    import ckan.lib.signals as _signals
     import ckan.cli as cli
     import ckan.lib.plugins as lib_plugins
     import ckan.common as common
@@ -669,3 +670,4 @@ if TYPE_CHECKING:
     CkanVersionException = CkanVersionException
     HelperError = HelperError
     enqueue_job = enqueue_job
+    signals = _signals

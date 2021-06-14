@@ -6,11 +6,9 @@ Provides plugin services to the CKAN
 
 import logging
 from contextlib import contextmanager
-from typing import (Any, Dict, Generator, Generic, Iterable, Iterator, List, Optional,
+from typing import (Any, Dict, Generator, Generic, Iterator, List, Optional,
                     Type, TypeVar, Union)
 from pkg_resources import iter_entry_points
-
-import blinker
 
 from pyutilib.component.core import PluginGlobals, implements
 from pyutilib.component.core import ExtensionPoint
@@ -22,6 +20,7 @@ from six import string_types
 import ckan.plugins.interfaces as interfaces
 
 from ckan.common import config
+from ckan.types import SignalMapping
 
 
 __all__ = [
@@ -301,10 +300,6 @@ def _get_service(plugin_name: Union[str, Any]) -> SingletonPlugin:
         raise PluginNotFoundException(plugin_name)
     else:
         raise TypeError('Expected a plugin name', plugin_name)
-
-
-SignalMapping = Dict[blinker.Signal, Iterable[Union[Any, Dict[str, Any]]]]
-
 
 def _connect_signals(mapping: SignalMapping):
     for signal, listeners in mapping.items():

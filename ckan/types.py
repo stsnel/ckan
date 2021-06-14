@@ -15,6 +15,7 @@ from typing import (
 )
 
 from typing_extensions import Protocol, TypedDict, TypeAlias
+from blinker import Signal
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm import Query
 
@@ -38,6 +39,7 @@ FlattenKey = Tuple[Any, ...]
 FlattenDataDict = Dict[FlattenKey, Any]
 FlattenErrorDict = Dict[FlattenKey, List[str]]
 
+SignalMapping = Dict[Signal, Iterable[Union[Any, Dict[str, Any]]]]
 
 class Context(TypedDict, total=False):
     """Mutable private dictionary passed along through many layers of code.

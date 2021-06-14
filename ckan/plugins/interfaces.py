@@ -16,7 +16,7 @@ from flask.wrappers import Response
 
 
 from ckan.types import (Action, AuthFunction, Context, DataDict, PFeed,
-                        PUploader, PResourceUploader, Schema)
+                        PUploader, PResourceUploader, Schema, SignalMapping)
 
 if TYPE_CHECKING:
     import click
@@ -2134,7 +2134,7 @@ class ISignal(Interface):
     """Subscribe to CKAN signals.
     """
 
-    def get_signal_subscriptions(self):
+    def get_signal_subscriptions(self) -> SignalMapping:
         """Return a mapping of signals to their listeners.
 
         Note that keys are not strings, they are instances of
