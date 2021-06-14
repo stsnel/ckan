@@ -162,6 +162,8 @@ def register_package_blueprints(app: 'CKANFlask') -> None:
                     dataset_blueprint)
             register_dataset_plugin_rules(dataset_blueprint)
 
+            toolkit.signals.register_blueprint.send(
+                u"dataset", blueprint=dataset_blueprint)
             app.register_blueprint(dataset_blueprint)
 
             resource_blueprint = Blueprint(
@@ -174,6 +176,8 @@ def register_package_blueprints(app: 'CKANFlask') -> None:
                     package_type,
                     resource_blueprint)
             dataset_resource_rules(resource_blueprint)
+            toolkit.signals.register_blueprint.send(
+                u"resource", blueprint=resource_blueprint)
             app.register_blueprint(resource_blueprint)
             log.debug(
                 'Registered blueprints for custom dataset type \'{}\''.format(
@@ -286,6 +290,9 @@ def register_group_blueprints(app: 'CKANFlask') -> None:
                 blueprint = plugin.prepare_group_blueprint(
                     group_type, blueprint)
             register_group_plugin_rules(blueprint)
+            toolkit.signals.register_blueprint.send(
+                u"organization" if is_organization else u"group",
+                blueprint=blueprint)
             app.register_blueprint(blueprint)
 
 

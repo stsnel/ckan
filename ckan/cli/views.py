@@ -21,7 +21,7 @@ from ckan.types import Context
 _page_size = 100
 
 
-@click.group()
+@click.group(short_help=u"Manage resource views.")
 def views():
     """Manage resource views.
     """

@@ -29,7 +29,7 @@ from ckan.views import (identify_user,
                         check_session_cookie,
                         )
 from ckan.common import (c, request, config,
-                         session, is_flask_request, asbool)
+                         session, asbool)
 
 
 log = logging.getLogger(__name__)

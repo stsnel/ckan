@@ -24,14 +24,15 @@ from flask_babel import (gettext as flask_ugettext,
                          ngettext as flask_ungettext)
 
 import simplejson as json
+import ckan.lib.maintain as maintain
 
 current_app = flask.current_app
 
 
-def is_flask_request() -> Literal[True]:
+@maintain.deprecated('All web requests are served by Flask', since="2.10.0")
+def is_flask_request():
     u'''
-    A centralized way to determine whether we are in the context of a
-    request being served by Flask or Pylons
+    This function is deprecated. All CKAN requests are now served by Flask
     '''
     return True
 
@@ -109,7 +110,7 @@ class CKANConfig(MutableMapping):
             pass
 
 
-def _get_request() -> flask.Request:
+def _get_request():
     return flask.request
 
 
@@ -140,14 +141,12 @@ class CKANRequest(LocalProxy):
             return self.args
 
 
-def _get_c() -> Any:
-    if is_flask_request():
-        return flask.g
+def _get_c():
+    return flask.g
 
 
-def _get_session() -> Any:
-    if is_flask_request():
-        return flask.session
+def _get_session():
+    return flask.session
 
 
 local = Local()

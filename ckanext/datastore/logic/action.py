@@ -280,6 +280,8 @@ def datastore_upsert(context: Context, data_dict: Dict[str, Any]):
         ))
 
     result = backend.upsert(context, data_dict)
+    p.toolkit.signals.datastore_upsert.send(resource_id, records=records)
+
     result.pop('id', None)
     result.pop('connection_url', None)
 
@@ -406,7 +408,8 @@ def datastore_delete(context: Context, data_dict: Dict[str, Any]):
         ))
 
     result = backend.delete(context, data_dict)
-
+    p.toolkit.signals.datastore_delete.send(
+        res_id, result=result, data_dict=data_dict)
     if data_dict.get('calculate_record_count', False):
         backend.calculate_record_count(data_dict['resource_id'])  # type: ignore
 

@@ -331,11 +331,11 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
 
     # Prevent the host from request to be added to the new header location.
     app = HostHeaderMiddleware(app)
-    if six.PY3:
-        app = I18nMiddleware(app)
 
-        if asbool(config.get('ckan.tracking_enabled', 'false')):
-            app = TrackingMiddleware(app, config)
+    app = I18nMiddleware(app)
+
+    if asbool(config.get('ckan.tracking_enabled', 'false')):
+        app = TrackingMiddleware(app, config)
 
     # Add a reference to the actual Flask app so it's easier to access
     # type_ignore_reason: custom attribute

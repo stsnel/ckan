@@ -6,9 +6,12 @@ Provides plugin services to the CKAN
 
 import logging
 from contextlib import contextmanager
-from typing import (Any, Dict, Generator, Generic, Iterator, List, Optional,
+from typing import (Any, Dict, Generator, Generic, Iterable, Iterator, List, Optional,
                     Type, TypeVar, Union)
 from pkg_resources import iter_entry_points
+
+import blinker
+
 from pyutilib.component.core import PluginGlobals, implements
 from pyutilib.component.core import ExtensionPoint
 from pyutilib.component.core import SingletonPlugin as _pca_SingletonPlugin
@@ -199,7 +202,8 @@ def load(
 
         if isinstance(service, SingletonPlugin):
             _PLUGINS_SERVICE[plugin] = service
-
+        if interfaces.ISignal.implemented_by(service.__class__):
+            _connect_signals(service.get_signal_subscriptions())
         output.append(service)
     plugins_update()
 
@@ -235,6 +239,10 @@ def unload(*plugins: str) -> None:
             raise Exception('Cannot unload plugin `%s`' % plugin)
 
         service = _get_service(plugin)
+
+        if interfaces.ISignal.implemented_by(service.__class__):
+            _disconnect_signals(service.get_signal_subscriptions())
+
         for observer_plugin in observers:
             observer_plugin.before_unload(service)
 
@@ -293,3 +301,24 @@ def _get_service(plugin_name: Union[str, Any]) -> SingletonPlugin:
         raise PluginNotFoundException(plugin_name)
     else:
         raise TypeError('Expected a plugin name', plugin_name)
+
+
+SignalMapping = Dict[blinker.Signal, Iterable[Union[Any, Dict[str, Any]]]]
+
+
+def _connect_signals(mapping: SignalMapping):
+    for signal, listeners in mapping.items():
+        for options in listeners:
+            if not isinstance(options, dict):
+                options = {'receiver': options}
+            signal.connect(**options)
+
+
+def _disconnect_signals(mapping: SignalMapping):
+    for signal, listeners in mapping.items():
+        for options in listeners:
+            if isinstance(options, dict):
+                options.pop('weak', None)
+            else:
+                options = {'receiver': options}
+            signal.disconnect(**options)

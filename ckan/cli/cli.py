@@ -2,7 +2,7 @@
 
 import logging
 from collections import defaultdict
-from typing import Any, Callable, Generator, Optional, cast
+from typing import Any, Callable, Generator, List, Optional, cast
 from pkg_resources import iter_entry_points
 
 import six
@@ -33,6 +33,10 @@ from ckan.cli import (
 )
 
 
+META_ATTR = u'_ckan_meta'
+CMD_TYPE_PLUGIN = u'plugin'
+CMD_TYPE_ENTRY = u'entry_point'
+
 log = logging.getLogger(__name__)
 
 _no_config_commands = [
@@ -42,7 +46,7 @@ _no_config_commands = [
 ]
 
 
-class CkanCommand(object):
+class CtxObject(object):
 
     def __init__(self, conf: Optional[str] = None):
         # Don't import `load_config` by itself, rather call it using
@@ -51,20 +55,120 @@ class CkanCommand(object):
         self.app = make_app(self.config)
 
 
-def _get_commands_from_plugins(
-        plugins: "p.PluginImplementations[p.IClick]"
-) -> Generator[Any, None, None]:
+class ExtendableGroup(click.Group):
+    _section_titles = {
+        CMD_TYPE_PLUGIN: u'Plugins',
+        CMD_TYPE_ENTRY: u'Entry points',
+    }
+
+    def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter):
+        """Print help message.
+
+        Includes information about commands that were registered by extensions.
+        """
+        # click won't parse config file from envvar if no other options
+        # provided, except for `--help`. In this case it has to be done
+        # manually.
+        if not ctx.obj:
+            _add_ctx_object(ctx)
+            _add_external_commands(ctx)
+
+        commands = []
+        ext_commands = defaultdict(lambda: defaultdict(list))
+
+        for subcommand in self.list_commands(ctx):
+            cmd = self.get_command(ctx, subcommand)
+            if cmd is None:
+                continue
+            if cmd.hidden:
+                continue
+            help = cmd.short_help or u''
+
+            meta = getattr(cmd, META_ATTR, None)
+            if meta:
+                ext_commands[meta[u'type']][meta[u'name']].append(
+                    (subcommand, help))
+            else:
+                commands.append((subcommand, help))
+
+        if commands:
+            with formatter.section(u'Commands'):
+                formatter.write_dl(commands)
+
+        for section, group in ext_commands.items():
+            with formatter.section(self._section_titles.get(section, section)):
+                for rows in group.values():
+                    formatter.write_dl(rows)
+
+    def parse_args(self, ctx: click.Context, args: List[str]):
+        """Preprocess options and arguments.
+
+        As long as at least one option is provided, click won't fallback to
+        printing help message. That means that `ckan -c config.ini` will be
+        executed as command, instead of just printing help message(as `ckan -c
+        config.ini --help`).
+        In order to fix it, we have to check whether there is at least one
+        argument. If no, let's print help message manually
+
+        """
+        result = super().parse_args(ctx, args)
+        if not ctx.protected_args and not ctx.args:
+            click.echo(ctx.get_help(), color=ctx.color)
+            ctx.exit()
+        return result
+
+
+def _init_ckan_config(ctx: click.Context, param: str, value: str):
+    if any(sys.argv[1:len(cmd) + 1] == cmd for cmd in _no_config_commands):
+        return
+    _add_ctx_object(ctx, value)
+    _add_external_commands(ctx)
+
+
+def _add_ctx_object(ctx: click.Context, path: Optional[str] = None):
+    """Initialize CKAN App using config file available under provided path.
+
+    """
+    try:
+        ctx.obj = CtxObject(path)
+    except CkanConfigurationException as e:
+        p.toolkit.error_shout(e)
+        ctx.abort()
+
+    ctx.meta["flask_app"] = ctx.obj.app._wsgi_app
+
+
+def _add_external_commands(ctx: Any):
+    for cmd in _get_commands_from_entry_point():
+        ctx.command.add_command(cmd)
+
+    plugins = p.PluginImplementations(p.IClick)
+    for cmd in _get_commands_from_plugins(plugins):
+        ctx.command.add_command(cmd)
+
+
+def _command_with_ckan_meta(cmd: Any, name: str, type_: str):
+    """Mark command as one retrived from CKAN extension.
+
+    This information is used when CLI help text is generated.
+    """
+    setattr(cmd, META_ATTR, {u'name': name, u'type': type_})
+    return cmd
+
+
+def _get_commands_from_plugins(plugins: "p.PluginImplementations[p.IClick]"):
+    """Register commands that are available when plugin enabled.
+
+    """
     for plugin in plugins:
         for cmd in plugin.get_commands():
-            # type_ignore_reason: using custom prop
-            cmd._ckan_meta = {  # type: ignore
-                u'name': plugin.name,
-                u'type': u'plugin'
-            }
-            yield cmd
+            yield _command_with_ckan_meta(cmd, plugin.name, CMD_TYPE_PLUGIN)
 
 
-def _get_commands_from_entry_point(entry_point: str = u'ckan.click_command'):
+def _get_commands_from_entry_point(entry_point: str = 'ckan.click_command'):
+    """Register commands that are available even if plugin is not enabled.
+
+    """
     registered_entries = {}
     for entry in iter_entry_points(entry_point):
         if entry.name in registered_entries:
@@ -81,92 +185,16 @@ def _get_commands_from_entry_point(entry_point: str = u'ckan.click_command'):
             raise click.Abort()
         registered_entries[entry.name] = entry
 
-        cmd = entry.load()
-        cmd._ckan_meta = {
-            u'name': entry.name,
-            u'type': u'entry_point'
-        }
-        yield cmd
+        yield _command_with_ckan_meta(entry.load(), entry.name, CMD_TYPE_ENTRY)
 
 
-def _init_ckan_config(ctx: Any, param: str, value: str):
-    is_help = u'--help' in sys.argv
-    no_config = False
-    if len(sys.argv) > 1:
-        for cmd in _no_config_commands:
-            if sys.argv[1:len(cmd) + 1] == cmd:
-                no_config = True
-                break
-    if no_config or is_help:
-        return
-
-    try:
-        ctx.obj = CkanCommand(value)
-    except CkanConfigurationException as e:
-        p.toolkit.error_shout(e)
-        raise click.Abort()
-
-    ctx.meta["flask_app"] = ctx.obj.app._wsgi_app
-
-    for cmd in _get_commands_from_entry_point():
-        ctx.command.add_command(cmd)
-
-    plugins = p.PluginImplementations(p.IClick)
-    for cmd in _get_commands_from_plugins(plugins):
-        ctx.command.add_command(cmd)
-
-
-click_config_option = click.option(
-    u'-c',
-    u'--config',
-    default=None,
-    metavar=u'CONFIG',
-    help=u'Config file to use (default: development.ini)',
-    is_eager=True,
-    callback=cast(Callable[..., Any], _init_ckan_config)
-)
-
-
-class CustomGroup(click.Group):
-    _section_titles = {
-        u'plugin': u'Plugins',
-        u'entry_point': u'Entry points',
-    }
-
-    def format_commands(self, ctx: Any, formatter: Any):
-        # Without any arguments click skips option callbacks.
-        self.parse_args(ctx, [u'help'])
-
-        commands = []
-        ext_commands = defaultdict(lambda: defaultdict(list))
-
-        for subcommand in self.list_commands(ctx):
-            cmd = self.get_command(ctx, subcommand)
-            if cmd is None:
-                continue
-            help = cmd.short_help or u''
-
-            meta = getattr(cmd, u'_ckan_meta', None)
-            if meta:
-                ext_commands[meta[u'type']][meta[u'name']].append(
-                    (subcommand, help))
-            else:
-                commands.append((subcommand, help))
-
-        if commands:
-            with formatter.section(u'Commands'):
-                formatter.write_dl(commands)
-
-        for section, group in ext_commands.items():
-            with formatter.section(self._section_titles.get(section, section)):
-                for _ext, rows in group.items():
-                    formatter.write_dl(rows)
-
-
-@click.group(cls=CustomGroup)
+@click.group(cls=ExtendableGroup)
+@click.option(
+    u'-c', u'--config', metavar=u'CONFIG',
+    is_eager=True, callback=cast(Any, _init_ckan_config), expose_value=False,
+    help=u'Config file to use (default: ckan.ini)')
 @click.help_option(u'-h', u'--help')
-@click_config_option
-def ckan(config: Any, *args: Any, **kwargs: Any):
+def ckan():
     pass
 
 

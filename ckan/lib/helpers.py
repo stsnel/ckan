@@ -25,7 +25,7 @@ from typing import (
 import dominate.tags as dom_tags
 from markdown import markdown
 from bleach import clean as bleach_clean, ALLOWED_TAGS, ALLOWED_ATTRIBUTES
-from ckan.common import asbool, config, is_flask_request
+from ckan.common import asbool, config
 from flask import redirect as _flask_redirect, Response
 from flask import _request_ctx_stack  # type: ignore
 from flask import url_for as _flask_default_url_for
@@ -232,7 +232,6 @@ def redirect_to(*args: Any, **kw: Any) -> Response:
         _url = str(config['ckan.site_url'].rstrip('/') + _url)
 
     return cast(Response, _flask_redirect(_url))
-
 
 @maintain.deprecated('h.url is deprecated please use h.url_for', since='2.6.0')
 @core_helper
@@ -766,21 +765,7 @@ def are_there_flash_messages() -> bool:
 
 def _link_active(kwargs: Any) -> bool:
     ''' creates classes for the link_to calls '''
-    if is_flask_request():
-        return _link_active_flask(kwargs)
-    else:
-        return _link_active_pylons(kwargs)
-
-
-def _link_active_pylons(kwargs: Any) -> bool:
-    highlight_controllers = kwargs.get('highlight_controllers', [])
-    if highlight_controllers and c.controller in highlight_controllers:
-        return True
-
-    highlight_actions = kwargs.get('highlight_actions',
-                                   kwargs.get('action', '')).split()
-    return (c.controller == kwargs.get('controller')
-            and c.action in highlight_actions)
+    return _link_active_flask(kwargs)
 
 
 def _link_active_flask(kwargs: Any) -> bool:
@@ -903,10 +888,7 @@ def nav_link(text: str, *args: Any, **kwargs: Any) -> Union[Markup, str]:
     :param condition: if ``False`` then no link is returned
 
     '''
-    if is_flask_request():
-        return nav_link_flask(text, *args, **kwargs)
-    else:
-        return nav_link_pylons(text, *args, **kwargs)
+    return nav_link_flask(text, *args, **kwargs)
 
 
 def nav_link_flask(text: str, *args: Any, **kwargs: Any):
@@ -1222,8 +1204,7 @@ def get_facet_items_dict(
     for facet_item in search_facets[facet]['items']:
         if not len(facet_item['name'].strip()):
             continue
-        params_items = request.params.items(multi=True) \
-            if is_flask_request() else request.params.items()
+        params_items = request.params.items(multi=True)
         if not (facet, facet_item['name']) in params_items:
             facets.append(dict(active=False, **facet_item))
         elif not exclude_active:
@@ -1263,8 +1244,7 @@ def has_more_facets(facet: str,
     for facet_item in search_facets[facet]['items']:
         if not len(facet_item['name'].strip()):
             continue
-        params_items = request.params.items(multi=True) \
-            if is_flask_request() else request.params.items()
+        params_items = request.params.items(multi=True)
         if not (facet, facet_item['name']) in params_items:
             facets.append(dict(active=False, **facet_item))
         elif not exclude_active:
@@ -1678,8 +1658,7 @@ def user_image(user_id: str, size: int = 100) -> Union[Markup, str]:
 @core_helper
 def pager_url(page: int, partial: Optional[str] = None, **kwargs: Any) -> str:
     pargs = []
-    if is_flask_request():
-        pargs.append(request.endpoint)
+    pargs.append(request.endpoint)
     kwargs['page'] = page
     return url_for(*pargs, **kwargs)
 
@@ -2137,8 +2116,7 @@ def add_url_param(alternative_url: Optional[str] = None,
     instead.
     '''
 
-    params_items = request.params.items(multi=True) \
-        if is_flask_request() else request.params.items()
+    params_items = request.params.items(multi=True)
     params_nopage = [
         (k, v) for k, v in params_items
         if k != 'page'
@@ -2181,8 +2159,7 @@ def remove_url_param(key: Union[List[str], str],
     else:
         keys = key
 
-    params_items = request.params.items(multi=True) \
-        if is_flask_request() else request.params.items()
+    params_items = request.params.items(multi=True)
     params_nopage = [
         (k, v) for k, v in params_items
         if k != 'page'

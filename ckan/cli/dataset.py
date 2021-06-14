@@ -13,10 +13,11 @@ from ckan.types import Context
 log = logging.getLogger(__name__)
 
 
-@click.group()
+@click.group(short_help=u"Manage datasets")
 def dataset():
-    u'''Manage datasets
-    '''
+    """Manage datasets.
+    """
+    pass
 
 
 @dataset.command()

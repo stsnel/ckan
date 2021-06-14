@@ -184,6 +184,7 @@ def download(package_type: str,
         resp = flask.send_file(filepath)
         if rsc.get('mimetype'):
             resp.headers['Content-Type'] = rsc['mimetype']
+        plugins.toolkit.signals.resource_download.send(resource_id)
         return resp
 
     elif u'url' not in rsc:

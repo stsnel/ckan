@@ -509,6 +509,7 @@ def get_action(action: str) -> Action:
                         context['__auth_audit'].pop()
                 except IndexError:
                     pass
+
                 return result
             return wrapped
 
