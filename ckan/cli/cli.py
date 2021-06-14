@@ -61,7 +61,8 @@ class ExtendableGroup(click.Group):
         CMD_TYPE_ENTRY: u'Entry points',
     }
 
-    def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter):
+    def format_commands(
+            self, ctx: click.Context, formatter: click.HelpFormatter):
         """Print help message.
 
         Includes information about commands that were registered by extensions.

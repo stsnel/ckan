@@ -301,6 +301,7 @@ def _get_service(plugin_name: Union[str, Any]) -> SingletonPlugin:
     else:
         raise TypeError('Expected a plugin name', plugin_name)
 
+
 def _connect_signals(mapping: SignalMapping):
     for signal, listeners in mapping.items():
         for options in listeners:

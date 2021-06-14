@@ -233,6 +233,7 @@ def redirect_to(*args: Any, **kw: Any) -> Response:
 
     return cast(Response, _flask_redirect(_url))
 
+
 @maintain.deprecated('h.url is deprecated please use h.url_for', since='2.6.0')
 @core_helper
 def url(*args: Any, **kw: Any) -> str:
