@@ -10,7 +10,7 @@ import six
 try:
     from http.cookies import SimpleCookie
 except ImportError:
-    from Cookie import SimpleCookie
+    from Cookie import SimpleCookie  # type: ignore
 
 from ckan.common import config
 from repoze.who.plugins import auth_tkt as repoze_auth_tkt

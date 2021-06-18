@@ -2444,7 +2444,9 @@ def render_markdown(data: str,
         data = RE_MD_HTML_TAGS.sub('', data.strip())
         data = bleach_clean(
             markdown(data), strip=True,
-            tags=MARKDOWN_TAGS, attributes=MARKDOWN_ATTRIBUTES)
+            tags=MARKDOWN_TAGS,
+            # type_ignore_reason: incorrect typing of bleach
+            attributes=MARKDOWN_ATTRIBUTES)  # type: ignore
     # tags can be added by tag:... or tag:"...." and a link will be made
     # from it
     if auto_link:

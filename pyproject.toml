@@ -48,3 +48,41 @@ markers = [
 
 testpaths = ["ckan", "ckanext"]
 addopts = "--strict-markers  --pdbcls=IPython.terminal.debugger:TerminalPdb"
+
+[tool.pyright]
+pythonVersion = "3.6"
+include = ["ckan", "ckanext"]
+exclude = [
+    "**/test*",
+    "**/migration",
+    "ckan/lib/create_test_data.py"
+]
+strict = []
+
+strictParameterNoneValue = true # type must be Optional if default value is None
+
+reportFunctionMemberAccess = true # non-standard member accesses for functions
+reportMissingImports = true
+reportMissingTypeStubs = false
+
+reportImportCycles = false
+reportUnusedImport = false
+reportUnusedClass = true
+reportUnusedFunction = true
+reportUnusedVariable = false
+reportDuplicateImport = true
+reportOptionalSubscript = true
+reportOptionalMemberAccess = true
+reportOptionalCall = true
+reportOptionalIterable = true
+reportOptionalContextManager = true
+reportOptionalOperand = true
+reportTypedDictNotRequiredAccess = false
+reportUntypedFunctionDecorator = false
+reportUnknownParameterType = true
+reportUnknownArgumentType = false
+reportUnnecessaryIsInstance = true
+reportUnnecessaryCast = true
+reportUnnecessaryComparison = true
+
+useLibraryCodeForTypes = true

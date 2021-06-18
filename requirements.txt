@@ -29,7 +29,7 @@ packaging==20.9           # via bleach
 passlib==1.7.3            # via -r requirements.in
 polib==1.0.7              # via -r requirements.in
 psycopg2==2.8.2           # via -r requirements.in
-pyjwt==1.7.1              # via -r requirements.in
+pyjwt==2.1.0              # via -r requirements.in
 pyparsing==2.4.7          # via packaging
 pysolr==3.6.0             # via -r requirements.in
 python-dateutil==2.8.1    # via -r requirements.in, alembic, feedgen

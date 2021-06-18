@@ -31,17 +31,17 @@ def _get_algorithm() -> str:
     return config.get(_config_algorithm, u"HS256")
 
 
-def _get_secret(encode: bool) -> bytes:
+def _get_secret(encode: bool) -> str:
     config_key = _config_encode_secret if encode else _config_decode_secret
     secret: str = config.get(config_key, '')
     if not secret:
         secret = u"string:" + config.get(_config_secret_fallback, u"")
     type_, string = secret.split(u":", 1)
     if type_ == u"file":
-        with open(string, u"rb") as key_file:
+        with open(string, u"r") as key_file:
             value = key_file.read()
     else:
-        value = bytes(string, u'utf8')
+        value = string
     if not value:
         raise CkanConfigurationException(
             (
@@ -82,7 +82,7 @@ def decode(encoded: str, **kwargs: Any) -> Optional[Dict[str, Any]]:
             data = jwt.decode(
                 encoded,
                 _get_secret(encode=False),
-                algorithms=_get_algorithm(),
+                algorithms=[_get_algorithm()],
                 **kwargs
             )
         except jwt.InvalidTokenError as e:

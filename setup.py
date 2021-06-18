@@ -41,12 +41,6 @@ if parse_version(setuptools_version) < min_setuptools_version:
 
 
 entry_points = {
-    'paste.app_factory': [
-        'main = ckan.config.middleware:make_app',
-    ],
-    'paste.app_install': [
-        'main = ckan.config.install:CKANInstaller',
-    ],
     'console_scripts': [
         'ckan = ckan.cli.cli:ckan',
     ],
