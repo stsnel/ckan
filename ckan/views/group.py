@@ -251,14 +251,11 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
                      if k != u'page']
     sort_by = request.params.get(u'sort', None)
 
+
     def search_url(params: Any) -> str:
-        controller = lookup_group_controller(group_type)
-        assert controller, (
-            'Controller cannot be missing because of the join below'
-        )
         action = u'bulk_process' if getattr(
             g, u'action', u'') == u'bulk_process' else u'read'
-        url = h.url_for(u'.'.join([controller, action]), id=id)
+        url = h.url_for(u'.'.join([group_type, action]), id=id)
         params = [(k, v.encode(u'utf-8')
                    if isinstance(v, string_types) else str(v))
                   for k, v in params]
