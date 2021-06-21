@@ -2,7 +2,7 @@
 
 import datetime
 import logging
-from typing import Any, List, Optional, Tuple
+from typing import Any, Iterable, List, Optional, Tuple
 from ckan.common import config
 from six import text_type
 from sqlalchemy import Table, select, join, func, and_
@@ -51,7 +51,7 @@ class Stats(object):
             )
         ).order_by(func.count(member.c.table_id).desc()).limit(limit)
 
-        res_ids = model.Session.execute(s).fetchall()
+        res_ids: Iterable[Tuple[str, int]] = model.Session.execute(s).fetchall()
         res_groups = [
             (model.Session.query(model.Group).get(text_type(group_id)), val)
             for group_id, val in res_ids
@@ -87,7 +87,7 @@ class Stats(object):
         s = s.group_by(tag_column).order_by(
             func.count(package_tag.c.package_id).desc()
         ).limit(limit)
-        res_col = model.Session.execute(s).fetchall()
+        res_col: List[Tuple[str, int]] = model.Session.execute(s).fetchall()
         if returned_tag_info in ('id', 'name'):
             return res_col
         elif returned_tag_info == 'object':
