@@ -14,7 +14,7 @@ from ckan.types import AlchemySession
 __all__ = ['Session', 'engine_is_sqlite', 'engine_is_pg']
 
 
-class CkanCacheExtension(SessionExtension):
+class CkanCacheExtension(SessionExtension):  # type: ignore
     ''' This extension checks what tables have been affected by
     database access and allows us to act on them. Currently this is
     used by the page cache to flush the cache when data in the database
@@ -34,7 +34,7 @@ class CkanCacheExtension(SessionExtension):
                 objs.add(item.__class__.__name__)
 
 
-class CkanSessionExtension(SessionExtension):
+class CkanSessionExtension(SessionExtension):  # type: ignore
 
     def before_flush(self, session: Any, flush_context: Any, instances: Any):
         if not hasattr(session, '_object_cache'):

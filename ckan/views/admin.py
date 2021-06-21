@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 admin = Blueprint(u'admin', __name__, url_prefix=u'/ckan-admin')
 
 
-def _get_sysadmins() -> Query:
+def _get_sysadmins() -> "Query[model.User]":
     q = model.Session.query(model.User).filter(
         # type_ignore_reason: incomplete SQLAlchemy types
         model.User.sysadmin.is_(True),  # type: ignore

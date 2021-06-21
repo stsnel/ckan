@@ -3,7 +3,7 @@
 import logging
 import re
 from collections import OrderedDict
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Set, Tuple, Union, cast
 from typing_extensions import Literal
 
 import six
@@ -141,8 +141,8 @@ def index(group_type: str, is_organization: bool) -> str:
     })
 
     try:
-        _check_access(u'site_read', context)
-        _check_access(u'group_list', context)
+        assert _check_access(u'site_read', context)
+        assert _check_access(u'group_list', context)
     except NotAuthorized:
         base.abort(403, _(u'Not authorized to see this page'))
 
@@ -165,7 +165,7 @@ def index(group_type: str, is_organization: bool) -> str:
         context['user_is_admin'] = g.userobj.sysadmin
 
     try:
-        data_dict_global_results = {
+        data_dict_global_results: Dict[str, Any] = {
             u'all_fields': False,
             u'q': q,
             u'sort': sort_by,
@@ -184,7 +184,7 @@ def index(group_type: str, is_organization: bool) -> str:
         return base.render(
             _get_group_template(u'index_template', group_type), extra_vars)
 
-    data_dict_page_results = {
+    data_dict_page_results: Dict[str, Any] = {
         u'all_fields': True,
         u'q': q,
         u'sort': sort_by,
@@ -247,10 +247,9 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
     page = h.get_page_number(request.params)
 
     # most search operations should reset the page counter:
-    params_nopage = [(k, v) for k, v in request.params.items(multi=True)
-                     if k != u'page']
+    params_nopage: List[Tuple[str, Any]] = [
+        (k, v) for k, v in request.params.items(multi=True) if k != u'page']
     sort_by = request.params.get(u'sort', None)
-
 
     def search_url(params: Any) -> str:
         action = u'bulk_process' if getattr(
@@ -286,7 +285,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
     extra_vars["remove_field"] = remove_field
 
     def pager_url(q: Any = None, page: Optional[int] = None):
-        params = list(params_nopage)
+        params: List[Tuple[str, Any]] = list(params_nopage)
         params.append((u'page', page))
         return search_url(params)
 
@@ -302,7 +301,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
     g.fields = extra_vars[u'fields']
     g.fields_grouped = extra_vars[u'fields_grouped']
 
-    facets = OrderedDict()
+    facets: "OrderedDict[str, str]" = OrderedDict()
 
     org_label = h.humanize_entity_type(
         u'organization',
@@ -333,7 +332,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
 
     extra_vars["facet_titles"] = facets
 
-    data_dict = {
+    data_dict: Dict[str, Any] = {
         u'q': q,
         u'fq': fq,
         u'include_private': True,
@@ -556,7 +555,7 @@ def changes(id: str, group_type: str, is_organization: bool) -> str:
         }
     )
 
-    extra_vars = {
+    extra_vars: Dict[str, Any] = {
         u'activity_diffs': [activity_diff],
         u'group_dict': current_group_dict,
         u'group_activity_list': group_activity_list,
@@ -635,14 +634,14 @@ def changes_multiple(is_organization: bool, group_type: str) -> str:
         else:
             current_id = activity_diff['activities'][0]['id']
 
-    group_id = diff_list[0][u'activities'][1][u'data'][u'group'][u'id']
+    group_id: str = diff_list[0][u'activities'][1][u'data'][u'group'][u'id']
     current_group_dict = get_action(group_type + u'_show')(
         context, {u'id': group_id})
     group_activity_list = get_action(group_type + u'_activity_list')(context, {
         u'id': group_id,
         u'limit': 100})
 
-    extra_vars = {
+    extra_vars: Dict[str, Any] = {
         u'activity_diffs': diff_list,
         u'group_dict': current_group_dict,
         u'group_activity_list': group_activity_list,
@@ -667,8 +666,8 @@ def about(id: str, group_type: str, is_organization: bool) -> str:
     g.group_dict = group_dict
     g.group_type = group_type
 
-    extra_vars = {u"group_dict": group_dict,
-                  u"group_type": group_type}
+    extra_vars: Dict[str, Any] = {u"group_dict": group_dict,
+                                  u"group_type": group_type}
 
     return base.render(
         _get_group_template(u'about_template', group_type), extra_vars)
@@ -682,7 +681,7 @@ def members(id: str, group_type: str, is_organization: bool) -> str:
 
     try:
         data_dict: Dict[str, Any] = {u'id': id}
-        check_access(u'group_edit_permissions', context, data_dict)
+        assert check_access(u'group_edit_permissions', context, data_dict)
         members = get_action(u'member_list')(context, {
             u'id': id,
             u'object_type': u'user'
@@ -702,7 +701,7 @@ def members(id: str, group_type: str, is_organization: bool) -> str:
     g.members = members
     g.group_dict = group_dict
 
-    extra_vars = {
+    extra_vars: Dict[str, Any] = {
         u"members": members,
         u"group_dict": group_dict,
         u"group_type": group_type
@@ -721,7 +720,7 @@ def member_delete(id: str, group_type: str,
         Context, {u'model': model, u'session': model.Session, u'user': g.user})
 
     try:
-        _check_access(u'group_member_delete', context, {u'id': id})
+        assert _check_access(u'group_member_delete', context, {u'id': id})
     except NotAuthorized:
         base.abort(403, _(u'Unauthorized to delete group %s members') % u'')
 
@@ -747,7 +746,7 @@ def member_delete(id: str, group_type: str,
         base.abort(403, _(u'Unauthorized to delete group %s members') % u'')
     except NotFound:
         base.abort(404, _(u'Group not found'))
-    extra_vars = {
+    extra_vars: Dict[str, Any] = {
         u"user_id": user_id,
         u"user_dict": user_dict,
         u"group_id": id
@@ -821,7 +820,7 @@ def followers(id: str, group_type: str, is_organization: bool) -> str:
     g.group_dict = group_dict
     g.followers = followers
 
-    extra_vars = {
+    extra_vars: Dict[str, Any] = {
         u"group_dict": group_dict,
         u"group_type": group_type,
         u"followers": followers
@@ -841,7 +840,7 @@ def admins(id: str, group_type: str, is_organization: bool) -> str:
     g.group_dict = group_dict
     g.admins = admins
 
-    extra_vars = {
+    extra_vars: Dict[str, Any] = {
         u"group_dict": group_dict,
         u'group_type': group_type,
         u"admins": admins
@@ -895,7 +894,7 @@ class BulkProcessView(MethodView):
         extra_vars = _read(id, limit, group_type)
         g.packages = g.page.items
 
-        extra_vars = {
+        extra_vars: Dict[str, Any] = {
             u"group_dict": group_dict,
             u"group": group,
             u"page": g.page,
@@ -914,7 +913,8 @@ class BulkProcessView(MethodView):
         context = self._prepare(group_type)
         data_dict: Dict[str, Any] = {u'id': id, u'type': group_type}
         try:
-            check_access(u'bulk_update_public', context, {u'org_id': id})
+            assert check_access(
+                u'bulk_update_public', context, {u'org_id': id})
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
             data_dict['include_datasets'] = False
@@ -947,11 +947,12 @@ class BulkProcessView(MethodView):
             u"bulk_action.delete",
             u"bulk_action.private"
         ])
-        actions_in_form = set(request.form.keys())
+        actions_in_form: Set[str] = set(request.form.keys())
         actions = form_names.intersection(actions_in_form)
         # ie7 puts all buttons in form params but puts submitted one twice
 
-        for key, value in six.iteritems(request.form.to_dict()):
+        form_dict: Dict[str, str] = request.form.to_dict()
+        for key, value in six.iteritems(form_dict):
             if value in [u'private', u'public']:
                 action = key.split(u'.')[-1]
                 break
@@ -1002,7 +1003,7 @@ class CreateGroupView(MethodView):
         })
 
         try:
-            _check_access(u'group_create', context)
+            assert _check_access(u'group_create', context)
         except NotAuthorized:
             base.abort(403, _(u'Unauthorized to create a group'))
 
@@ -1058,7 +1059,7 @@ class CreateGroupView(MethodView):
             data.pop(u'image_url', None)
         errors = errors or {}
         error_summary = error_summary or {}
-        extra_vars = {
+        extra_vars: Dict[str, Any] = {
             u'data': data,
             u'errors': errors,
             u'error_summary': error_summary,
@@ -1084,7 +1085,7 @@ class EditGroupView(MethodView):
     u''' Edit group view'''
 
     def _prepare(self, id: Optional[str]) -> Context:
-        data_dict = {u'id': id, u'include_datasets': False}
+        data_dict: Dict[str, Any] = {u'id': id, u'include_datasets': False}
 
         context = cast(Context, {
             u'model': model,
@@ -1098,7 +1099,7 @@ class EditGroupView(MethodView):
 
         try:
             _action(u'group_show')(context, data_dict)
-            check_access(u'group_update', context)
+            assert check_access(u'group_update', context)
         except NotAuthorized:
             base.abort(403, _(u'Unauthorized to create a group'))
         except NotFound:
@@ -1148,7 +1149,7 @@ class EditGroupView(MethodView):
         extra_vars = {}
         set_org(is_organization)
         context = self._prepare(id)
-        data_dict = {u'id': id, u'include_datasets': False}
+        data_dict: Dict[str, Any] = {u'id': id, u'include_datasets': False}
         try:
             group_dict = _action(u'group_show')(context, data_dict)
         except (NotFound, NotAuthorized):
@@ -1156,7 +1157,7 @@ class EditGroupView(MethodView):
         data = data or group_dict
         assert data is not None
         errors = errors or {}
-        extra_vars = {
+        extra_vars: Dict[str, Any] = {
             u'data': data,
             u"group_dict": group_dict,
             u'errors': errors,
@@ -1192,7 +1193,7 @@ class DeleteGroupView(MethodView):
             u'user': g.user,
         })
         try:
-            _check_access(u'group_delete', context, {u'id': id})
+            assert _check_access(u'group_delete', context, {u'id': id})
         except NotAuthorized:
             base.abort(403, _(u'Unauthorized to delete group %s') % u'')
         return context
@@ -1225,7 +1226,6 @@ class DeleteGroupView(MethodView):
             group_type: str,
             is_organization: bool,
             id: Optional[str] = None) -> Union[str, Response]:
-        extra_vars = {}
         set_org(is_organization)
         context = self._prepare(id)
         group_dict = _action(u'group_show')(context, {u'id': id})
@@ -1234,7 +1234,7 @@ class DeleteGroupView(MethodView):
 
         # TODO: Remove
         g.group_dict = group_dict
-        extra_vars = {
+        extra_vars: Dict[str, Any] = {
             u"group_dict": group_dict,
             u"group_type": group_type
         }
@@ -1252,7 +1252,7 @@ class MembersGroupView(MethodView):
             u'user': g.user
         })
         try:
-            _check_access(u'group_member_create', context, {u'id': id})
+            assert _check_access(u'group_member_create', context, {u'id': id})
         except NotAuthorized:
             base.abort(403,
                        _(u'Unauthorized to create group %s members') % u'')
@@ -1272,7 +1272,7 @@ class MembersGroupView(MethodView):
         email = data_dict.get(u'email')
 
         if email:
-            user_data_dict = {
+            user_data_dict: Dict[str, Any] = {
                 u'email': email,
                 u'group_id': data_dict['id'],
                 u'role': data_dict['role']

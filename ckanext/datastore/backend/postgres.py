@@ -6,7 +6,8 @@ import copy
 import logging
 import sys
 from typing import (
-    Any, Container, Dict, Iterable, List, Optional, Tuple, Union, cast)
+    Any, Callable, Container, Dict, Iterable, List, Optional, Tuple, Union,
+    cast)
 import sqlalchemy
 import os
 import pprint
@@ -132,9 +133,10 @@ def _get_engine_from_url(connection_url: str) -> Engine:
     # don't automatically convert to python objects
     # when using native json types in 9.2+
     # http://initd.org/psycopg/docs/extras.html#adapt-json
+    _loads: Callable[[Any], Any] = lambda x: x
     register_default_json(conn_or_curs=engine.raw_connection().connection,
                           globally=False,
-                          loads=lambda x: x)
+                          loads=_loads)
 
     return engine
 

@@ -26,7 +26,7 @@ REDIS_URL_DEFAULT_VALUE = u'redis://localhost:6379/0'
 _connection_pool: Optional[ConnectionPool] = None
 
 
-def connect_to_redis() -> Redis:
+def connect_to_redis() -> Redis:  # type: ignore
     u'''
     (Lazily) connect to Redis.
 

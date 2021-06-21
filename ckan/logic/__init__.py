@@ -751,7 +751,8 @@ def model_name_to_class(model_module: Any, model_name: str) -> Any:
             "message": "%s isn't a valid model" % model_class_name})
 
 
-def _import_module_functions(module_path: str) -> Dict[str, Callable]:
+def _import_module_functions(
+        module_path: str) -> Dict[str, Callable[..., Any]]:
     '''Import a module and get the functions and return them in a dict'''
     module = importlib.import_module(module_path)
     return {

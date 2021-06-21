@@ -47,7 +47,7 @@ class AuthFunctions:
         ''' clear any stored auth functions. '''
         self._functions.clear()
 
-    def keys(self) -> KeysView:
+    def keys(self) -> KeysView[str]:
         ''' Return a list of known auth functions.'''
         if not self._functions:
             self._build()
@@ -147,7 +147,7 @@ def clear_auth_functions_cache() -> None:
     _AuthFunctions.clear()
 
 
-def auth_functions_list() -> KeysView:
+def auth_functions_list() -> KeysView[str]:
     '''Returns a list of the names of the auth functions available.  Currently
     this is to allow the Auth Audit to know if an auth function is available
     for a given action.'''

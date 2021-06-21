@@ -202,7 +202,7 @@ click_config_option = click.option(
     help=u'Config file to use (default: development.ini)')
 
 
-class CkanCommand(paste.script.command.Command):
+class CkanCommand(paste.script.command.Command):  # type: ignore
     '''DEPRECATED - Instead use ckan.cli.cli.CkanCommand or extensions
     should use IClick.
 

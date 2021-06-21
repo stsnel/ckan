@@ -22,13 +22,13 @@ def make_uuid() -> str:
 class UuidType(types.TypeDecorator):
     impl = types.Unicode
 
-    def process_bind_param(self, value: Any, engine: Any):
+    def process_bind_param(self, value: Any, dialect: Any):
         return text_type(value)
 
-    def process_result_value(self, value: Any, engine: Any):
+    def process_result_value(self, value: Any, dialect: Any):
         return value
 
-    def copy(self):
+    def copy(self, **kw: Any):
         return UuidType(self.impl.length)
 
     @classmethod
@@ -45,7 +45,7 @@ class JsonType(types.TypeDecorator):
     '''
     impl = types.UnicodeText
 
-    def process_bind_param(self, value: Any, engine: Any):
+    def process_bind_param(self, value: Any, dialect: Any):
         # ensure we stores nulls in db not json "null"
         if value is None or value == {}:
             return None
@@ -53,13 +53,13 @@ class JsonType(types.TypeDecorator):
         # ensure_ascii=False => allow unicode but still need to convert
         return text_type(json.dumps(value, ensure_ascii=False))
 
-    def process_result_value(self, value: Any, engine: Any) -> Any:
+    def process_result_value(self, value: Any, dialect: Any) -> Any:
         if value is None:
             return {}
 
         return json.loads(value)
 
-    def copy(self):
+    def copy(self, **kw: Any):
         return JsonType(self.impl.length)
 
     def is_mutable(self):
@@ -73,7 +73,7 @@ class JsonDictType(JsonType):
 
     impl = types.UnicodeText
 
-    def process_bind_param(self, value: Any, engine: Any):
+    def process_bind_param(self, value: Any, dialect: Any):
         # ensure we stores nulls in db not json "null"
         if value is None or value == {}:
             return None
@@ -83,7 +83,7 @@ class JsonDictType(JsonType):
 
         return text_type(json.dumps(value, ensure_ascii=False))
 
-    def copy(self):
+    def copy(self, **kw: Any):
         return JsonDictType(self.impl.length)
 
 

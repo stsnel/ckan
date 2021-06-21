@@ -8,7 +8,7 @@ from simplejson import (
 from six import text_type
 
 
-class LazyJSONObject(RawJSON):
+class LazyJSONObject(RawJSON):  # type: ignore
     u'''
     An object that behaves like a dict returned from json.loads
     but when passed to simplejson.dumps will render original

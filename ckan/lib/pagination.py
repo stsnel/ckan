@@ -35,7 +35,7 @@ SUCH DAMAGE.
 '''
 import re
 from string import Template
-from typing import Any, Callable, Dict, Match, Optional, Sequence
+from typing import Any, Callable, Dict, List, Match, Optional, Sequence
 
 import dominate.tags as tags
 from markupsafe import Markup
@@ -43,7 +43,7 @@ from six import text_type
 from six.moves import range  # type: ignore
 
 
-class BasePage(list):
+class BasePage(List[Any]):
     """A list/iterator of items representing one page in a larger
     collection.
 

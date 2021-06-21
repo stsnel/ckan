@@ -150,7 +150,7 @@ class DataValidator(Protocol):
 
 Validator = Union[ValueValidator, ContextValidator, DataValidator]
 
-Schema = Dict[str, Union[Iterable[Validator], "Schema"]]
+Schema = Dict[str, Union[List[Validator], "Schema"]]
 
 # Function that accepts arbitary number of validators(decorated by
 # ckan.logic.schema.validator_args) and returns Schema dictionary

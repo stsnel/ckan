@@ -89,7 +89,7 @@ def convert_legacy_parameters_to_solr(
     return solr_params
 
 
-class QueryOptions(dict):
+class QueryOptions(Dict[str, Any]):
     """
     Options specify aspects of the search query which are only tangentially related
     to the query terms (such as limits, etc.).

@@ -3,7 +3,7 @@
 import datetime
 import six
 from collections import OrderedDict
-from typing import Any, Dict, Generic, List, Optional, Set, Tuple, Type, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar
 
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -18,7 +18,7 @@ T = TypeVar("T")
 
 __all__ = ['DomainObject', 'DomainObjectOperation']
 
-class Enum(set, Generic[T]):
+class Enum(Set[T]):
     '''Simple enumeration
     e.g. Animal = Enum("dog", "cat", "horse")
     joey = Animal.dog
@@ -59,7 +59,8 @@ class DomainObject(object):
     @classmethod
     def text_search(cls, query: Any, term: str) -> Any:
         register = cls
-        make_like = lambda x,y: x.ilike('%' + y + '%')
+        make_like: Callable[
+            [Any, str], str] = lambda x, y: x.ilike('%' + y + '%')
         q = sa.null() | sa.null()
         for field in cls.text_search_fields:
             attr = getattr(register, field)

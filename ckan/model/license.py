@@ -104,7 +104,7 @@ class License(Generic[TLicense]):
 
 class LicenseRegister(object):
     """Dictionary-like interface to a group of licenses."""
-    licenses: List[License]
+    licenses: List[License["DefaultLicense"]]
 
     def __init__(self) -> None:
         group_url = config.get('licenses_group_url', None)
@@ -162,8 +162,9 @@ class LicenseRegister(object):
             msg = "Licenses at %s must be dictionary or list" % license_url
             raise ValueError(msg)
 
-    def __getitem__(self, key: str,
-                    default: Any=Exception) -> Union[License, Any]:
+    def __getitem__(
+            self, key: str,
+            default: Any=Exception) -> Union[License["DefaultLicense"], Any]:
         for license in self.licenses:
             if key == license.id:
                 return license
@@ -172,16 +173,18 @@ class LicenseRegister(object):
         else:
             raise KeyError("License not found: %s" % key)
 
-    def get(self, key: str, default: Optional[Any]=None) -> Union[License, Any]:
+    def get(
+            self, key: str, default: Optional[Any]=None
+    ) -> Union[License["DefaultLicense"], Any]:
         return self.__getitem__(key, default)
 
     def keys(self) -> List[str]:
         return [license.id for license in self.licenses]
 
-    def values(self) -> List[License]:
+    def values(self) -> List[License["DefaultLicense"]]:
         return self.licenses
 
-    def items(self) -> List[Tuple[str, License]]:
+    def items(self) -> List[Tuple[str, License["DefaultLicense"]]]:
         return [(license.id, license) for license in self.licenses]
 
     def __iter__(self) -> Iterator[str]:
@@ -191,7 +194,7 @@ class LicenseRegister(object):
         return len(self.licenses)
 
 
-class DefaultLicense(dict):
+class DefaultLicense(Dict[str, Any]):
     ''' The license was a dict but this did not allow translation of the
     title.  This is a slightly changed dict that allows us to have the title
     as a property and so translated. '''
@@ -206,8 +209,11 @@ class DefaultLicense(dict):
     maintainer: str = ''
     status: str = 'active'
     url: str = ''
-    title: str = ''
     id: str = ''
+
+    @property
+    def title(self) -> str:
+        return ""
 
     _keys: List[str] = ['domain_content',
             'id',

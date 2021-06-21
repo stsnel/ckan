@@ -81,7 +81,8 @@ def table_dictize(obj: Any, context: Context, **kw: Any) -> Dict[str, Any]:
 def obj_list_dictize(
         obj_list: List[Any],
         context: Context,
-        sort_key: Callable[..., Any] = legacy_dict_sort) -> List[dict]:
+        sort_key: Callable[..., Any] = legacy_dict_sort
+) -> List[Dict[str, Any]]:
     '''Get a list of model object and represent it as a list of dicts'''
 
     result_list = []

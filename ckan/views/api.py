@@ -495,7 +495,7 @@ api.add_url_rule(u'/<int(min=3, max={0}):ver>/action/<logic_function>'.format(
 
 # Util API
 
-util_rules: List[Tuple[str, Callable]] = [
+util_rules: List[Tuple[str, Callable[..., Union[str, Response]]]] = [
     (u'/util/dataset/autocomplete', dataset_autocomplete),
     (u'/util/user/autocomplete', user_autocomplete),
     (u'/util/tag/autocomplete', tag_autocomplete),

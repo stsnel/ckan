@@ -3,7 +3,7 @@
 from __future__ import print_function
 import six
 import re
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Set
 from typing_extensions import Literal
 
 INSERT_NEW_SECTIONS_BEFORE_SECTION = 'app:main'
@@ -107,14 +107,14 @@ class Option(object):
 
 
 def calculate_new_sections(existing_options: Iterable[Option],
-                           desired_options: Iterable[Option]) -> set:
+                           desired_options: Iterable[Option]) -> Set[str]:
     existing_sections = {option.section for option in existing_options}
     desired_sections = {option.section for option in desired_options}
     new_sections = desired_sections - existing_sections
     return new_sections
 
 
-class Changes(dict):
+class Changes(Dict[str, Any]):
     '''A store of Options that are to "edit" or "add" to existing sections of a
        config file. (Excludes options that go into new sections.)'''
     def add(self, action: Literal["edit", "add"], option: Option) -> None:
@@ -175,9 +175,9 @@ def parse_config(input_lines: List[str]) -> Dict[str, Option]:
 
 
 def make_changes(input_lines: Iterable[str], new_sections: Iterable[str],
-                 changes: Changes) -> list:
+                 changes: Changes) -> List[str]:
     '''Makes changes to the config file (returned as lines).'''
-    output = []
+    output: List[str] = []
     section = None
     options_to_edit_in_this_section = {}  # key: option
     options_already_edited = set()

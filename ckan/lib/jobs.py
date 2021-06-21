@@ -44,7 +44,7 @@ DEFAULT_JOB_TIMEOUT = 180
 _queues: Dict[str, rq.Queue] = {}
 
 
-def _connect() -> Redis:
+def _connect() -> Redis:  # type: ignore
     u'''
     Connect to Redis and tell RQ about it.
 

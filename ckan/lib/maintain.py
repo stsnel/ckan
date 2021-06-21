@@ -43,7 +43,7 @@ def deprecated(
     return decorator
 
 
-def timer(params: Union[Callable[..., Any], List[str]]) -> Callable:
+def timer(params: Union[Callable[..., Any], List[str]]) -> Callable[..., Any]:
     ''' Decorator function for basic performance testing. It logs the time
     taken to call a function.  It can either be used as a basic decorator or an
     array of parameter names can be passed. If parameter names are passed then

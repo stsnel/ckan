@@ -35,7 +35,7 @@ class LazyView(object):
         self.view_name = view_name
 
     @cached_property
-    def view(self) -> Callable:
+    def view(self) -> Callable[..., Any]:
         actual_view = import_string(self.import_name)
         if self.view_name:
             actual_view = actual_view.as_view(self.view_name)

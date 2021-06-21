@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import datetime as _datetime
-from typing import Generic, List, Optional, Tuple, Type, TypeVar
+from typing import Generic, List, Optional, Tuple, Type, TypeVar, Any
 
 import sqlalchemy
 
@@ -17,7 +17,7 @@ Follower = TypeVar("Follower", bound='ckan.model.User')
 Followed = TypeVar(
     "Followed", 'ckan.model.User', 'ckan.model.Package', 'ckan.model.Group')
 
-T = TypeVar('T', bound='ModelFollowingModel')
+T = TypeVar('T', bound='ModelFollowingModel[Any, Any]')
 
 class ModelFollowingModel(domain_object.DomainObject,
                           Generic[Follower, Followed]):

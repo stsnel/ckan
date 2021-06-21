@@ -30,7 +30,7 @@ def create_country_codes():
         for tag in (u'uk', u'ie', u'de', u'fr', u'es'):
             logging.info(
                     "Adding tag {0} to vocab 'country_codes'".format(tag))
-            data = {'name': tag, 'vocabulary_id': vocab['id']}
+            data: Dict[str, str] = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
 
 
@@ -108,21 +108,26 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
         return schema
 
     def create_package_schema(self):
-        schema = super(ExampleIDatasetFormPlugin, self).create_package_schema()
+        schema: Schema = super(
+            ExampleIDatasetFormPlugin, self).create_package_schema()
         schema = self._modify_package_schema(schema)
         return schema
 
     def update_package_schema(self):
-        schema = super(ExampleIDatasetFormPlugin, self).update_package_schema()
+        schema: Schema = super(
+            ExampleIDatasetFormPlugin, self).update_package_schema()
         schema = self._modify_package_schema(schema)
         return schema
 
     def show_package_schema(self) -> Schema:
-        schema = super(ExampleIDatasetFormPlugin, self).show_package_schema()
+        schema: Schema = super(
+            ExampleIDatasetFormPlugin, self).show_package_schema()
 
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
-        schema['tags']['__extras'].append(tk.get_converter('free_tags_only'))
+        _extras = cast(List[Validator],
+                       cast(Schema, schema['tags'])['__extras'])
+        _extras.append(tk.get_converter('free_tags_only'))
 
         # Add our custom country_code metadata field to the schema.
         schema.update({
@@ -139,7 +144,7 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
                 tk.get_validator('ignore_missing')]
             })
 
-        schema['resources'].update({
+        cast(Schema, schema['resources']).update({
                 'custom_resource_text' : [ tk.get_validator('ignore_missing') ]
             })
         return schema
@@ -150,7 +155,8 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
     # these methods are actually used, not just that the methods get
     # called.
 
-    def setup_template_variables(self, context: Context, data_dict: Dict[str, Any]) -> Any:
+    def setup_template_variables(
+            self, context: Context, data_dict: Dict[str, Any]) -> Any:
         ExampleIDatasetFormPlugin.num_times_setup_template_variables_called += 1
         return super(ExampleIDatasetFormPlugin, self).setup_template_variables(
                 context, data_dict)

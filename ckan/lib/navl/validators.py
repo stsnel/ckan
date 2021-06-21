@@ -7,7 +7,9 @@ from six import text_type
 import ckan.lib.navl.dictization_functions as df
 
 from ckan.common import _, json, config
-from ckan.types import Context, FlattenDataDict, FlattenErrorDict, FlattenKey
+from ckan.types import (
+    Context, FlattenDataDict, FlattenErrorDict, FlattenKey, Validator
+)
 
 missing = df.missing
 StopOnError = df.StopOnError
@@ -49,7 +51,7 @@ def if_empty_same_as(other_key: str) -> Callable[..., Any]:
     return callable
 
 
-def both_not_empty(other_key: str) -> Callable:
+def both_not_empty(other_key: str) -> Validator:
 
     def callable(key: FlattenKey, data: FlattenDataDict,
                  errors: FlattenErrorDict, context: Context):
@@ -83,7 +85,7 @@ def ignore(key: FlattenKey, data: FlattenDataDict,
     value = data.pop(key, None)
     raise StopOnError
 
-def default(default_value: Any) -> Callable:
+def default(default_value: Any) -> Validator:
     '''When key is missing or value is an empty string or None, replace it with
     a default value'''
 
@@ -98,7 +100,7 @@ def default(default_value: Any) -> Callable:
 
 
 def configured_default(config_name: str,
-                       default_value_if_not_configured: Any) -> Callable:
+                       default_value_if_not_configured: Any) -> Validator:
     '''When key is missing or value is an empty string or None, replace it with
     a default value from config, or if that isn't set from the
     default_value_if_not_configured.'''
@@ -193,7 +195,7 @@ def unicode_safe(value: Any) -> str:
 
 
 def limit_to_configured_maximum(config_option: str,
-                                default_limit: int) -> Callable:
+                                default_limit: int) -> Validator:
     '''
     If the value is over a limit, it changes it to the limit. The limit is
     defined by a configuration option, or if that is not set, a given int

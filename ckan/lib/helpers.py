@@ -92,7 +92,7 @@ LEGACY_ROUTE_NAMES = {
 }
 
 
-class HelperAttributeDict(dict):
+class HelperAttributeDict(Dict[str, Callable[..., Any]]):
     def __missing__(self, key: str) -> NoReturn:
         raise ckan.exceptions.HelperError(
             'Helper \'{key}\' has not been defined.'.format(
@@ -108,7 +108,7 @@ class HelperAttributeDict(dict):
 
 
 # Builtin helper functions.
-_builtin_functions: Dict[str, Callable] = {}
+_builtin_functions: Dict[str, Callable[..., Any]] = {}
 helper_functions = HelperAttributeDict()
 
 
@@ -1211,7 +1211,9 @@ def get_facet_items_dict(
         elif not exclude_active:
             facets.append(dict(active=True, **facet_item))
     # Sort descendingly by count and ascendingly by case-sensitive display name
-    facets.sort(key=lambda it: (-it['count'], it['display_name'].lower()))
+    sort_facets: Callable[[Any], Tuple[int, str]] = lambda it: (
+        -it['count'], it['display_name'].lower())
+    facets.sort(key=sort_facets)
     if hasattr(c, 'search_facets_limits'):
         if c.search_facets_limits and limit is None:
             limit = c.search_facets_limits.get(facet)

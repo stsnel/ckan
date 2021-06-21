@@ -10,7 +10,7 @@
 
 from collections import MutableMapping
 from typing import (
-    Any, Dict, Iterable, List, Optional, Iterator,
+    Any, Dict, Iterable, List, Optional, Iterator, TYPE_CHECKING,
     Tuple, TypeVar, Union, cast, overload)
 from typing_extensions import Literal
 
@@ -25,6 +25,11 @@ from flask_babel import (gettext as flask_ugettext,
 
 import simplejson as json
 import ckan.lib.maintain as maintain
+
+if TYPE_CHECKING:
+    # starting from python 3.7 the following line can be used without any
+    # conditions after `annotation` import from `__future__`
+    MutableMapping = MutableMapping[str, Any]
 
 current_app = flask.current_app
 
@@ -47,14 +52,14 @@ def streaming_response(data: Iterable[Any],
 
 
 def ugettext(*args: Any, **kwargs: Any) -> str:
-    return flask_ugettext(*args, **kwargs)
+    return cast(str, flask_ugettext(*args, **kwargs))
 
 
 _ = ugettext
 
 
 def ungettext(*args: Any, **kwargs: Any) -> str:
-    return flask_ungettext(*args, **kwargs)
+    return cast(str, flask_ungettext(*args, **kwargs))
 
 
 class CKANConfig(MutableMapping):
@@ -126,19 +131,17 @@ class CKANRequest(LocalProxy):
     able to interact with them transparently.
     '''
     endpoint: str
-    form: 'ImmutableMultiDict[str, Any]'
-    args: 'ImmutableMultiDict[str, Any]'
+    path: str
+    form: 'ImmutableMultiDict[str, str]'
+    args: 'ImmutableMultiDict[str, str]'
 
     @property
-    def params(self) -> 'ImmutableMultiDict[str, Any]':
+    def params(self) -> 'ImmutableMultiDict[str, str]':
         u''' Special case as Pylons' request.params is used all over the place.
         All new code meant to be run just in Flask (eg views) should always
         use request.args
         '''
-        try:
-            return super(CKANRequest, self).params
-        except AttributeError:
-            return self.args
+        return self.args
 
 
 def _get_c():

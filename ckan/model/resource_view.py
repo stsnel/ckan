@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from typing import Collection, Dict, List, Optional, Tuple
+from typing import Any, Collection, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
 
@@ -32,7 +32,7 @@ class ResourceView(domain_object.DomainObject):
     description: Optional[str]
     view_type: str
     order: int
-    config: Dict
+    config: Dict[str, Any]
 
     @classmethod
     def get(cls, reference: str) -> Optional["ResourceView"]:

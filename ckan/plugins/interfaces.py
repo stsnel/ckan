@@ -15,8 +15,9 @@ from flask.blueprints import Blueprint
 from flask.wrappers import Response
 
 
-from ckan.types import (Action, AuthFunction, Context, DataDict, PFeed,
-                        PUploader, PResourceUploader, Schema, SignalMapping)
+from ckan.types import (
+    Action, AuthFunction, Context, DataDict, PFeed,
+    PUploader, PResourceUploader, Schema, SignalMapping, Validator)
 
 if TYPE_CHECKING:
     import click
@@ -986,7 +987,7 @@ class IValidators(Interface):
     Add extra validators to be returned by
     :py:func:`ckan.plugins.toolkit.get_validator`.
     '''
-    def get_validators(self) -> Dict[str, Callable]:
+    def get_validators(self) -> Dict[str, Validator]:
         u'''Return the validator functions provided by this plugin.
 
         Return a dictionary mapping validator names (strings) to
@@ -1093,7 +1094,7 @@ class ITemplateHelpers(Interface):
     See ``ckanext/example_itemplatehelpers`` for an example plugin.
 
     '''
-    def get_helpers(self) -> Dict[str, Callable]:
+    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
         u'''Return a dict mapping names to helper functions.
 
         The keys of the dict should be the names with which the helper

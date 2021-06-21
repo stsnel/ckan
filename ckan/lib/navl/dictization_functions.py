@@ -435,7 +435,7 @@ def unflatten(data: FlattenDataDict) -> Dict[str, Any]:
     clean_lists: Dict[int, Any] = {}
 
     for flattend_key in sorted(data.keys(), key=flattened_order_key):
-        current_pos: Union[List, Dict[str, Any]] = unflattened
+        current_pos: Union[List[Any], Dict[str, Any]] = unflattened
 
         for key in flattend_key[:-1]:
             try:
@@ -472,7 +472,7 @@ class MissingNullEncoder(json.JSONEncoder):
 
 def check_dict(data_dict: Union[Dict[str, Any], Any],
                select_dict: Dict[str, Any],
-               parent_path: FlattenKey = ()) -> List[Tuple]:
+               parent_path: FlattenKey = ()) -> List[FlattenKey]:
     """
     return list of key tuples from select_dict whose values don't match
     corresponding values in data_dict.

@@ -78,7 +78,7 @@ class PluginMapperExtension(MapperExtension):
         )
 
 
-class PluginSessionExtension(SessionExtension):
+class PluginSessionExtension(SessionExtension):  # type: ignore
     """
     Class that calls plugins implementing ISession on SQLAlchemy
     SessionExtension events

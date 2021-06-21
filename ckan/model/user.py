@@ -67,7 +67,7 @@ class User(core.StatefulObjectMixin,
     sysadmin: bool
     state: str
     image_url: str
-    plugin_extras: Dict
+    plugin_extras: Dict[str, Any]
 
     api_tokens: List['ApiToken']
     ratings: List['Rating']

@@ -20,7 +20,7 @@ def get_message_hash(value: str) -> str:
     return hmac.new(secret, value.encode('utf8'), hashlib.sha1).hexdigest()
 
 
-def get_redirect() -> Optional[str]:
+def get_redirect() -> Optional[bytes]:
     '''Checks the return_to value against the hash, and if it
     is valid then returns the return_to for redirect. Otherwise
     it returns None.'''
