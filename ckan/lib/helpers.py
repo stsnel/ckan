@@ -766,10 +766,6 @@ def are_there_flash_messages() -> bool:
 
 def _link_active(kwargs: Any) -> bool:
     ''' creates classes for the link_to calls '''
-    return _link_active_flask(kwargs)
-
-
-def _link_active_flask(kwargs: Any) -> bool:
     blueprint, endpoint = p.toolkit.get_endpoint()
 
     highlight_controllers = kwargs.get('highlight_controllers', [])
@@ -889,34 +885,12 @@ def nav_link(text: str, *args: Any, **kwargs: Any) -> Union[Markup, str]:
     :param condition: if ``False`` then no link is returned
 
     '''
-    return nav_link_flask(text, *args, **kwargs)
-
-
-def nav_link_flask(text: str, *args: Any, **kwargs: Any):
     if len(args) > 1:
         raise Exception('Too many unnamed parameters supplied')
     blueprint, endpoint = p.toolkit.get_endpoint()
     if args:
         kwargs['controller'] = blueprint or None
         kwargs['action'] = endpoint or None
-    named_route = kwargs.pop('named_route', '')
-    if kwargs.pop('condition', True):
-        if named_route:
-            link = _link_to(text, named_route, **kwargs)
-        else:
-            link = _link_to(text, **kwargs)
-    else:
-        link = ''
-    return link
-
-
-def nav_link_pylons(text: str, *args: Any, **kwargs: Any):
-    if len(args) > 1:
-        raise Exception('Too many unnamed parameters supplied')
-    if args:
-        kwargs['controller'] = kwargs.get('controller')
-        log.warning('h.nav_link() please supply controller as a named '
-                    'parameter not a positional one')
     named_route = kwargs.pop('named_route', '')
     if kwargs.pop('condition', True):
         if named_route:
@@ -1526,16 +1500,8 @@ def icon(name: str, alt: Optional[str] = None, inline: bool = True) -> Markup:
     return icon_html(icon_url(name), alt, inline)
 
 
-@core_helper
 def resource_icon(res: Dict[str, Any]) -> Markup:
-    if False:
-        icon_name = 'page_white'
-        # if (res.is_404?): icon_name = 'page_white_error'
-        # also: 'page_white_gear'
-        # also: 'page_white_link'
-        return icon(icon_name)
-    else:
-        return icon(format_icon(res.get('format', '')))
+    return icon(format_icon(res.get('format', '')))
 
 
 @core_helper

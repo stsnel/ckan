@@ -301,9 +301,7 @@ def _get_schema_from_solr(file_offset: str):
     headers = {}
     if solr_user is not None and solr_password is not None:
         http_auth = solr_user + ':' + solr_password
-        http_auth = b'Basic ' + base64.encodebytes(
-            bytes(http_auth, 'utf8')).strip()
-        headers['Authorization'] = http_auth
+        http_auth = 'Basic {}'.format(base64.b64encode(http_auth.encode('utf8')).strip())
 
     url = solr_url.strip('/') + file_offset
     response = requests.get(url, headers=headers)
