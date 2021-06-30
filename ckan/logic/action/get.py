@@ -51,13 +51,10 @@ ValidationError = logic.ValidationError
 _get_or_bust = logic.get_or_bust
 
 _select = sqlalchemy.sql.select
-_aliased = sqlalchemy.orm.aliased
 _or_ = sqlalchemy.or_
 _and_ = sqlalchemy.and_
 _func = sqlalchemy.func
-_desc = sqlalchemy.desc
 _case = sqlalchemy.case
-_text = sqlalchemy.text
 
 
 def site_read(context: Context, data_dict: Optional[DataDict]=None) -> bool:

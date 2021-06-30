@@ -286,7 +286,7 @@ def resource_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
     '''
     model = context['model']
-    user = context['user']
+
     package_id = _get_or_bust(data_dict, 'package_id')
     if not data_dict.get('url'):
         data_dict['url'] = ''
@@ -525,7 +525,6 @@ def package_relationship_create(
 
     '''
     model = context['model']
-    user = context['user']
     schema = context.get('schema') \
         or ckan.logic.schema.default_create_relationship_schema()
     api = context.get('api_version')
@@ -1366,6 +1365,7 @@ def follow_user(context: Context, data_dict: DataDict) -> Dict[str, Any]:
         raise NotAuthorized(_("You must be logged in to follow users"))
 
     model = context['model']
+
     userobj = model.User.get(context['user'])
     if not userobj:
         raise NotAuthorized(_("You must be logged in to follow users"))
@@ -1424,6 +1424,7 @@ def follow_dataset(context: Context, data_dict: DataDict) -> Dict[str, Any]:
             _("You must be logged in to follow a dataset."))
 
     model = context['model']
+
     userobj = model.User.get(context['user'])
     if not userobj:
         raise NotAuthorized(

@@ -5,16 +5,16 @@ import inspect
 import time
 import logging
 import re
-from typing import Any, Callable, List, Optional, TypeVar, Union
+from typing import Any, Callable, List, Optional, TypeVar, Union, cast
 
-RT = TypeVar("RT")
+RT = TypeVar("RT", bound=Callable[..., Any])
 log = logging.getLogger(__name__)
 
 
 def deprecated(
         message: Optional[str]='',
         since: Optional[str] = None
-) -> Callable[[Callable[..., RT]], Callable[..., RT]]:
+) -> Callable[[RT], RT]:
     ''' This is a decorator used to mark functions as deprecated.
 
     It logs a warning when the function is called. If a message is
@@ -23,7 +23,7 @@ def deprecated(
 
     Additionally an exception is raised if the functions docstring does
     not contain the word `deprecated`.'''
-    def decorator(fn: Callable[..., RT]) -> Callable[..., RT]:
+    def decorator(fn: RT) -> RT:
         # When decorating a function check that the docstring is correct.
         if not fn.__doc__ or not re.search(r'\bdeprecated\b',
                                            fn.__doc__, re.IGNORECASE):
@@ -39,7 +39,8 @@ def deprecated(
                         'and will be removed in a later release of ckan. %s'
                         % (fn.__name__, fn.__module__, since_msg, message))
             return fn(*args, **kw)
-        return wrapped
+        return cast(RT, wrapped)
+
     return decorator
 
 
