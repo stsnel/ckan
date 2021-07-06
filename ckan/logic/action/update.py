@@ -914,8 +914,6 @@ def user_generate_apikey(context: Context, data_dict: DataDict) -> Dict[str, Any
     :rtype: dictionary
     '''
     model = context['model']
-    user = context['user']
-    session = context['session']
     schema = context.get('schema') or schema_.default_generate_apikey_user_schema()
     context['schema'] = schema
     # check if user id in data_dict
@@ -1200,7 +1198,6 @@ def package_owner_org_update(context: Context, data_dict: DataDict) -> None:
     :type organization_id: string
     '''
     model = context['model']
-    user = context['user']
     name_or_id = data_dict.get('id', '')
     organization_id = data_dict.get('organization_id')
 

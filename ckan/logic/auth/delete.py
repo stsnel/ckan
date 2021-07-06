@@ -124,17 +124,11 @@ def organization_delete(context: Context, data_dict: DataDict) -> AuthResult:
     else:
         return {'success': True}
 
-def revision_undelete(context: Context, data_dict: DataDict) -> AuthResult:
-    return {'success': False, 'msg': 'Not implemented yet in the auth refactor'}
-
-def revision_delete(context: Context, data_dict: DataDict) -> AuthResult:
-    return {'success': False, 'msg': 'Not implemented yet in the auth refactor'}
 
 def task_status_delete(context: Context, data_dict: DataDict) -> AuthResult:
     # sysadmins only
-    user = context['user']
-    return {'success': False, 'msg': _(
-        'User %s not authorized to delete task_status') % user}
+    return {'success': False}
+
 
 def vocabulary_delete(context: Context, data_dict: DataDict) -> AuthResult:
     # sysadmins only

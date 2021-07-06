@@ -35,9 +35,6 @@ def table_dictize(obj: Any, context: Context, **kw: Any) -> Dict[str, Any]:
 
     result_dict: Dict[str, Any] = {}
 
-    model = context["model"]
-    session = model.Session
-
     if isinstance(obj, RowProxy):
         fields = obj.keys()
     else:

@@ -274,7 +274,6 @@ def package_relationship_delete(context: Context, data_dict: DataDict) -> None:
 
     '''
     model = context['model']
-    user = context['user']
     id, id2, rel = _get_or_bust(data_dict, ['subject', 'object', 'type'])
 
     pkg1 = model.Package.get(id)
@@ -289,7 +288,6 @@ def package_relationship_delete(context: Context, data_dict: DataDict) -> None:
         raise NotFound
 
     relationship = existing_rels[0]
-    revisioned_details = 'Package Relationship: %s %s %s' % (id, rel, id2)
 
     context['relationship'] = relationship
     _check_access('package_relationship_delete', context, data_dict)
@@ -409,8 +407,6 @@ def _group_or_org_delete(
     if group is None:
         raise NotFound('Group was not found.')
 
-    revisioned_details = 'Group: %s' % group.name
-
     if is_org:
         _check_access('organization_delete', context, data_dict)
     else:
@@ -466,7 +462,6 @@ def _group_or_org_delete(
     }
     activity_create_context = cast(Context, {
         'model': model,
-        'user': user,
         'defer_commit': True,
         'ignore_auth': True,
         'session': context['session']

@@ -1470,7 +1470,6 @@ def _group_or_org_member_create(
     # this needs to be after the repo.commit or else revisions break
     model = context['model']
     user = context['user']
-    session = context['session']
 
     schema = ckan.logic.schema.member_schema()
     data, errors = _validate(data_dict, schema, context)
@@ -1501,7 +1500,6 @@ def _group_or_org_member_create(
     member_create_context = cast(Context, {
         'model': model,
         'user': user,
-        'session': session,
         'ignore_auth': context.get('ignore_auth'),
     })
     return logic.get_action('member_create')(member_create_context,
