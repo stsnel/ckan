@@ -313,7 +313,7 @@ class User(core.StatefulObjectMixin,
         This function returns a list of ids from an input that can be a list of
         names or ids
         '''
-        query = meta.Session.query(cls.id)
+        query: Any = meta.Session.query(cls.id)
         # type_ignore_reason: incomplete SQLAlchemy types
         query = query.filter(or_(cls.name.in_(user_list),  # type: ignore
                                  cls.id.in_(user_list)))  # type: ignore

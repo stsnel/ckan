@@ -386,15 +386,18 @@ def package_name_validator(key: FlattenKey, data: FlattenDataDict,
     session = context['session']
     package = context.get('package')
 
-    query = session.query(model.Package.state).filter_by(name=data[key])
+    query = session.query(model.Package.id).filter(
+        model.Package.name == data[key],
+        model.Package.state != State.DELETED,
+    )
     if package:
         package_id: Union[Optional[str], Missing] = package.id
     else:
         package_id = data.get(key[:-1] + ('id',))
     if package_id and package_id is not missing:
         query = query.filter(model.Package.id != package_id)
-    result = query.first()
-    if result and result.state != State.DELETED:
+
+    if session.query(query.exists()).scalar():
         errors[key].append(_('That URL is already in use.'))
 
     value = data[key]

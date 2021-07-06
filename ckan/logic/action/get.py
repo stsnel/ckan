@@ -597,7 +597,7 @@ def group_list_authz(context: Context,
 
     group_ids: List[str] = []
     if not sysadmin or am_member:
-        q = model.Session.query(model.Member.group_id) \
+        q: Any = model.Session.query(model.Member.group_id) \
             .filter(model.Member.table_name == 'user') \
             .filter(
                 # type_ignore_reason: incomplete SQLAlchemy types

@@ -6,7 +6,7 @@ import importlib
 
 from collections import defaultdict, OrderedDict
 from logging import getLogger
-from typing import Callable, Collection, Dict, KeysView, List, Optional, Union
+from typing import Any, Callable, Collection, Dict, KeysView, List, Optional, Union
 from types import ModuleType
 
 import six
@@ -20,7 +20,7 @@ from ckan.common import _, g
 
 import ckan.lib.maintain as maintain
 
-from ckan.types import AuthResult, AuthFunction, DataDict, Context
+from ckan.types import AuthResult, AuthFunction, DataDict, Context, Query
 
 log = getLogger(__name__)
 
@@ -196,7 +196,9 @@ def get_group_or_org_admin_ids(group_id: Optional[str]) -> List[str]:
         .filter(model.Member.table_name == 'user') \
         .filter(model.Member.state == 'active') \
         .filter(model.Member.capacity == 'admin')
-    return [a.table_id for a in q]
+
+    # type_ignore_reason: all stored memerships have table_id
+    return [a.table_id for a in q] # type: ignore
 
 
 def is_authorized_boolean(action: str, context: Context, data_dict: Optional[DataDict]=None) -> bool:
@@ -247,7 +249,7 @@ def is_authorized(action: str, context: Context,
 
 
 # these are the permissions that roles have
-ROLE_PERMISSIONS = OrderedDict([
+ROLE_PERMISSIONS: Dict[str, List[str]] = OrderedDict([
     ('admin', ['admin', 'membership']),
     ('editor', ['read', 'delete_dataset', 'create_dataset',
                 'update_dataset', 'manage_group']),
@@ -344,7 +346,7 @@ def _has_user_permission_for_groups(
     if not group_ids:
         return False
     # get any roles the user has for the group
-    q = (model.Session.query(model.Member.capacity)
+    q: Any = (model.Session.query(model.Member.capacity)
          # type_ignore_reason: attribute has no method
          .filter(model.Member.group_id.in_(group_ids))  # type: ignore
          .filter(model.Member.table_name == 'user')
@@ -378,7 +380,7 @@ def users_role_for_group_or_org(
     if not user_id:
         return None
     # get any roles the user has for the group
-    q = model.Session.query(model.Member.capacity) \
+    q: Any = model.Session.query(model.Member.capacity) \
         .filter(model.Member.group_id == group.id) \
         .filter(model.Member.table_name == 'user') \
         .filter(model.Member.state == 'active') \
@@ -400,7 +402,7 @@ def has_user_permission_for_some_org(
     if not roles:
         return False
     # get any groups the user has with the needed role
-    q = (model.Session.query(model.Member.group_id)
+    q: Any = (model.Session.query(model.Member.group_id)
          .filter(model.Member.table_name == 'user')
          .filter(model.Member.state == 'active')
          # type_ignore_reason: attribute has no method

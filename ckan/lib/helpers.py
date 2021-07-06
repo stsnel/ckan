@@ -902,6 +902,7 @@ def nav_link(text: str, *args: Any, **kwargs: Any) -> Union[Markup, str]:
     return link
 
 
+@core_helper
 def build_nav_main(
     *args: Union[Tuple[str, str], Tuple[str, str, List[str]],
                  Tuple[str, str, List[str], str], ]
