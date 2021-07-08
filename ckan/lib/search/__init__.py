@@ -171,10 +171,10 @@ class SynchronousSearchPlugin(p.SingletonPlugin):
 def rebuild(package_id: Optional[str] = None,
             only_missing: bool = False,
             force: bool = False,
-            refresh: bool = False,
             defer_commit: bool = False,
             package_ids: Optional[Collection[str]] = None,
-            quiet: bool = False):
+            quiet: bool = False,
+            clear: bool = False):
     '''
         Rebuilds the search index.
 
@@ -224,7 +224,7 @@ def rebuild(package_id: Optional[str] = None,
         else:
             log.info('Rebuilding the whole index...')
             # When refreshing, the index is not previously cleared
-            if not refresh:
+            if clear:
                 package_index.clear()
 
         total_packages = len(package_ids)
