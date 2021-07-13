@@ -1141,8 +1141,9 @@ def get_facet_items_dict(
         search_facets = getattr(
             c, u'search_facets', None)
 
-    if not search_facets or not search_facets.get(
-            facet, {}).get('items'):
+    if not search_facets \
+       or not isinstance(search_facets, dict) \
+       or not search_facets.get(facet, {}).get('items'):
         return []
     facets = []
     for facet_item in search_facets[facet]['items']:
