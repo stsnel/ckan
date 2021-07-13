@@ -2,7 +2,7 @@
 
 import datetime
 from typing import (
-    Any, Dict, List,  Optional, TYPE_CHECKING, Tuple, Union, overload
+    Any, Dict, List,  Optional, Tuple, Type, TypeVar, Union, overload
 )
 from typing_extensions import Literal
 
@@ -22,6 +22,8 @@ from ckan.types import Context, Query
 __all__ = ['group_table', 'Group',
            'Member',
            'member_table']
+
+TGroup = TypeVar("TGroup", bound="Group")
 
 member_table = Table('member', meta.metadata,
                      Column('id', types.UnicodeText,
@@ -178,8 +180,8 @@ class Group(core.StatefulObjectMixin,
     # Todo: Make sure group names can't be changed to look like group IDs?
 
     @classmethod
-    def all(cls, group_type: Optional[str]=None,
-            state: Tuple[str]=('active',)) -> 'Query[Group]':
+    def all(cls: Type[TGroup], group_type: Optional[str] = None,
+            state: Tuple[str]=('active',)) -> 'Query[TGroup]':
         """
         Returns all groups.
         """
@@ -376,8 +378,8 @@ class Group(core.StatefulObjectMixin,
 
     @classmethod
     def search_by_name_or_title(
-            cls, text_query: str, group_type: Optional[str]=None,
-            is_org: bool=False, limit: int=20) -> 'Query[Group]':
+            cls: Type[TGroup], text_query: str, group_type: Optional[str] = None,
+            is_org: bool = False, limit: int = 20) -> 'Query[TGroup]':
         text_query = text_query.strip().lower()
         # type_ignore_reason: incomplete SQLAlchemy types
         q = meta.Session.query(cls) \

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar
 
 from sqlalchemy import orm, types, Column, Table, ForeignKey
 
@@ -23,6 +23,9 @@ except:
 
 __all__ = ['PackageRelationship', 'package_relationship_table',
            ]
+
+
+TPackageRelationship = TypeVar("TPackageRelationship", bound="PackageRelationship")
 
 package_relationship_table = Table('package_relationship', meta.metadata,
      Column('id', types.UnicodeText, primary_key=True, default=_types.make_uuid),
@@ -119,11 +122,13 @@ class PackageRelationship(core.StatefulObjectMixin,
         return (type_str, other_package)
 
     @classmethod
-    def by_subject(cls, package: _package.Package) -> 'Query[PackageRelationship]':
+    def by_subject(cls: Type[TPackageRelationship],
+                   package: _package.Package) -> 'Query[TPackageRelationship]':
         return meta.Session.query(cls).filter(cls.subject_package_id==package.id)
 
     @classmethod
-    def by_object(cls, package: _package.Package) -> 'Query[PackageRelationship]':
+    def by_object(cls: Type[TPackageRelationship],
+                  package: _package.Package) -> 'Query[TPackageRelationship]':
         return meta.Session.query(cls).filter(cls.object_package_id==package.id)
 
     @classmethod

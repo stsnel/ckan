@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Type, TypeVar
 
 from sqlalchemy import (
     orm,
@@ -28,6 +28,8 @@ from ckan.types import Context, Query
 __all__ = ['Activity', 'activity_table',
            'ActivityDetail', 'activity_detail_table',
            ]
+
+TActivityDetail = TypeVar("TActivityDetail", bound="ActivityDetail")
 
 activity_table = Table(
     'activity', meta.metadata,
@@ -111,7 +113,7 @@ class ActivityDetail(domain_object.DomainObject):
             self.data = data
 
     @classmethod
-    def by_activity_id(cls, activity_id: str) -> List["ActivityDetail"]:
+    def by_activity_id(cls: Type[TActivityDetail], activity_id: str) -> List["TActivityDetail"]:
         return ckan.model.Session.query(cls) \
             .filter_by(activity_id=activity_id).all()
 
