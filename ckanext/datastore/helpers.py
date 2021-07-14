@@ -4,7 +4,7 @@ from ckan.types import Context
 import json
 import logging
 from typing import (
-    Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union, overload
+    Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union, cast, overload
 )
 
 import ckan.common as converters
@@ -179,7 +179,7 @@ def _get_function_names_from_sql(sql: str):
     def _get_function_names(tokens: Iterable[Any]):
         for token in tokens:
             if isinstance(token, sqlparse.sql.Function):
-                function_name = token.get_name()
+                function_name = cast(str, token.get_name())
                 if function_name not in function_names:
                     function_names.append(function_name)
             if hasattr(token, 'tokens'):

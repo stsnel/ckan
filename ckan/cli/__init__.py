@@ -25,7 +25,7 @@ class CKANConfigLoader(object):
         self.config = dict()
         self.parser = ConfigParser()
         # Preserve case in config keys
-        self.parser.optionxform = str
+        self.parser.optionxform = lambda optionstr: str(optionstr)
         self.section = u'app:main'
         defaults = dict(
             (k, v) for k, v in os.environ.items()

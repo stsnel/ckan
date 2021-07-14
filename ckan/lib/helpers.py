@@ -852,7 +852,7 @@ def _input_tag(
     if u"id" not in attrs:
         attrs[u"id"] = id if id else _make_safe_id_component(name)
 
-    return dom_tags.input(**attrs)
+    return dom_tags.input_(**attrs)
 
 
 @core_helper
@@ -1115,7 +1115,7 @@ def humanize_entity_type(entity_type: str, object_type: str,
 @core_helper
 def get_facet_items_dict(
         facet: str,
-        search_facets: Optional[Dict[str, Dict[str, Any]]] = None,
+        search_facets: Union[Dict[str, Dict[str, Any]], Any] = None,
         limit: Optional[int] = None,
         exclude_active: bool = False) -> List[Dict[str, Any]]:
     '''Return the list of unselected facet items for the given facet, sorted
