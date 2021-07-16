@@ -419,7 +419,7 @@ def package_revise(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     * Change description in dataset, checking for old description::
 
         match={"notes": "old notes", "name": "xyz"}
-        date={"notes": "new notes"}
+        update={"notes": "new notes"}
 
     * Identical to above, but using flattened keys::
 
