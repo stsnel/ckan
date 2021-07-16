@@ -98,3 +98,39 @@ reportAssertAlwaysTrue = true
 reportSelfClsParameterName = true
 reportUnusedCallResult = false # allow function calls for side-effect only (like logic.check_acces)
 useLibraryCodeForTypes = true
+
+[tool.mypy]
+# plugins = "sqlmypy"
+files = "ckan"
+exclude = "ckan/(pastertemplates|tests|migration)"
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = [
+    "alembic.*",
+    "babel.*",
+    "beaker.*",
+    "blinker.*",
+    "click.*",
+    "cookiecutter.*",
+    "dominate.*",
+    "factory.*",
+    "feedgen.*",
+    "flask.*",
+    "flask_babel.*",
+    "flask_debugtoolbar.*",
+    "flask_multistatic.*",
+    "jinja2.*",
+    "magic.*",
+    "passlib.*",
+    "pysolr.*",
+    "pyutilib.*",
+    "repoze.*",
+    "routes.*",
+    "rq.*",
+    "sqlalchemy.orm.session.*",
+    "webassets.*",
+    "webob.*",
+    "werkzeug.*",
+    "zope.*",
+]
