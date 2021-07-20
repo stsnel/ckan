@@ -56,8 +56,8 @@ def mangle():
                      u'|\\%((\\d)*\\$)?' + spf_reg_ex + u')'
 
     for entry in po:
-        msg = entry.msgid.encode(u'utf-8')
-        matches = re.finditer(extract_reg_ex.encode('utf-8'), msg)
+        msg = entry.msgid
+        matches = re.finditer(extract_reg_ex, msg)
         length = len(msg)
         position = 0
         translation = u''
