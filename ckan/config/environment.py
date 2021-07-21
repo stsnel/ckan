@@ -19,7 +19,6 @@ import ckan.lib.plugins as lib_plugins
 import ckan.lib.helpers as helpers
 import ckan.lib.app_globals as app_globals
 from ckan.lib.redis import is_redis_available
-import ckan.lib.render as render
 import ckan.lib.search as search
 import ckan.logic as logic
 import ckan.authz as authz
@@ -241,10 +240,6 @@ def update_config() -> None:
 
     for plugin in p.PluginImplementations(p.IConfigurable):
         plugin.configure(config)
-
-    # reset the template cache - we do this here so that when we load the
-    # environment it is clean
-    render.reset_template_info_cache()
 
     # clear other caches
     logic.clear_actions_cache()

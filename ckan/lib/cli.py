@@ -7,7 +7,7 @@ from typing import Any, Optional, cast
 
 import click
 import paste.script  # type: ignore
-import routes
+import routes  # type: ignore
 from paste.registry import Registry  # type: ignore
 from six.moves import input  # type: ignore
 from six.moves.urllib.parse import urlparse  # type: ignore
