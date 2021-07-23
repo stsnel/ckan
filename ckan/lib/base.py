@@ -5,29 +5,19 @@
 Provides the BaseController class for subclassing.
 """
 import logging
-import time
-import inspect
-import sys
 from typing import Any, Dict, NoReturn, Optional
 
 from jinja2.exceptions import TemplateNotFound
 
-import six
 from flask import (
     render_template as flask_render_template,
     abort as flask_abort
 )
 
-import ckan.lib.i18n as i18n
 import ckan.lib.helpers as h
-import ckan.lib.app_globals as app_globals
 import ckan.plugins as p
-import ckan.model as model
-from ckan.views import (identify_user,
-                        set_cors_headers_for_response,
-                        check_session_cookie,
-                        )
-from ckan.common import (c, request, config,
+
+from ckan.common import (request, config,
                          session, asbool)
 
 
@@ -43,7 +33,7 @@ def abort(status_code: int,
           comment: Optional[str] = None) -> NoReturn:
     '''Abort the current request immediately by returning an HTTP exception.
 
-    This is a wrapper for :py:func:`pylons.controllers.util.abort` that adds
+    This is a wrapper for :py:func:`flask.abort` that adds
     some CKAN custom behavior, including allowing
     :py:class:`~ckan.plugins.interfaces.IAuthenticator` plugins to alter the
     abort response, and showing flash messages in the web interface.
@@ -97,16 +87,8 @@ def render_snippet(*template_names: str, **kw: Any) -> str:
         raise last_exc or TemplateNotFound(template_names)
 
 
-def render_jinja2(template_name: str, extra_vars: Dict[str, Any]) -> str:
-    env = config['pylons.app_globals'].jinja_env
-    template = env.get_template(template_name)
-    return template.render(**extra_vars)
-
-
 def render(template_name: str,
-           extra_vars: Optional[Dict[str, Any]] = None,
-           *pargs: Any,
-           **kwargs: Any) -> str:
+           extra_vars: Optional[Dict[str, Any]] = None) -> str:
     '''Render a template and return the output.
 
     This is CKAN's main template rendering function.
@@ -115,19 +97,8 @@ def render(template_name: str,
     :type template_name: str
     :params extra_vars: additional variables available in template
     :type extra_vars: dict
-    :params pargs: DEPRECATED
-    :type pargs: tuple
-    :params kwargs: DEPRECATED
-    :type kwargs: dict
 
     '''
-    if pargs or kwargs:
-        tb = inspect.getframeinfo(sys._getframe(1))
-        log.warning(
-            'Extra arguments to `base.render` are deprecated: ' +
-            '<{0.filename}:{0.lineno}>'.format(tb)
-        )
-
     if extra_vars is None:
         extra_vars = {}
 
@@ -171,7 +142,3 @@ def _is_valid_session_cookie_data() -> bool:
             break
 
     return is_valid_cookie_data
-
-
-class ValidationException(Exception):
-    pass
