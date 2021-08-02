@@ -178,8 +178,7 @@ def get_invite_body(user: model.User,
 
 
 def get_reset_link(user: model.User) -> str:
-    return h.url_for(controller='user',
-                     action='perform_reset',
+    return h.url_for('user.perform_reset',
                      id=user.id,
                      key=user.reset_key,
                      qualified=True)

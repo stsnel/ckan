@@ -424,7 +424,8 @@ def _feed_url(query: Dict[str, Any], controller: str, action: str,
     """
     for item in six.iteritems(query):
         kwargs['query'] = item
-    return h.url_for(controller=controller, action=action, **kwargs)
+    endpoint = controller + '.' + action
+    return h.url_for(endpoint, **kwargs)
 
 
 def _navigation_urls(

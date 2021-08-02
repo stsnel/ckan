@@ -71,7 +71,7 @@ def index() -> str:
         g.package_count = 0
 
     if g.userobj and not g.userobj.email:
-        url = h.url_for(controller=u'user', action=u'edit')
+        url = h.url_for('user.edit')
         msg = _(u'Please <a href="%s">update your profile</a>'
                 u' and add your email address. ') % url + \
             _(u'%s uses your email address'

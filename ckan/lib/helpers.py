@@ -1900,8 +1900,7 @@ def group_link(group: Dict[str, Any]) -> Markup:
 
 @core_helper
 def organization_link(organization: Dict[str, Any]) -> Markup:
-    url = url_for(controller='organization', action='read',
-                  id=organization['name'])
+    url = url_for('organization.read', id=organization['name'])
     return link_to(organization['title'], url)
 
 
@@ -2034,8 +2033,8 @@ def _create_url_with_params(params: Optional[Iterable[Tuple[str, Any]]] = None,
         action = getattr(c, 'action', None) or p.toolkit.get_endpoint()[1]
     if not extras:
         extras = {}
-
-    url = url_for(controller=controller, action=action, **extras)
+    endpoint = controller + '.' + action
+    url = url_for(endpoint, **extras)
     return _url_with_params(url, params)
 
 
