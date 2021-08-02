@@ -45,7 +45,7 @@ from typing import Any, Dict, List, Optional, Set
 
 import six
 from babel import Locale
-from babel.core import (LOCALE_ALIASES,
+from babel.core import (LOCALE_ALIASES,  # type: ignore
                         get_locale_identifier,
                         UnknownLocaleError)
 from babel.support import Translations

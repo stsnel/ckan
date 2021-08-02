@@ -2033,6 +2033,7 @@ def _create_url_with_params(params: Optional[Iterable[Tuple[str, Any]]] = None,
         action = getattr(c, 'action', None) or p.toolkit.get_endpoint()[1]
     if not extras:
         extras = {}
+    assert controller is not None and action is not None
     endpoint = controller + '.' + action
     url = url_for(endpoint, **extras)
     return _url_with_params(url, params)
