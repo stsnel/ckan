@@ -1,8 +1,8 @@
 # encoding: utf-8
 
-from ckan.types import Schema, Validator
-from typing import Any, Callable, Dict, Optional, cast
-from six.moves import zip_longest  # type: ignore
+from ckan.types import Schema, ValidatorFactory
+from typing import Any, Dict, Optional, cast
+from itertools import zip_longest
 
 from flask import Blueprint, make_response
 from flask.views import MethodView
@@ -31,8 +31,8 @@ from ckanext.datastore.writer import (
 int_validator = get_validator(u'int_validator')
 boolean_validator = get_validator(u'boolean_validator')
 ignore_missing = get_validator(u'ignore_missing')
-one_of = cast(Callable[[Any], Validator], get_validator(u'one_of'))
-default = cast(Callable[[Any], Validator], get_validator(u'default'))
+one_of = cast(ValidatorFactory, get_validator(u'one_of'))
+default = cast(ValidatorFactory, get_validator(u'default'))
 unicode_only = get_validator(u'unicode_only')
 
 DUMP_FORMATS = u'csv', u'tsv', u'json', u'xml'

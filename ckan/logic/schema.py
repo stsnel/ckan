@@ -7,7 +7,9 @@ from typing import Any, Callable, Iterable, cast
 import ckan.model
 import ckan.plugins as plugins
 from ckan.logic import get_validator
-from ckan.types import ComplexSchemaFunc, PlainSchemaFunc, Schema, Validator
+from ckan.types import (
+    ComplexSchemaFunc, PlainSchemaFunc, Schema, Validator, ValidatorFactory
+)
 
 
 def validator_args(fn: ComplexSchemaFunc) -> PlainSchemaFunc:
@@ -112,7 +114,7 @@ def default_create_package_schema(
         unicode_safe: Validator, package_id_does_not_exist: Validator,
         not_empty: Validator, name_validator: Validator,
         package_name_validator: Validator, strip_value: Validator,
-        if_empty_same_as: Callable[[str], Validator],
+        if_empty_same_as: ValidatorFactory,
         email_validator: Validator, package_version_validator: Validator,
         ignore_not_package_admin: Validator, boolean_validator: Validator,
         datasets_with_no_organization_cannot_be_private: Validator,
@@ -367,7 +369,7 @@ def default_extras_schema(ignore: Validator, not_empty: Validator,
 @validator_args
 def default_relationship_schema(ignore_missing: Validator,
                                 unicode_safe: Validator, not_empty: Validator,
-                                one_of: Callable[[Iterable[Any]], Validator],
+                                one_of: ValidatorFactory,
                                 ignore: Validator):
     return cast(Schema, {
         'id': [ignore_missing, unicode_safe],
@@ -642,9 +644,9 @@ def default_pagination_schema(ignore_missing: Validator,
 
 @validator_args
 def default_dashboard_activity_list_schema(
-        configured_default: Callable[[str, Any], Validator],
+        configured_default: ValidatorFactory,
         natural_number_validator: Validator,
-        limit_to_configured_maximum: Callable[[str, Any], Validator]):
+        limit_to_configured_maximum: ValidatorFactory):
     schema = default_pagination_schema()
     schema['limit'] = [
         configured_default('ckan.activity_list_limit', 31),
@@ -656,9 +658,9 @@ def default_dashboard_activity_list_schema(
 @validator_args
 def default_activity_list_schema(
         not_missing: Validator, unicode_safe: Validator,
-        configured_default: Callable[[str, Any], Validator],
+        configured_default: ValidatorFactory,
         natural_number_validator: Validator,
-        limit_to_configured_maximum: Callable[[str, Any], Validator],
+        limit_to_configured_maximum: ValidatorFactory,
         ignore_missing: Validator, boolean_validator: Validator,
         ignore_not_sysadmin: Validator, list_of_strings: Validator):
 
@@ -693,8 +695,8 @@ def default_package_search_schema(
         list_of_strings: Validator, natural_number_validator: Validator,
         int_validator: Validator, convert_to_json_if_string: Validator,
         convert_to_list_if_string: Validator,
-        limit_to_configured_maximum: Callable[[str, Any], Validator],
-        default: Callable[[Any], Validator]):
+        limit_to_configured_maximum: ValidatorFactory,
+        default: ValidatorFactory):
     return cast(Schema, {
         'q': [ignore_missing, unicode_safe],
         'fl': [ignore_missing, convert_to_list_if_string],

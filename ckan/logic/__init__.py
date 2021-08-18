@@ -24,7 +24,7 @@ from ckan.common import _, c
 from ckan.types import (
     Action, ChainedAction,
     ChainedAuthFunction, DataDict, ErrorDict, Context, FlattenDataDict,
-    Schema, Validator)
+    Schema, Validator, ValidatorFactory)
 
 Decorated = TypeVar("Decorated")
 
@@ -748,7 +748,7 @@ class UnknownValidator(Exception):
     pass
 
 
-_validators_cache: Dict[str, Union[Validator, Callable[..., Validator]]] = {}
+_validators_cache: Dict[str, Union[Validator, ValidatorFactory]] = {}
 
 
 def clear_validators_cache() -> None:
@@ -758,7 +758,7 @@ def clear_validators_cache() -> None:
 # This function exists mainly so that validators can be made available to
 # extensions via ckan.plugins.toolkit.
 def get_validator(
-        validator: str) -> Union[Validator, Callable[..., Validator]]:
+        validator: str) -> Union[Validator, ValidatorFactory]:
     '''Return a validator function by name.
 
     :param validator: the name of the validator function to return,

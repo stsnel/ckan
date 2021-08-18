@@ -121,34 +121,16 @@ class AuthResult(TypedDict, total=False):
     msg: Optional[str]
 
 
-class ValueValidator(Protocol):
-    """Simplest validator that accepts only validated value.
-    """
-    def __call__(self, value: Any) -> Any:
-        ...
-
-
-class ContextValidator(Protocol):
-    """Validator that accepts validation context alongside with the value.
-    """
-    def __call__(self, value: Any, context: Context) -> Any:
-        ...
-
-
-class DataValidator(Protocol):
-    """Complex validator that has access the whole validated dictionary.
-    """
-    def __call__(
-        self,
-        key: FlattenKey,
-        data: Dict[FlattenKey, Any],
-        errors: FlattenErrorDict,
-        context: Context,
-    ) -> None:
-        ...
-
+# Simplest validator that accepts only validated value.
+ValueValidator = Callable[[Any], Any]
+# Validator that accepts validation context alongside with the value.
+ContextValidator = Callable[[Any, Context], Any]
+# Complex validator that has access the whole validated dictionary.
+DataValidator = Callable[
+    [FlattenKey, FlattenDataDict, FlattenErrorDict, Context], None]
 
 Validator = Union[ValueValidator, ContextValidator, DataValidator]
+ValidatorFactory = Callable[..., Validator]
 
 Schema = Dict[str, Union[List[Validator], "Schema"]]
 

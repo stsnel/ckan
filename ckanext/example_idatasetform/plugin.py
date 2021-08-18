@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 from ckan.common import CKANConfig
-from typing import Any, Callable, Dict, List, cast
-from ckan.types import Context, Schema, Validator
+from typing import Any, Dict, List, cast
+from ckan.types import Context, Schema, Validator, ValidatorFactory
 import logging
 
 import ckan.plugins as plugins
@@ -92,7 +92,7 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
                 'country_code': [
                     tk.get_validator('ignore_missing'),
                     cast(
-                        Callable[..., Validator],
+                        ValidatorFactory,
                         tk.get_converter('convert_to_tags'))('country_codes')]
                 })
         # Add our custom_test metadata field to the schema, this one will use
@@ -133,7 +133,7 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
         schema.update({
             'country_code': [
                 cast(
-                    Callable[..., Validator],
+                    ValidatorFactory,
                     tk.get_converter('convert_from_tags'))('country_codes'),
                 tk.get_validator('ignore_missing')]
             })

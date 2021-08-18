@@ -1,13 +1,13 @@
 # encoding: utf-8
 
 from ckan.common import CKANConfig
-from typing import Any, Callable, Dict, cast
-from ckan.types import Context, Validator
+from typing import Any, Dict, cast
+from ckan.types import Context, ValidatorFactory
 import ckan.plugins as p
 import ckan.plugins.toolkit as toolkit
 from ckanext.datatablesview import blueprint
 
-default = cast(Callable[..., Validator], toolkit.get_validator(u'default'))
+default = cast(ValidatorFactory, toolkit.get_validator(u'default'))
 boolean_validator = toolkit.get_validator(u'boolean_validator')
 natural_number_validator = toolkit.get_validator(u'natural_number_validator')
 ignore_missing = toolkit.get_validator(u'ignore_missing')

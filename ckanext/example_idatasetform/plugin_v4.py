@@ -2,7 +2,7 @@
 
 from ckan.common import CKANConfig
 from typing import Callable, List, cast
-from ckan.types import Context, Schema, Validator
+from ckan.types import Context, Schema, Validator, ValidatorFactory
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 
@@ -47,7 +47,7 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         schema.update({
             'country_code': [
                 tk.get_validator('ignore_missing'),
-                cast(Callable[..., Validator],
+                cast(ValidatorFactory,
                      tk.get_converter('convert_to_tags'))('country_codes'),
             ]
         })
@@ -63,7 +63,7 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         schema['tags']['__extras'].append(tk.get_converter('free_tags_only'))
         schema.update({
             'country_code': [
-                cast(Callable[..., Validator],
+                cast(ValidatorFactory,
                      tk.get_converter('convert_from_tags'))('country_codes'),
                 tk.get_validator('ignore_missing')]
         })

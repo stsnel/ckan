@@ -11,9 +11,11 @@ log = logging.getLogger(__name__)
 
 _template_info_cache: Dict[str, Any] = {}
 
+
 def reset_template_info_cache() -> None:
     '''Reset the template cache'''
     _template_info_cache.clear()
+
 
 def find_template(template_name: str) -> Optional[str]:
     ''' looks through the possible template paths to find a template
@@ -46,7 +48,7 @@ def template_info(template_name: str) -> Tuple[str, str]:
     # if in debug mode we always want to search for templates so we
     # don't want to store it.
     if not config.get('debug', False):
-        t_data = {'template_path' : template_path,
-                  'template_type' : t_type,}
+        t_data = {'template_path': template_path,
+                  'template_type': t_type}
         _template_info_cache[template_name] = t_data
     return template_path, t_type

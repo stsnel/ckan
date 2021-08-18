@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import json
-from typing import Any, Callable, cast
+from typing import Any, cast
 
 from six import string_types, text_type
 
@@ -9,7 +9,8 @@ from six import string_types, text_type
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
 from ckan.types import (
-    Context, FlattenDataDict, Schema, FlattenErrorDict, FlattenKey, Validator)
+    Context, FlattenDataDict, Schema, FlattenErrorDict,
+    FlattenKey, Validator, ValidatorFactory)
 
 get_validator = p.toolkit.get_validator
 
@@ -21,13 +22,13 @@ ignore_missing = get_validator('ignore_missing')
 empty = get_validator('empty')
 boolean_validator = get_validator('boolean_validator')
 int_validator = get_validator('int_validator')
-one_of = cast(Callable[..., Validator], get_validator('one_of'))
+one_of = cast(ValidatorFactory, get_validator('one_of'))
 unicode_only = get_validator('unicode_only')
-default = cast(Callable[..., Validator], get_validator('default'))
+default = cast(ValidatorFactory, get_validator('default'))
 natural_number_validator = get_validator('natural_number_validator')
-configured_default = cast(Callable[..., Validator], get_validator(
+configured_default = cast(ValidatorFactory, get_validator(
     'configured_default'))
-limit_to_configured_maximum = cast(Callable[..., Validator], get_validator(
+limit_to_configured_maximum = cast(ValidatorFactory, get_validator(
     'limit_to_configured_maximum'))
 unicode_safe = get_validator('unicode_safe')
 
