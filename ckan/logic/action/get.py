@@ -854,7 +854,7 @@ def user_list(
             model.User.name.label('name'),  # type: ignore
             model.User.fullname.label('fullname'),  # type: ignore
             model.User.about.label('about'),  # type: ignore
-            model.User.about.label('email'),  # type: ignore
+            model.User.email.label('email'),  # type: ignore
             model.User.created.label('created'),  # type: ignore
             _select([_func.count(model.Package.id)],
                     _and_(

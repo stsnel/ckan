@@ -32,7 +32,6 @@ from ckan.types import Context, Query
 
 if TYPE_CHECKING:
     from ckan.model import (
-     Rating,
      PackageExtra, PackageRelationship, Resource,
      PackageTag, Tag, Vocabulary,
      User, Group,
@@ -117,7 +116,6 @@ class Package(core.StatefulObjectMixin,
     package_tag_all: List["PackageTag"]
 
     resources_all: List["Resource"]
-    ratings: List["Rating"]
     _extras: Dict[str, Any]  # List['PackageExtra']
     extras: AssociationProxy
 
@@ -256,14 +254,6 @@ class Package(core.StatefulObjectMixin,
             return True
         return False
 
-    def get_average_rating(self) -> float:
-        total = 0.0
-        if not len(self.ratings):
-            return total
-        for rating in self.ratings:
-            total += rating.rating
-        return total / len(self.ratings)
-
     def as_dict(self, ref_package_by: str='name',
                 ref_group_by: str='name') -> Dict[str, Any]:
         _dict = domain_object.DomainObject.as_dict(self)
@@ -278,8 +268,6 @@ class Package(core.StatefulObjectMixin,
         groups.sort()
         _dict['groups'] = groups
         _dict['extras'] = {key: value for key, value in self.extras.items()}
-        _dict['ratings_average'] = self.get_average_rating()
-        _dict['ratings_count'] = len(self.ratings)
         _dict['resources'] = [res.as_dict(core_columns_only=False) \
                               for res in self.resources]
         site_url = config.get('ckan.site_url', None)
@@ -543,53 +531,6 @@ class Package(core.StatefulObjectMixin,
             }
         )
 
-    def set_rating(self,
-                   user_or_ip: Union["User", str], rating: float) -> None:
-        '''Record a user's rating of this package.
-
-        The caller function is responsible for doing the commit.
-
-        If a rating is outside the range MAX_RATING - MIN_RATING then a
-        RatingValueException is raised.
-
-        @param user_or_ip - user object or an IP address string
-        '''
-        user = None
-        ip = None
-        from ckan.model.user import User
-        from ckan.model.rating import Rating, MAX_RATING, MIN_RATING
-
-        try:
-            rating = float(rating)
-        except TypeError:
-            raise RatingValueException
-        except ValueError:
-            raise RatingValueException
-        if rating > MAX_RATING or rating < MIN_RATING:
-            raise RatingValueException
-
-        if isinstance(user_or_ip, User):
-            user = user_or_ip
-            rating_obj = meta.Session.query(Rating)\
-                               .filter_by(package=self, user=user).first()
-        else:
-            ip = user_or_ip
-            rating_obj = meta.Session.query(Rating)\
-                               .filter_by(package=self, user_ip_address=ip)\
-                               .first()
-        if rating_obj:
-            rating_obj.rating = rating
-        elif user:
-            rating_obj = Rating(package=self,
-                            user=user,
-                            rating=rating)
-            meta.Session.add(rating_obj)
-        else:
-            rating_obj = Rating(package=self,
-                            user_ip_address=ip,
-                            rating=rating)
-            meta.Session.add(rating_obj)
-
     @property
     @maintain.deprecated(since="2.9.0")
     def extras_list(self) -> List['PackageExtra']:
@@ -610,9 +551,6 @@ class PackageMember(domain_object.DomainObject):
     capacity: str
     modified: datetime.datetime
 
-
-class RatingValueException(Exception):
-    pass
 
 # import here to prevent circular import
 from ckan.model import tag

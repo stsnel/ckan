@@ -24,7 +24,7 @@ from ckan.common import config, asbool
 from ckan.types import Query
 
 if TYPE_CHECKING:
-    from ckan.model import Group, Rating, ApiToken
+    from ckan.model import Group, ApiToken
 
 TUser = TypeVar("TUser", bound="User")
 
@@ -73,7 +73,6 @@ class User(core.StatefulObjectMixin,
     plugin_extras: Dict[str, Any]
 
     api_tokens: List['ApiToken']
-    ratings: List['Rating']
 
     VALID_NAME = re.compile(r"^[a-zA-Z0-9_\-]{3,255}$")
     DOUBLE_SLASH = re.compile(r':\/([^/])')

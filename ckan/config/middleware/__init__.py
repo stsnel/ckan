@@ -21,8 +21,7 @@ _internal_test_request_context: Optional[RequestContext] = None
 
 def make_app(conf: Union[Config, CKANConfig]) -> CKANApp:
     '''
-    Initialise both the pylons and flask apps, and wrap them in dispatcher
-    middleware.
+    Initialise the Flask app and wrap it in dispatcher middleware.
     '''
 
     load_environment(conf)

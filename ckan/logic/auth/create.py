@@ -149,9 +149,6 @@ def organization_create(context: Context,
     return {'success': False,
             'msg': _('User %s not authorized to create organizations') % user}
 
-def rating_create(context: Context, data_dict: DataDict) -> AuthResult:
-    return {'success': True}
-
 
 @logic.auth_allow_anonymous_access
 def user_create(context: Context,
