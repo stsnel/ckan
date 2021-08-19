@@ -5,11 +5,11 @@ import logging
 import sys
 import cgitb
 import warnings
-import base64
 import xml.dom.minidom
 from typing import Collection, Dict, Any, Optional, Type, cast, overload
 
 import requests
+from requests.auth import HTTPBasicAuth
 
 import ckan.model as model
 import ckan.model.domain_object as domain_object
@@ -298,13 +298,13 @@ def clear_all() -> None:
 def _get_schema_from_solr(file_offset: str):
     solr_url, solr_user, solr_password = SolrSettings.get()
 
-    headers = {}
-    if solr_user is not None and solr_password is not None:
-        http_auth = solr_user + ':' + solr_password
-        http_auth = 'Basic {}'.format(base64.b64encode(http_auth.encode('utf8')).strip())
-
     url = solr_url.strip('/') + file_offset
-    response = requests.get(url, headers=headers)
+
+    if solr_user is not None and solr_password is not None:
+        response = requests.get(
+            url, auth=HTTPBasicAuth(solr_user, solr_password))
+    else:
+        response = requests.get(url)
 
     return response
 

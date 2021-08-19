@@ -39,7 +39,8 @@ include = '\.pyi?$'
 filterwarnings = [
     "ignore::sqlalchemy.exc.SADeprecationWarning",
     "ignore::sqlalchemy.exc.SAWarning",
-    "ignore::DeprecationWarning"
+    "ignore::DeprecationWarning",
+    "ignore::bs4.GuessedAtParserWarning"  # using lxml as default parser
 ]
 markers = [
     "ckan_config: patch configuration used by other fixtures via (key, value) pair.",
@@ -47,7 +48,7 @@ markers = [
 ]
 
 testpaths = ["ckan", "ckanext"]
-addopts = "--strict-markers  --pdbcls=IPython.terminal.debugger:TerminalPdb"
+addopts = "--strict-markers --pdbcls=IPython.terminal.debugger:TerminalPdb -p no:ckan"
 
 [tool.pyright]
 pythonVersion = "3.6"

@@ -14,26 +14,6 @@ from ckan.types import AlchemySession
 __all__ = ['Session', 'engine_is_sqlite', 'engine_is_pg']
 
 
-class CkanCacheExtension(SessionExtension):  # type: ignore
-    ''' This extension checks what tables have been affected by
-    database access and allows us to act on them. Currently this is
-    used by the page cache to flush the cache when data in the database
-    is altered. '''
-
-    def __init__(self, *args: Any, **kw: Any):
-        super(CkanCacheExtension, self).__init__(*args, **kw)
-
-    def after_commit(self, session: Any):
-        if hasattr(session, '_object_cache'):
-            oc = session._object_cache
-            oc_list = oc['new']
-            oc_list.update(oc['changed'])
-            oc_list.update(oc['deleted'])
-            objs = set()
-            for item in oc_list:
-                objs.add(item.__class__.__name__)
-
-
 class CkanSessionExtension(SessionExtension):  # type: ignore
 
     def before_flush(self, session: Any, flush_context: Any, instances: Any):
@@ -74,8 +54,7 @@ Session: AlchemySession = orm.scoped_session(orm.sessionmaker(
     autoflush=False,
     autocommit=False,
     expire_on_commit=False,
-    extension=[CkanCacheExtension(),
-               CkanSessionExtension(),
+    extension=[CkanSessionExtension(),
                extension.PluginSessionExtension(),
     ],
 ))
@@ -84,8 +63,7 @@ create_local_session = orm.sessionmaker(
     autoflush=False,
     autocommit=False,
     expire_on_commit=False,
-    extension=[CkanCacheExtension(),
-               CkanSessionExtension(),
+    extension=[CkanSessionExtension(),
                extension.PluginSessionExtension(),
     ],
 )

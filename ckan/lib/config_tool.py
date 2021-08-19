@@ -1,12 +1,15 @@
 # encoding: utf-8
 
-from __future__ import print_function
 import six
 import re
+import logging
+
 from typing import Any, Dict, Iterable, List, Optional, Set
 from typing_extensions import Literal
 
+
 INSERT_NEW_SECTIONS_BEFORE_SECTION = 'app:main'
+log = logging.getLogger(__name__)
 
 
 def config_edit_using_option_strings(config_filepath: str,
@@ -191,8 +194,8 @@ def make_changes(input_lines: Iterable[str], new_sections: Iterable[str],
             output.append('[%s]' % section)
             for option in changes.get(section, 'add'):
                 write_option(option)
-                print('Created option %s = "%s" (NEW section "%s")' %
-                      (option.key, option.value, section))
+                log.info('Created option %s = "%s" (NEW section "%s")',
+                         option.key, option.value, section)
             write_option('')
 
     for line in input_lines:
@@ -228,12 +231,12 @@ def make_changes(input_lines: Iterable[str], new_sections: Iterable[str],
             key = existing_option.key
             if existing_option.id in options_already_edited:
                 if not existing_option.is_commented_out:
-                    print('Commented out repeat of %s (section "%s")' %
-                          (key, section))
+                    log.info('Commented out repeat of %s (section "%s")',
+                             key, section)
                     existing_option.comment_out()
                 else:
-                    print('Left commented out repeat of %s (section "%s")' %
-                          (key, section))
+                    log.info('Left commented out repeat of %s (section "%s")',
+                             key, section)
             elif not existing_option.is_commented_out and \
                     updated_option.is_commented_out:
                 changes_made = 'Commented out %s (section "%s")' % \
@@ -256,7 +259,7 @@ def make_changes(input_lines: Iterable[str], new_sections: Iterable[str],
                         (key, existing_option.value, section)
 
             if changes_made:
-                print(changes_made)
+                log.info(changes_made)
                 write_option(updated_option)
                 options_already_edited.add(updated_option.id)
             else:
