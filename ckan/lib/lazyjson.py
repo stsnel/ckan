@@ -32,7 +32,7 @@ class LazyJSONObject(RawJSON):  # type: ignore
             return u'<LazyJSONObject %r>' % self._json_string
         return u'<LazyJSONObject %r>' % self._json_dict
 
-    @property
+    @property  # type: ignore
     def encoded_json(self):
         if self._json_string:
             return self._json_string
