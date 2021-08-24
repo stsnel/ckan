@@ -48,7 +48,6 @@ __all__ = [
     u'IResourceUrlChange',
     u'IDatasetForm',
     u'IValidators',
-    u'IResourcePreview',
     u'IResourceView',
     u'IResourceController',
     u'IGroupForm',
@@ -477,70 +476,6 @@ class IResourceView(Interface):
 
         :returns: the location of the edit view form template.
         :rtype: string
-        '''
-
-
-class IResourcePreview(Interface):
-    u'''
-
-    .. warning:: This interface is deprecated, and is only kept for backwards
-        compatibility with the old resource preview code. Please
-        use :py:class:`~ckan.plugins.interfaces.IResourceView` for writing
-        custom view plugins.
-
-    '''
-    class CanPreviewDict(TypedDict):
-        can_preview: bool
-        fixable: str
-        quality: Literal[1, 2, 3]
-
-    def can_preview(self, data_dict: DataDict) -> Union[bool, CanPreviewDict]:
-        u'''Return info on whether the plugin can preview the resource.
-
-        This can be done in two ways:
-
-        1. The old way is to just return ``True`` or ``False``.
-
-        2. The new way is to return a dict with  three keys:
-
-           * ``can_preview`` (``boolean``)
-             ``True`` if the extension can preview the resource.
-
-           * ``fixable`` (``string``)
-             A string explaining how preview for the resource could be enabled,
-             for example if the ``resource_proxy`` plugin was enabled.
-
-           * ``quality`` (``int``)
-             How good the preview is: ``1`` (poor), ``2`` (average) or
-             ``3`` (good). When multiple preview extensions can preview the
-             same resource, this is used to determine which extension will
-             be used.
-
-        :param data_dict: the resource to be previewed and the dataset that it
-          belongs to.
-        :type data_dict: dictionary
-
-        Make sure to check the ``on_same_domain`` value of the resource or the
-        url if your preview requires the resource to be on the same domain
-        because of the same-origin policy.  To find out how to preview
-        resources that are on a different domain, read :ref:`resource-proxy`.
-
-        '''
-
-    def setup_template_variables(self, context: Context,
-                                 data_dict: DataDict) -> None:
-        u'''
-        Add variables to c just prior to the template being rendered.
-        The ``data_dict`` contains the resource and the dataset.
-
-        Change the url to a proxied domain if necessary.
-        '''
-
-    def preview_template(self, context: Context, data_dict: DataDict) -> str:
-        u'''
-        Returns a string representing the location of the template to be
-        rendered for the read page.
-        The ``data_dict`` contains the resource and the dataset.
         '''
 
 
