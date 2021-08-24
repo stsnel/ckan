@@ -2,6 +2,7 @@
 
 '''API functions for updating existing data in CKAN.'''
 
+from ckan.types.logic import ActionResult
 import logging
 import datetime
 import time
@@ -46,7 +47,7 @@ ValidationError = logic.ValidationError
 _get_or_bust = logic.get_or_bust
 
 
-def resource_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def resource_update(context: Context, data_dict: DataDict) -> ActionResult.ResourceUpdate:
     '''Update a resource.
 
     To update a resource you must be authorized to update the dataset that the
@@ -132,7 +133,7 @@ def resource_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
 
 def resource_view_update(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.ResourceViewUpdate:
     '''Update a resource view.
 
     To update a resource_view you must be authorized to update the resource
@@ -183,7 +184,7 @@ def resource_view_update(
     return model_dictize.resource_view_dictize(resource_view, context)
 
 def resource_view_reorder(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.ResourceViewReorder:
     '''Reorder resource views.
 
     :param id: the id of the resource
@@ -229,7 +230,7 @@ def resource_view_reorder(
 
 
 def package_update(
-        context: Context, data_dict: DataDict) -> Union[str, Dict[str, Any]]:
+        context: Context, data_dict: DataDict) -> ActionResult.PackageUpdate:
     '''Update a dataset (package).
 
     You must be authorized to edit the dataset and the groups that it belongs
@@ -374,7 +375,7 @@ def package_update(
     return output
 
 
-def package_revise(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def package_revise(context: Context, data_dict: DataDict) -> ActionResult.PackageRevise:
     '''Revise a dataset (package) selectively with match, filter and
     update parameters.
 
@@ -536,7 +537,7 @@ def package_revise(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
 
 def package_resource_reorder(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.PackageResourceReorder:
     '''Reorder resources against datasets.  If only partial resource ids are
     supplied then these are assumed to be first and the other resources will
     stay in their original order
@@ -597,7 +598,7 @@ def _update_package_relationship(
 
 
 def package_relationship_update(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.PackageRelationshipUpdate:
     '''Update a relationship between two datasets (packages).
 
     The subject, object and type parameters are required to identify the
@@ -769,7 +770,7 @@ def _group_or_org_update(
     return model_dictize.group_dictize(group, context)
 
 
-def group_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def group_update(context: Context, data_dict: DataDict) -> ActionResult.GroupUpdate:
     '''Update a group.
 
     You must be authorized to edit the group.
@@ -798,7 +799,7 @@ def group_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return _group_or_org_update(context, data_dict)
 
 def organization_update(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.OrganizationUpdate:
     '''Update a organization.
 
     You must be authorized to edit the organization.
@@ -825,7 +826,7 @@ def organization_update(
     # values. This includes: users, groups, tags, extras
     return _group_or_org_update(context, data_dict, is_org=True)
 
-def user_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def user_update(context: Context, data_dict: DataDict) -> ActionResult.UserUpdate:
     '''Update a user account.
 
     Normal users can only update their own user accounts. Sysadmins can update
@@ -904,7 +905,7 @@ def user_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return user_dict
 
 
-def user_generate_apikey(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def user_generate_apikey(context: Context, data_dict: DataDict) -> ActionResult.UserGenerateApikey:
     '''Cycle a user's API key
 
     :param id: the name or id of the user whose key needs to be updated
@@ -937,7 +938,7 @@ def user_generate_apikey(context: Context, data_dict: DataDict) -> Dict[str, Any
 
 
 def task_status_update(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.TaskStatusUpdate:
     '''Update a task status.
 
     :param id: the id of the task status to update
@@ -989,7 +990,7 @@ def task_status_update(
     return model_dictize.task_status_dictize(task_status, context)
 
 def task_status_update_many(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.TaskStatusUpdateMany:
     '''Update many task statuses at once.
 
     :param data: the task_status dictionaries to update, for the format of task
@@ -1015,7 +1016,7 @@ def task_status_update_many(
     return {'results': results}
 
 def term_translation_update(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.TermTranslationUpdate:
     '''Create or update a term translation.
 
     You must be a sysadmin to create or update term translations.
@@ -1067,7 +1068,7 @@ def term_translation_update(
     return data
 
 def term_translation_update_many(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.TermTranslationUpdateMany:
     '''Create or update many term translations at once.
 
     :param data: the term translation dictionaries to create or update,
@@ -1100,7 +1101,7 @@ def term_translation_update_many(
     return {'success': '%s rows updated' % (num + 1)}
 
 
-def vocabulary_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def vocabulary_update(context: Context, data_dict: DataDict) -> ActionResult.VocabularyUpdate:
     '''Update a tag vocabulary.
 
     You must be a sysadmin to update vocabularies.
@@ -1147,7 +1148,7 @@ def vocabulary_update(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
 
 def dashboard_mark_activities_old(
-        context: Context, data_dict: DataDict) -> None:
+        context: Context, data_dict: DataDict) -> ActionResult.DashboardMarkActivitiesOld:
     '''Mark all the authorized user's new dashboard activities as old.
 
     This will reset
@@ -1167,7 +1168,7 @@ def dashboard_mark_activities_old(
 
 
 @logic.auth_audit_exempt
-def send_email_notifications(context: Context, data_dict: DataDict) -> None:
+def send_email_notifications(context: Context, data_dict: DataDict) -> ActionResult.SendEmailNotifications:
     '''Send any pending activity stream notification emails to users.
 
     You must provide a sysadmin's API key in the Authorization header of the
@@ -1189,7 +1190,7 @@ def send_email_notifications(context: Context, data_dict: DataDict) -> None:
     email_notifications.get_and_send_notifications_for_all_users()
 
 
-def package_owner_org_update(context: Context, data_dict: DataDict) -> None:
+def package_owner_org_update(context: Context, data_dict: DataDict) -> ActionResult.PackageOwnerOrgUpdate:
     '''Update the owning organization of a dataset
 
     :param id: the name or id of the dataset to update
@@ -1310,7 +1311,7 @@ def _bulk_update_dataset(
     psi.commit()
 
 
-def bulk_update_private(context: Context, data_dict: DataDict) -> None:
+def bulk_update_private(context: Context, data_dict: DataDict) -> ActionResult.BulkUpdatePrivate:
     ''' Make a list of datasets private
 
     :param datasets: list of ids of the datasets to update
@@ -1323,7 +1324,7 @@ def bulk_update_private(context: Context, data_dict: DataDict) -> None:
     _check_access('bulk_update_private', context, data_dict)
     _bulk_update_dataset(context, data_dict, {'private': True})
 
-def bulk_update_public(context: Context, data_dict: DataDict) -> None:
+def bulk_update_public(context: Context, data_dict: DataDict) -> ActionResult.BulkUpdatePublic:
     ''' Make a list of datasets public
 
     :param datasets: list of ids of the datasets to update
@@ -1336,7 +1337,7 @@ def bulk_update_public(context: Context, data_dict: DataDict) -> None:
     _check_access('bulk_update_public', context, data_dict)
     _bulk_update_dataset(context, data_dict, {'private': False})
 
-def bulk_update_delete(context: Context, data_dict: DataDict) -> None:
+def bulk_update_delete(context: Context, data_dict: DataDict) -> ActionResult.BulkUpdateDelete:
     ''' Make a list of datasets deleted
 
     :param datasets: list of ids of the datasets to update
@@ -1351,7 +1352,7 @@ def bulk_update_delete(context: Context, data_dict: DataDict) -> None:
 
 
 def config_option_update(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context, data_dict: DataDict) -> ActionResult.ConfigOptionUpdate:
     '''
 
     .. versionadded:: 2.4

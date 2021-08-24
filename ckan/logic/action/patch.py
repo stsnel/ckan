@@ -2,6 +2,7 @@
 
 '''API functions for partial updates of existing data in CKAN'''
 
+from ckan.types.logic import ActionResult
 from typing import Dict, Union, Any
 
 import ckan.logic.action.update as _update
@@ -14,7 +15,7 @@ from ckan.types import Context, DataDict
 
 
 def package_patch(
-        context: Context, data_dict: DataDict) -> Union[str, Dict[str, Any]]:
+        context: Context, data_dict: DataDict) -> ActionResult.PackagePatch:
     '''Patch a dataset (package).
 
     :param id: the id or name of the dataset
@@ -55,7 +56,8 @@ def package_patch(
     return _update.package_update(context, patched)
 
 
-def resource_patch(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def resource_patch(context: Context,
+                   data_dict: DataDict) -> ActionResult.ResourcePatch:
     '''Patch a resource
 
     :param id: the id of the resource
@@ -84,7 +86,8 @@ def resource_patch(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return _update.resource_update(context, patched)
 
 
-def group_patch(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def group_patch(context: Context,
+                data_dict: DataDict) -> ActionResult.GroupPatch:
     '''Patch a group
 
     :param id: the id or name of the group
@@ -118,7 +121,8 @@ def group_patch(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
 
 def organization_patch(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context,
+        data_dict: DataDict) -> ActionResult.OrganizationPatch:
     '''Patch an organization
 
     :param id: the id or name of the organization
@@ -151,7 +155,8 @@ def organization_patch(
     return _update.organization_update(patch_context, patched)
 
 
-def user_patch(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def user_patch(context: Context,
+               data_dict: DataDict) -> ActionResult.UserPatch:
     '''Patch a user
 
     :param id: the id or name of the user

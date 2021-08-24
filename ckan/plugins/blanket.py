@@ -115,7 +115,7 @@ import inspect
 
 from functools import update_wrapper
 from importlib import import_module
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Type, Union, cast, overload
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Type, Union
 
 import ckan.plugins as p
 

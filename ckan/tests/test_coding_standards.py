@@ -355,19 +355,16 @@ class TestPep8(object):
         "ckan/lib/dictization/model_dictize.py",
         "ckan/lib/dictization/model_save.py",
         "ckan/lib/email_notifications.py",
-        "ckan/lib/hash.py",
         "ckan/lib/jinja_extensions.py",
         "ckan/lib/jsonp.py",
         "ckan/lib/maintain.py",
         "ckan/lib/navl/validators.py",
         "ckan/lib/package_saver.py",
         "ckan/lib/plugins.py",
-        "ckan/lib/render.py",
         "ckan/lib/search/__init__.py",
         "ckan/lib/search/index.py",
         "ckan/lib/search/query.py",
         "ckan/lib/search/sql.py",
-        "ckan/logic/action/__init__.py",
         "ckan/logic/action/delete.py",
         "ckan/logic/action/get.py",
         "ckan/logic/action/update.py",
@@ -490,8 +487,6 @@ class TestActionAuth(object):
     that each auth function has an action.  We check the function only
     accepts (context, data_dict) as parameters."""
 
-    ACTION_FN_SIGNATURES_BLACKLIST = ["create: activity_create"]
-
     ACTION_NO_AUTH_BLACKLIST = [
         "create: follow_dataset",
         "create: follow_group",
@@ -602,14 +597,9 @@ class TestActionAuth(object):
     def test_fn_signatures(self, results):
         errors = []
         for name, fn in six.iteritems(results[0]):
-            args_info = inspect.getargspec(fn)
-            if (
-                args_info.args != ["context", "data_dict"]
-                or args_info.varargs is not None
-                or args_info.keywords is not None
-            ):
-                if name not in self.ACTION_FN_SIGNATURES_BLACKLIST:
-                    errors.append(name)
+            params = inspect.signature(fn).parameters
+            if list(params) != ["context", "data_dict"]:
+                errors.append(name)
         assert not errors, (
             "These action functions have the wrong function"
             + " signature, should be (context, data_dict)\n%s"

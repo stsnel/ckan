@@ -2,6 +2,7 @@
 
 '''API functions for deleting data from CKAN.'''
 
+from ckan.types.logic import ActionResult
 import logging
 from typing import Any, List, Type, cast
 
@@ -35,7 +36,7 @@ _get_or_bust = ckan.logic.get_or_bust
 _get_action = ckan.logic.get_action
 
 
-def user_delete(context: Context, data_dict: DataDict) -> None:
+def user_delete(context: Context, data_dict: DataDict) -> ActionResult.UserDelete:
     '''Delete a user.
 
     Only sysadmins can delete users.
@@ -70,7 +71,7 @@ def user_delete(context: Context, data_dict: DataDict) -> None:
     model.repo.commit()
 
 
-def package_delete(context: Context, data_dict: DataDict) -> None:
+def package_delete(context: Context, data_dict: DataDict) -> ActionResult.PackageDelete:
     '''Delete a dataset (package).
 
     This makes the dataset disappear from all web & API views, apart from the
@@ -127,7 +128,7 @@ def package_delete(context: Context, data_dict: DataDict) -> None:
     model.repo.commit()
 
 
-def dataset_purge(context: Context, data_dict: DataDict) -> None:
+def dataset_purge(context: Context, data_dict: DataDict) -> ActionResult.DatasetPurge:
     '''Purge a dataset.
 
     .. warning:: Purging a dataset cannot be undone!
@@ -172,7 +173,7 @@ def dataset_purge(context: Context, data_dict: DataDict) -> None:
     model.repo.commit_and_remove()
 
 
-def resource_delete(context: Context, data_dict: DataDict) -> None:
+def resource_delete(context: Context, data_dict: DataDict) -> ActionResult.ResourceDelete:
     '''Delete a resource from a dataset.
 
     You must be a sysadmin or the owner of the resource to delete it.
@@ -216,7 +217,7 @@ def resource_delete(context: Context, data_dict: DataDict) -> None:
     model.repo.commit()
 
 
-def resource_view_delete(context: Context, data_dict: DataDict) -> None:
+def resource_view_delete(context: Context, data_dict: DataDict) -> ActionResult.ResourceViewDelete:
     '''Delete a resource_view.
 
     :param id: the id of the resource_view
@@ -236,7 +237,7 @@ def resource_view_delete(context: Context, data_dict: DataDict) -> None:
     model.repo.commit()
 
 
-def resource_view_clear(context: Context, data_dict: DataDict) -> None:
+def resource_view_clear(context: Context, data_dict: DataDict) -> ActionResult.ResourceViewClear:
     '''Delete all resource views, or all of a particular type.
 
     :param view_types: specific types to delete (optional)
@@ -252,7 +253,7 @@ def resource_view_clear(context: Context, data_dict: DataDict) -> None:
     model.repo.commit()
 
 
-def package_relationship_delete(context: Context, data_dict: DataDict) -> None:
+def package_relationship_delete(context: Context, data_dict: DataDict) -> ActionResult.PackageRelationshipDelete:
     '''Delete a dataset (package) relationship.
 
     You must be authorised to delete dataset relationships, and to edit both
@@ -290,7 +291,7 @@ def package_relationship_delete(context: Context, data_dict: DataDict) -> None:
     relationship.delete()
     model.repo.commit()
 
-def member_delete(context: Context, data_dict: DataDict) -> None:
+def member_delete(context: Context, data_dict: DataDict) -> ActionResult.MemberDelete:
     '''Remove an object (e.g. a user, dataset or group) from a group.
 
     You must be authorized to edit a group to remove objects from it.
@@ -330,7 +331,7 @@ def member_delete(context: Context, data_dict: DataDict) -> None:
         model.repo.commit()
 
 
-def package_collaborator_delete(context: Context, data_dict: DataDict) -> None:
+def package_collaborator_delete(context: Context, data_dict: DataDict) -> ActionResult.PackageCollaboratorDelete:
     '''Remove a collaborator from a dataset.
 
     Currently you must be an Admin on the dataset owner organization to
@@ -473,7 +474,7 @@ def _group_or_org_delete(
 
     model.repo.commit()
 
-def group_delete(context: Context, data_dict: DataDict) -> None:
+def group_delete(context: Context, data_dict: DataDict) -> ActionResult.GroupDelete:
     '''Delete a group.
 
     You must be authorized to delete the group.
@@ -484,7 +485,7 @@ def group_delete(context: Context, data_dict: DataDict) -> None:
     '''
     return _group_or_org_delete(context, data_dict)
 
-def organization_delete(context: Context, data_dict: DataDict) -> None:
+def organization_delete(context: Context, data_dict: DataDict) -> ActionResult.OrganizationDelete:
     '''Delete an organization.
 
     You must be authorized to delete the organization
@@ -846,7 +847,7 @@ def job_cancel(context: Context, data_dict: DataDict) -> None:
         raise NotFound
 
 
-def api_token_revoke(context: Context, data_dict: DataDict) -> None:
+def api_token_revoke(context: Context, data_dict: DataDict) -> ActionResult.ApiTokenRevoke:
     """Delete API Token.
 
     :param string token: Token to remove(required if `jti` not specified).

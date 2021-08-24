@@ -2,6 +2,7 @@
 
 '''API functions for adding data to CKAN.'''
 
+from ckan.types.logic import ActionResult
 import logging
 import random
 import re
@@ -52,7 +53,7 @@ _get_or_bust = logic.get_or_bust
 
 
 def package_create(
-        context: Context, data_dict: DataDict) -> Union[Dict[str, Any], str]:
+        context: Context, data_dict: DataDict) -> ActionResult.PackageCreate:
     '''Create a new dataset (package).
 
     You must be authorized to create new datasets. If you specify any groups
@@ -246,7 +247,8 @@ def package_create(
     )
 
 
-def resource_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def resource_create(context: Context,
+                    data_dict: DataDict) -> ActionResult.ResourceCreate:
     '''Appends a new resource to a datasets list of resources.
 
     :param package_id: id of package that the resource should be added to.
@@ -355,7 +357,8 @@ def resource_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
 
 def resource_view_create(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context,
+        data_dict: DataDict) -> ActionResult.ResourceViewCreate:
     '''Creates a new resource view.
 
     :param resource_id: id of the resource
@@ -418,7 +421,9 @@ def resource_view_create(
 
 
 def resource_create_default_resource_views(
-        context: Context, data_dict: DataDict) -> List[Dict[str, Any]]:
+        context: Context,
+        data_dict: DataDict
+) -> ActionResult.ResourceCreateDefaultResourceViews:
     '''
     Creates the default views (if necessary) on the provided resource
 
@@ -466,7 +471,8 @@ def resource_create_default_resource_views(
 
 
 def package_create_default_resource_views(
-        context: Context, data_dict: DataDict) -> List[Dict[str, Any]]:
+        context: Context,
+        data_dict: DataDict) -> ActionResult.PackageCreateDefaultResourceViews:
     '''
     Creates the default views on all resources of the provided dataset
 
@@ -503,7 +509,8 @@ def package_create_default_resource_views(
 
 
 def package_relationship_create(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context,
+        data_dict: DataDict) -> ActionResult.PackageRelationshipCreate:
     '''Create a relationship between two datasets (packages).
 
     You must be authorized to edit both the subject and the object datasets.
@@ -561,7 +568,8 @@ def package_relationship_create(
     return relationship_dicts
 
 
-def member_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def member_create(context: Context,
+                  data_dict: DataDict) -> ActionResult.MemberCreate:
     '''Make an object (e.g. a user, dataset or group) a member of a group.
 
     If the object is already a member of the group then the capacity of the
@@ -630,7 +638,8 @@ def member_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
 
 def package_collaborator_create(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context,
+        data_dict: DataDict) -> ActionResult.PackageCollaboratorCreate:
     '''Make a user a collaborator in a dataset.
 
     If the user is already a collaborator in the dataset then their
@@ -814,7 +823,7 @@ def _group_or_org_create(context: Context,
 
 
 def group_create(context: Context,
-                 data_dict: DataDict) -> Union[str, Dict[str, Any]]:
+                 data_dict: DataDict) -> ActionResult.GroupCreate:
     '''Create a new group.
 
     You must be authorized to create groups.
@@ -885,8 +894,9 @@ def group_create(context: Context,
     return _group_or_org_create(context, data_dict)
 
 
-def organization_create(context: Context,
-                        data_dict: DataDict) -> Union[str, Dict[str, Any]]:
+def organization_create(
+        context: Context,
+        data_dict: DataDict) -> ActionResult.OrganizationCreate:
     '''Create a new organization.
 
     You must be authorized to create organizations.
@@ -945,7 +955,8 @@ def organization_create(context: Context,
     return _group_or_org_create(context, data_dict, is_org=True)
 
 
-def user_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def user_create(context: Context,
+                data_dict: DataDict) -> ActionResult.UserCreate:
     '''Create a new user.
 
     You must be authorized to create users.
@@ -1063,7 +1074,8 @@ def user_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return user_dict
 
 
-def user_invite(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def user_invite(context: Context,
+                data_dict: DataDict) -> ActionResult.UserInvite:
     '''Invite a new user.
 
     You must be authorized to create group members.
@@ -1159,7 +1171,8 @@ def _get_random_username_from_email(email: str):
     return cleaned_localpart
 
 
-def vocabulary_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def vocabulary_create(context: Context,
+                      data_dict: DataDict) -> ActionResult.VocabularyCreate:
     '''Create a new tag vocabulary.
 
     You must be a sysadmin to create vocabularies.
@@ -1196,7 +1209,8 @@ def vocabulary_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return model_dictize.vocabulary_dictize(vocabulary, context)
 
 
-def activity_create(context: Context, data_dict: DataDict):
+def activity_create(context: Context,
+                    data_dict: DataDict) -> ActionResult.ActivityCreate:
     '''Create a new activity stream activity.
 
     You must be a sysadmin to create new activities.
@@ -1247,7 +1261,8 @@ def activity_create(context: Context, data_dict: DataDict):
     return model_dictize.activity_dictize(activity, context)
 
 
-def tag_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def tag_create(context: Context,
+               data_dict: DataDict) -> ActionResult.TagCreate:
     '''Create a new vocabulary tag.
 
     You must be a sysadmin to create vocabulary tags.
@@ -1289,7 +1304,8 @@ def tag_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return model_dictize.tag_dictize(tag, context)
 
 
-def follow_user(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def follow_user(context: Context,
+                data_dict: DataDict) -> ActionResult.FollowUser:
     '''Start following another user.
 
     You must provide your API key in the Authorization header.
@@ -1346,7 +1362,8 @@ def follow_user(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return model_dictize.user_following_user_dictize(follower, context)
 
 
-def follow_dataset(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def follow_dataset(context: Context,
+                   data_dict: DataDict) -> ActionResult.FollowDataset:
     '''Start following a dataset.
 
     You must provide your API key in the Authorization header.
@@ -1406,7 +1423,7 @@ def follow_dataset(context: Context, data_dict: DataDict) -> Dict[str, Any]:
 
 def _group_or_org_member_create(
         context: Context, data_dict: Dict[str, Any], is_org: bool = False
-) -> Dict[str, Any]:
+) -> ActionResult.GroupOrOrgMemberCreate:
     # creator of group/org becomes an admin
     # this needs to be after the repo.commit or else revisions break
     model = context['model']
@@ -1448,7 +1465,8 @@ def _group_or_org_member_create(
 
 
 def group_member_create(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context,
+        data_dict: DataDict) -> ActionResult.GroupMemberCreate:
     '''Make a user a member of a group.
 
     You must be authorized to edit the group.
@@ -1469,7 +1487,8 @@ def group_member_create(
 
 
 def organization_member_create(
-        context: Context, data_dict: DataDict) -> Dict[str, Any]:
+        context: Context,
+        data_dict: DataDict) -> ActionResult.OrganizationMemberCreate:
     '''Make a user a member of an organization.
 
     You must be authorized to edit the organization.
@@ -1490,7 +1509,8 @@ def organization_member_create(
     return _group_or_org_member_create(context, data_dict, is_org=True)
 
 
-def follow_group(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def follow_group(context: Context,
+                 data_dict: DataDict) -> ActionResult.FollowGroup:
     '''Start following a group.
 
     You must provide your API key in the Authorization header.
@@ -1545,7 +1565,8 @@ def follow_group(context: Context, data_dict: DataDict) -> Dict[str, Any]:
     return model_dictize.user_following_group_dictize(follower, context)
 
 
-def api_token_create(context: Context, data_dict: DataDict) -> Dict[str, Any]:
+def api_token_create(context: Context,
+                     data_dict: DataDict) -> ActionResult.ApiTokenCreate:
     """Create new API Token for current user.
 
     Apart from the `user` and `name` field that are required by

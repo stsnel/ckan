@@ -61,7 +61,7 @@ _PLUGINS_SERVICE: Dict[str, "SingletonPlugin"] = {}
 @contextmanager
 def use_plugin(
     *plugins: str
-) -> Generator[Union['SingletonPlugin', List['SingletonPlugin']], None, None]:
+) -> Iterator[Union['SingletonPlugin', List['SingletonPlugin']]]:
     '''Load plugin(s) for testing purposes
 
     e.g.

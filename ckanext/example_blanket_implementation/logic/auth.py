@@ -4,6 +4,7 @@ from ckan.types import Context, DataDict
 
 __all__ = [u"sleep", u"wake_up"]
 
+
 def sleep(context: Context, data_dict: DataDict):
     pass
 

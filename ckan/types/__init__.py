@@ -11,21 +11,17 @@ from typing import (
     Optional,
     Tuple,
     Union,
-    TYPE_CHECKING,
 )
 
-from typing_extensions import Protocol, TypedDict, TypeAlias
+from typing_extensions import Protocol, TypedDict
 from blinker import Signal
-from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.orm import Query
 
-if TYPE_CHECKING:
-    import ckan.model as model_
-
-
-AlchemySession = ScopedSession
-Query = Query
-Model: TypeAlias = "model_"
+from .logic import (
+    ActionResult
+)  # re-export
+from .model import (
+    Model, AlchemySession, Query
+)  # re-export
 
 Config = Dict[str, Union[str, Mapping[str, str]]]
 CKANApp = Any
@@ -56,8 +52,8 @@ class Context(TypedDict, total=False):
 
     __auth_user_obj_checked: bool
     __auth_audit: List[Tuple[str, int]]
-    auth_user_obj: Optional["model_.User"]
-    user_obj: "model_.User"
+    auth_user_obj: Optional["Model.User"]
+    user_obj: "Model.User"
 
     schema_keys: List[Any]
     revision_id: Optional[Any]
@@ -96,15 +92,15 @@ class Context(TypedDict, total=False):
     count_private_and_draft_datasets: bool
 
     schema: "Schema"
-    group: "model_.Group"
-    package: "model_.Package"
-    vocabulary: "model_.Vocabulary"
-    tag: "model_.Tag"
-    activity: "model_.Activity"
-    task_status: "model_.TaskStatus"
-    resource: "model_.Resource"
-    resource_view: "model_.ResourceView"
-    relationship: "model_.PackageRelationship"
+    group: "Model.Group"
+    package: "Model.Package"
+    vocabulary: "Model.Vocabulary"
+    tag: "Model.Tag"
+    activity: "Model.Activity"
+    task_status: "Model.TaskStatus"
+    resource: "Model.Resource"
+    resource_view: "Model.ResourceView"
+    relationship: "Model.PackageRelationship"
     api_version: int
     dataset_counts: Dict[str, Any]
     limits: Dict[str, Any]
