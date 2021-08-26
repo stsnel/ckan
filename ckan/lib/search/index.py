@@ -10,12 +10,10 @@ import re
 from dateutil.parser import parse
 from typing import Any, Dict, List, NoReturn, Optional, cast
 
-
 import six
 import pysolr
 from ckan.common import config
 from ckan.common import asbool
-import six
 
 from .common import SearchIndexError, make_connection
 from ckan.model import PackageRelationship

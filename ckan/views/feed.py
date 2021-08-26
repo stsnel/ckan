@@ -6,7 +6,6 @@ from typing import Dict, Optional, Tuple, Type, cast, Any, List
 
 from urllib.parse import urlparse
 from flask import Blueprint, make_response, Response
-import six
 
 from dateutil.tz import tzutc
 from feedgen.feed import FeedGenerator
@@ -66,15 +65,8 @@ def _enclosure(pkg: Dict[str, Any]) -> 'Enclosure':
     return enc
 
 
-def _set_extras(**kw):
-    extras = []
-    for key, value in kw.items():
-        extras.append({key: value})
-    return extras
-
-
 class Enclosure(str):
-    def __init__(self, url):
+    def __init__(self, url: str):
         self.url = url
         self.length = u'0'
         self.mime_type = u'application/json'

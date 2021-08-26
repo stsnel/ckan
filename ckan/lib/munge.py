@@ -25,8 +25,6 @@ MIN_FILENAME_TOTAL_LENGTH = 3
 def munge_name(name: str) -> str:
     '''Munges the package name field in case it is not to spec.'''
     # substitute non-ascii characters
-    if isinstance(name, str):
-        name = substitute_ascii_equivalents(name)
     # separators become dashes
     name = re.sub('[ .:/]', '-', name)
     # take out not-allowed characters
@@ -39,9 +37,6 @@ def munge_name(name: str) -> str:
 
 def munge_title_to_name(name: str) -> str:
     '''Munge a package title into a package name.'''
-    # substitute non-ascii characters
-    if isinstance(name, str):
-        name = substitute_ascii_equivalents(name)
     # convert spaces and separators
     name = re.sub('[ .:/]', '-', name)
     # take out not-allowed characters

@@ -61,7 +61,7 @@ def error_summary(error_dict: ErrorDict) -> Dict[str, str]:
                             field_name.replace('_', ' ').capitalize())
         return _(field_name.replace('_', ' '))
 
-     summary: Dict[str, str] = {}
+    summary: Dict[str, str] = {}
     for key, error in cast(Dict[str, List[str]], error_dict).items():
         if key == 'resources':
             summary[_('Resources')] = _('Package resource(s) invalid')

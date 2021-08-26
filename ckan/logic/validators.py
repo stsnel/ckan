@@ -157,7 +157,7 @@ def isodate(value: Any, context: Context) -> Any:
         return None
     try:
         date = h.date_str_to_datetime(value)
-    except (TypeError, ValueError) as e:
+    except (TypeError, ValueError):
         raise Invalid(_('Date format incorrect'))
     return date
 
@@ -1032,17 +1032,17 @@ def json_object(value: Any) -> Any:
     try:
         if not json.dumps(value).startswith('{'):
             raise Invalid(_('The value should be a valid JSON object'))
-    except ValueError as e:
+    except ValueError:
         raise Invalid(_('Could not parse the value as a valid JSON object'))
 
     return value
 
 
 def extras_valid_json(extras: Any, context: Context) -> Any:
-    try:
-        for extra, value in extras.items():
+    for extra, value in extras.items():
+        try:
             json.dumps(value)
-    except ValueError as e:
-        raise Invalid(_(u'Could not parse extra \'{name}\' as valid JSON').
-                      format(name=extra))
+        except ValueError:
+            raise Invalid(_(u'Could not parse extra \'{name}\' as valid JSON').
+                          format(name=extra))
     return extras
