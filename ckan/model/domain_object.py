@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVa
 
 import sqlalchemy as sa
 from sqlalchemy import orm
-from six import string_types
+
 
 import ckan.model.meta as meta
 import ckan.model.core as core
@@ -137,7 +137,7 @@ class DomainObject(object):
             if col.name in _dict:
                 value = _dict[col.name]
                 db_value = getattr(self, col.name)
-                if isinstance(db_value, datetime.datetime) and isinstance(value, string_types):
+                if isinstance(db_value, datetime.datetime) and isinstance(value, str):
                     db_value = db_value.isoformat()
                 if db_value != value:
                     changed.add(col.name)

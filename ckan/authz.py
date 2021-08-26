@@ -115,7 +115,7 @@ class AuthFunctions:
                     resolved_auth_function_plugins[name] = plugin.name
                     fetched_auth_functions[name] = auth_function
 
-        for name, func_list in six.iteritems(chained_auth_functions):
+        for name, func_list in chained_auth_functions.items():
             if (name not in fetched_auth_functions and
                     name not in self._functions):
                 raise Exception('The auth %r is not found for chained auth' % (
@@ -130,7 +130,7 @@ class AuthFunctions:
 
                 new_func = (functools.partial(func, prev_func))
                 # persisting attributes to the new partial function
-                for attribute, value in six.iteritems(func.__dict__):
+                for attribute, value in func.__dict__.items():
                     setattr(new_func, attribute, value)
 
                 fetched_auth_functions[name] = new_func
@@ -493,7 +493,7 @@ def user_is_collaborator_on_dataset(
         .filter(model.PackageMember.package_id == dataset_id)
 
     if capacity:
-        if isinstance(capacity, six.string_types):
+        if isinstance(capacity, str):
             capacity = [capacity]
         # type_ignore_reason: attribute has no method
         q = q.filter(model.PackageMember.capacity.in_(capacity))  # type: ignore

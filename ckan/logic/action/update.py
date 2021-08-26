@@ -10,7 +10,7 @@ import json
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union, cast
 
 import six
-from six import text_type
+
 
 import ckan.lib.helpers as h
 import ckan.plugins as plugins
@@ -1424,7 +1424,7 @@ def config_option_update(
         model.Session.rollback()
         raise ValidationError(errors)
 
-    for key, value in six.iteritems(data):
+    for key, value in data.items():
 
         # Set full Logo url
         if key == 'ckan.site_logo' and value and not value.startswith('http')\

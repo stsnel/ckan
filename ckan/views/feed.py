@@ -4,10 +4,10 @@ import logging
 import json
 from typing import Dict, Optional, Tuple, Type, cast, Any, List
 
-from six.moves.urllib.parse import urlparse  # type: ignore
+from urllib.parse import urlparse
 from flask import Blueprint, make_response, Response
 import six
-from six import text_type
+
 from dateutil.tz import tzutc
 from feedgen.feed import FeedGenerator
 from ckan.common import _, config, g, request
@@ -62,12 +62,19 @@ def _enclosure(pkg: Dict[str, Any]) -> 'Enclosure':
     )
     enc = Enclosure(url)
     enc.mime_type = u'application/json'
-    enc.length = text_type(len(json.dumps(pkg)))
+    enc.length = str(len(json.dumps(pkg)))
     return enc
 
 
-class Enclosure(text_type):
-    def __init__(self, url: str) -> None:
+def _set_extras(**kw):
+    extras = []
+    for key, value in kw.items():
+        extras.append({key: value})
+    return extras
+
+
+class Enclosure(str):
+    def __init__(self, url):
         self.url = url
         self.length = u'0'
         self.mime_type = u'application/json'
@@ -422,7 +429,7 @@ def _feed_url(query: Dict[str, Any], controller: str, action: str,
     Constructs the url for the given action.  Encoding the query
     parameters.
     """
-    for item in six.iteritems(query):
+    for item in query.items():
         kwargs['query'] = item
     endpoint = controller + '.' + action
     return h.url_for(endpoint, **kwargs)

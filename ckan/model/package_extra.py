@@ -1,7 +1,7 @@
 # encoding: utf-8
 from typing import Any, List
 
-from six import text_type
+
 from sqlalchemy import orm, types, Column, Table, ForeignKey
 from sqlalchemy.ext.associationproxy import association_proxy
 
@@ -53,7 +53,7 @@ meta.mapper(PackageExtra, package_extra_table, properties={
 
 
 def _create_extra(key: str, value: Any):
-    return PackageExtra(key=text_type(key), value=value)
+    return PackageExtra(key=str(key), value=value)
 
 _package.Package.extras = association_proxy(
     '_extras', 'value', creator=_create_extra)

@@ -6,7 +6,6 @@ from typing import Any, Callable, Dict, Iterable, List
 import sqlalchemy
 from sqlalchemy import Table
 from sqlalchemy.orm import class_mapper
-from six import text_type
 
 from ckan.model.core import State
 from ckan.types import Context
@@ -15,11 +14,6 @@ try:
     RowProxy = sqlalchemy.engine.result.RowProxy
 except AttributeError:
     RowProxy = sqlalchemy.engine.base.RowProxy  # type: ignore
-
-try:
-    long # type: ignore
-except NameError:
-    long = int  # Python 3
 
 
 # NOTE The functions in this file contain very generic methods for dictizing
@@ -55,14 +49,12 @@ def table_dictize(obj: Any, context: Context, **kw: Any) -> Dict[str, Any]:
             result_dict[name] = value
         elif isinstance(value, int):
             result_dict[name] = value
-        elif isinstance(value, long):
-            result_dict[name] = value
         elif isinstance(value, datetime.datetime):
             result_dict[name] = value.isoformat()
         elif isinstance(value, list):
             result_dict[name] = value
         else:
-            result_dict[name] = text_type(value)
+            result_dict[name] = str(value)
 
     result_dict.update(kw)
 

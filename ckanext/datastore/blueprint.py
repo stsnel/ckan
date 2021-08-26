@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-from ckan.types import Schema, ValidatorFactory
 from typing import Any, Dict, Optional, cast
 from itertools import zip_longest
 
@@ -16,6 +15,7 @@ from ckan.plugins.toolkit import (
     ObjectNotFound, NotAuthorized, get_action, get_validator, _, request,
     abort, render, c, h
 )
+from ckan.types import Schema, ValidatorFactory
 from ckanext.datastore.logic.schema import (
     list_of_strings_or_string,
     json_validator,

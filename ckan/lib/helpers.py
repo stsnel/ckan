@@ -32,12 +32,10 @@ from flask import url_for as _flask_default_url_for
 from werkzeug.routing import BuildError as FlaskRouteBuildError
 from ckan.lib import i18n
 
-import six
-from six import string_types, text_type
-from six.moves.urllib.parse import (  # type: ignore
+from urllib.parse import (
     urlencode, quote, unquote, urlparse, urlunparse
 )
-from six.moves import map  # type: ignore
+
 import jinja2
 
 import ckan.config
@@ -52,7 +50,7 @@ import ckan.authz as authz
 import ckan.plugins as p
 import ckan
 
-from ckan.lib.pagination import Page
+from ckan.lib.pagination import Page  # re-export
 from ckan.common import _, ungettext, c, g, request, session, json
 from ckan.lib.webassets_tools import include_asset, render_assets
 from markupsafe import Markup, escape
@@ -190,7 +188,7 @@ def _datestamp_to_datetime(datetime_: Any) -> Optional[datetime.datetime]:
 
     :rtype: datetime
     '''
-    if isinstance(datetime_, string_types):
+    if isinstance(datetime_, str):
         try:
             datetime_ = date_str_to_datetime(datetime_)
         except TypeError:
@@ -244,12 +242,12 @@ def redirect_to(*args: Any, **kw: Any) -> Response:
         kw['__no_cache__'] = True
 
     # Routes router doesn't like unicode args
-    uargs = [str(arg) if isinstance(arg, text_type) else arg for arg in args]
+    uargs = [str(arg) if isinstance(arg, str) else arg for arg in args]
 
     _url = ''
     skip_url_parsing = False
     parse_url = kw.pop('parse_url', False)
-    if uargs and len(uargs) == 1 and isinstance(uargs[0], string_types) \
+    if uargs and len(uargs) == 1 and isinstance(uargs[0], str) \
             and (uargs[0].startswith('/') or is_url(uargs[0])) \
             and parse_url is False:
         skip_url_parsing = True
@@ -428,7 +426,7 @@ def _url_for_flask(*args: Any, **kw: Any) -> str:
     # The API routes used to require a slash on the version number, make sure
     # we remove it
     if (args and args[0].startswith('api.') and
-            isinstance(kw.get('ver'), string_types) and
+            isinstance(kw.get('ver'), str) and
             kw['ver'].startswith('/')):
         kw['ver'] = kw['ver'].replace('/', '')
 
@@ -1005,7 +1003,7 @@ def map_pylons_to_flask_route_name(menu_item: str):
     # Pylons to Flask legacy route names mappings
     mappings = config.get('ckan.legacy_route_mappings')
     if mappings:
-        if isinstance(mappings, string_types):
+        if isinstance(mappings, str):
             LEGACY_ROUTE_NAMES.update(json.loads(mappings))
         elif isinstance(mappings, dict):
             LEGACY_ROUTE_NAMES.update(mappings)
@@ -1029,7 +1027,7 @@ def build_extra_admin_nav() -> Markup:
     admin_tabs_dict = config.get('ckan.admin_tabs')
     output: Markup = literal('')
     if admin_tabs_dict:
-        for k, v in six.iteritems(admin_tabs_dict):
+        for k, v in admin_tabs_dict.items():
             if v['icon']:
                 output += build_nav_icon(k, v['label'], icon=v['icon'])
             else:
@@ -1269,7 +1267,7 @@ def _url_with_params(url: str, params: Optional[Iterable[Tuple[str,
                                                                Any]]]) -> str:
     if not params:
         return url
-    params = [(k, v.encode('utf-8') if isinstance(v, string_types) else str(v))
+    params = [(k, v.encode('utf-8') if isinstance(v, str) else str(v))
               for k, v in params]
     return url + u'?' + urlencode(params)
 
@@ -1308,7 +1306,7 @@ def sorted_extras(package_extras: List[Dict[str, Any]],
         elif auto_clean:
             k = k.replace('_', ' ').replace('-', ' ').title()
         if isinstance(v, (list, tuple)):
-            v = ", ".join(map(text_type, v))
+            v = ", ".join(map(str, v))
         output.append((k, v))
     return output
 
@@ -1348,7 +1346,7 @@ def linked_user(user: Union[str, model.User],
                 maxlength: int = 0,
                 avatar: int = 20) -> Union[Markup, str, None]:
     if not isinstance(user, model.User):
-        user_name = text_type(user)
+        user_name = str(user)
         user_obj = model.User.get(user_name)
         if not user_obj:
             return user_name
@@ -1441,7 +1439,7 @@ def markdown_extract(text: str,
     if not extract_length or len(plain) < extract_length:
         return literal(plain)
     return literal(
-        text_type(
+        str(
             shorten(
                 plain,
                 width=extract_length,
@@ -2095,7 +2093,7 @@ def remove_url_param(key: Union[List[str], str],
     instead.
 
     '''
-    if isinstance(key, string_types):
+    if isinstance(key, str):
         keys = [key]
     else:
         keys = key
@@ -2415,7 +2413,7 @@ def format_resource_items(
                 # Sometimes values that can't be converted to ints can sneak
                 # into the db. In this case, just leave them as they are.
                 pass
-        elif isinstance(value, string_types):
+        elif isinstance(value, str):
             # check if strings are actually datetime/number etc
             if re.search(reg_ex_datetime, value):
                 datetime_ = date_str_to_datetime(value)
@@ -2562,7 +2560,7 @@ def resource_view_full_page(resource_view: Dict[str, Any]) -> bool:
 @core_helper
 def remove_linebreaks(string: str) -> str:
     '''Remove linebreaks from string to make it usable in JavaScript'''
-    return text_type(string).replace('\n', '')
+    return str(string).replace('\n', '')
 
 
 @core_helper
@@ -2808,7 +2806,7 @@ def get_translated(data_dict: Dict[str, Any], field: str) -> Union[str, Any]:
         return data_dict[field + u'_translated'][language]
     except KeyError:
         val = data_dict.get(field, '')
-        return _(val) if val and isinstance(val, string_types) else val
+        return _(val) if val and isinstance(val, str) else val
 
 
 @core_helper
@@ -2835,8 +2833,8 @@ def radio(selected: str, id: str, checked: bool) -> Markup:
 
 
 @core_helper
-def clean_html(html: str) -> str:
-    return bleach_clean(text_type(html))
+def clean_html(html: Any) -> str:
+    return bleach_clean(str(html))
 
 
 core_helper(flash, name='flash')
@@ -2880,7 +2878,7 @@ def load_plugin_helpers() -> None:
             new_func = functools.partial(
                 func, helper_functions[name])
             # persisting attributes to the new partial function
-            for attribute, value in six.iteritems(func.__dict__):
+            for attribute, value in func.__dict__.items():
                 setattr(new_func, attribute, value)
             helper_functions[name] = new_func
 

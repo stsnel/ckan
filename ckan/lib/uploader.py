@@ -7,8 +7,7 @@ import logging
 import magic
 import mimetypes
 from typing import Any, Dict, IO, Optional, Union
-
-from six.moves.urllib.parse import urlparse  # type: ignore
+from urllib.parse import urlparse
 
 from werkzeug.datastructures import FileStorage as FlaskFileStorage
 

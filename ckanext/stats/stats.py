@@ -4,7 +4,7 @@ import datetime
 import logging
 from typing import Any, ClassVar, Iterable, List, Optional, Tuple, Union
 from ckan.common import config
-from six import text_type
+
 from sqlalchemy import Table, select, join, func, and_
 
 import ckan.plugins as p
@@ -59,7 +59,7 @@ class Stats(object):
 
         res_ids: Iterable[Tuple[str, int]] = model.Session.execute(s).fetchall()
         res_groups = [
-            (model.Session.query(model.Group).get(text_type(group_id)), val)
+            (model.Session.query(model.Group).get(str(group_id)), val)
             for group_id, val in res_ids
         ]
         return res_groups
@@ -105,7 +105,7 @@ class Stats(object):
             return res_col
         elif returned_tag_info == "object":
             res_tags = [
-                (model.Session.query(model.Tag).get(text_type(tag_id)), val)
+                (model.Session.query(model.Tag).get(str(tag_id)), val)
                 for tag_id, val in res_col
             ]
             return res_tags
@@ -125,7 +125,7 @@ class Stats(object):
             .all()
         )
         user_count = [
-            (model.Session.query(model.User).get(text_type(user_id)), count)
+            (model.Session.query(model.User).get(str(user_id)), count)
             for user_id, count in userid_count
             if user_id
         ]
@@ -160,7 +160,7 @@ class Stats(object):
 
         res_pkgs = []
         for pkg_id, val in res_ids:
-            pkg = model.Session.query(model.Package).get(text_type(pkg_id))
+            pkg = model.Session.query(model.Package).get(str(pkg_id))
             assert pkg
             res_pkgs.append((pkg, val))
 

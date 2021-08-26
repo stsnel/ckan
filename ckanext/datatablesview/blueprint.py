@@ -1,10 +1,10 @@
 # encoding: utf-8
 
 from typing import Any, Dict
-from six.moves.urllib.parse import urlencode  # type: ignore
+from urllib.parse import urlencode
 
 from flask import Blueprint
-from six import text_type
+
 
 from ckan.common import json
 from ckan.plugins.toolkit import get_action, request, h
@@ -48,11 +48,11 @@ def ajax(resource_view_id: str):
                                })
 
     draw = int(request.form[u'draw'])
-    search_text = text_type(request.form[u'search[value]'])
+    search_text = str(request.form[u'search[value]'])
     offset = int(request.form[u'start'])
     limit = int(request.form[u'length'])
     view_filters = resource_view.get(u'filters', {})
-    user_filters = text_type(request.form[u'filters'])
+    user_filters = str(request.form[u'filters'])
     filters = merge_filters(view_filters, user_filters)
 
     datastore_search = get_action(u'datastore_search')
@@ -86,9 +86,9 @@ def ajax(resource_view_id: str):
     while True:
         if u'columns[%d][search][value]' % i not in request.form:
             break
-        v = text_type(request.form[u'columns[%d][search][value]' % i])
+        v = str(request.form[u'columns[%d][search][value]' % i])
         if v:
-            k = text_type(request.form[u'columns[%d][name]' % i])
+            k = str(request.form[u'columns[%d][name]' % i])
             # replace non-alphanumeric characters with FTS wildcard (_)
             v = re.sub(r'[^0-9a-zA-Z\-]+', '_', v)
             # append ':*' so we can do partial FTS searches
@@ -120,10 +120,10 @@ def ajax(resource_view_id: str):
     else:
         data = []
         for row in response[u'records']:
-            record = {colname: text_type(row.get(colname, u''))
+            record = {colname: str(row.get(colname, u''))
                       for colname in cols}
             # the DT_RowId is used in DT to set an element id for each record
-            record['DT_RowId'] = 'row' + text_type(row.get(u'_id', u''))
+            record['DT_RowId'] = 'row' + str(row.get(u'_id', u''))
             data.append(record)
 
         dtdata = {
@@ -143,9 +143,9 @@ def filtered_download(resource_view_id: str):
                                    u'id': resource_view_id
                                })
 
-    search_text = text_type(params[u'search'][u'value'])
+    search_text = str(params[u'search'][u'value'])
     view_filters = resource_view.get(u'filters', {})
-    user_filters = text_type(params[u'filters'])
+    user_filters = str(params[u'filters'])
     filters = merge_filters(view_filters, user_filters)
 
     datastore_search = get_action(u'datastore_search')

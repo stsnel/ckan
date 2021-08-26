@@ -13,7 +13,7 @@ from typing_extensions import Literal
 from werkzeug.datastructures import MultiDict
 
 import six
-from six import string_types, text_type
+
 
 import ckan.model as model
 import ckan.authz as authz
@@ -49,7 +49,7 @@ class ActionError(Exception):
 
     def __str__(self):
         msg = self.message
-        if not isinstance(msg, six.string_types):
+        if not isinstance(msg, str):
             msg = str(msg)
         return six.ensure_text(msg)
 
@@ -118,7 +118,7 @@ class ValidationError(ActionError):
 
             summary = {}
 
-            for key, error in six.iteritems(error_dict):
+            for key, error in error_dict.items():
                 if key == 'resources':
                     summary[_('Resources')] = _('Package resource(s) invalid')
                 elif key == 'extras':
@@ -204,7 +204,7 @@ def clean_dict(data_dict: Dict[str, Any]) -> Dict[str, Any]:
         if not isinstance(value, list):
             continue
         for inner_dict in value[:]:
-            if isinstance(inner_dict, string_types):
+            if isinstance(inner_dict, str):
                 break
             if not any(inner_dict.values()):
                 value.remove(inner_dict)
@@ -223,7 +223,7 @@ def tuplize_dict(data_dict: Dict[str, Any]) -> FlattenDataDict:
     May raise a DataError if the format of the key is incorrect.
     '''
     tuplized_dict: FlattenDataDict = {}
-    for k, value in six.iteritems(data_dict):
+    for k, value in data_dict.items():
         key_list = cast(List[Union[str, int]], k.split('__'))
         for num, key in enumerate(key_list):
             if num % 2 == 1:
@@ -238,7 +238,7 @@ def tuplize_dict(data_dict: Dict[str, Any]) -> FlattenDataDict:
 def untuplize_dict(tuplized_dict: FlattenDataDict) -> Dict[str, Any]:
 
     data_dict = {}
-    for key, value in six.iteritems(tuplized_dict):
+    for key, value in tuplized_dict.items():
         new_key = '__'.join([str(item) for item in key])
         data_dict[new_key] = value
     return data_dict
@@ -339,7 +339,7 @@ def check_access(action: str,
             raise NotAuthorized(msg)
     except NotAuthorized as e:
         log.debug(u'check access NotAuthorized - %s user=%s "%s"',
-                  action, user, text_type(e))
+                  action, user, str(e))
         raise
 
     log.debug('check access OK - %s user=%s', action, user)
@@ -483,7 +483,7 @@ def get_action(action: str) -> Action:
                 # type_ignore_reason: custom attribute
                 action_function.auth_audit_exempt = True  # type: ignore
                 fetched_actions[name] = action_function
-    for name, func_list in six.iteritems(chained_actions):
+    for name, func_list in chained_actions.items():
         if name not in fetched_actions and name not in _actions:
             # nothing to override from plugins or core
             raise NotFound('The action %r is not found for chained action' % (
@@ -493,7 +493,7 @@ def get_action(action: str) -> Action:
             prev_func = fetched_actions.get(name, _actions.get(name))
             new_func = functools.partial(func, prev_func)
             # persisting attributes to the new partial function
-            for attribute, value in six.iteritems(func.__dict__):
+            for attribute, value in func.__dict__.items():
                 setattr(new_func, attribute, value)
             fetched_actions[name] = new_func
 
@@ -587,7 +587,7 @@ def get_or_bust(
         not in the given dictionary
 
     '''
-    if isinstance(keys, string_types):
+    if isinstance(keys, str):
         keys = [keys]
 
     from ckan.logic.schema import create_schema_for_required_keys

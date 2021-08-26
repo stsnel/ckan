@@ -3,9 +3,6 @@
 import json
 from typing import Any, cast
 
-from six import string_types, text_type
-
-
 import ckan.plugins as p
 import ckan.lib.navl.dictization_functions as df
 from ckan.types import (
@@ -63,14 +60,14 @@ def list_of_strings_or_lists(key: FlattenKey, data: FlattenDataDict,
     if not isinstance(value, list):
         raise df.Invalid('Not a list')
     for x in value:
-        if not isinstance(x, string_types) and not isinstance(x, list):
+        if not isinstance(x, str) and not isinstance(x, list):
             raise df.Invalid('%s: %s' % ('Neither a string nor a list', x))
 
 
 def list_of_strings_or_string(key: FlattenKey, data: FlattenDataDict,
                               errors: FlattenErrorDict, context: Context):
     value = data.get(key)
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         return
     list_of_strings_or_lists(key, data, errors, context)
 
@@ -104,11 +101,11 @@ def unicode_or_json_validator(value: Any) -> Any:
         v = json_validator(value)
         # json.loads will parse literals; however we want literals as unicode.
         if not isinstance(v, dict):
-            return text_type(value)
+            return str(value)
         else:
             return v
     except df.Invalid:
-        return text_type(value)
+        return str(value)
 
 
 def datastore_create_schema() -> Schema:

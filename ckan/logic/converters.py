@@ -4,7 +4,7 @@ import json
 from typing import Any
 
 import six
-from six import string_types, text_type
+
 
 import ckan.model as model
 import ckan.lib.navl.dictization_functions as df
@@ -33,14 +33,14 @@ def convert_from_extras(key: FlattenKey, data: FlattenDataDict,
 
     def remove_from_extras(data: FlattenDataDict, key: FlattenKey):
         to_remove = []
-        for data_key, data_value in six.iteritems(data):
+        for data_key, data_value in data.items():
             if (data_key[0] == 'extras'
                 and data_key[1] == key):
                 to_remove.append(data_key)
         for item in to_remove:
             del data[item]
 
-    for data_key, data_value in six.iteritems(data):
+    for data_key, data_value in data.items():
         if (data_key[0] == 'extras'
             and data_key[-1] == 'key'
             and data_value == key[-1]):
@@ -52,7 +52,7 @@ def convert_from_extras(key: FlattenKey, data: FlattenDataDict,
 
 def extras_unicode_convert(extras: FlattenDataDict, context: Context):
     for extra in extras:
-        extras[extra] = text_type(extras[extra])
+        extras[extra] = str(extras[extra])
     return extras
 
 
@@ -71,7 +71,7 @@ def convert_to_tags(vocab: Any) -> DataValidator:
         new_tags = data.get(key)
         if not new_tags:
             return
-        if isinstance(new_tags, string_types):
+        if isinstance(new_tags, str):
             new_tags = [new_tags]
 
         # get current number of tags
@@ -191,7 +191,7 @@ def convert_group_name_or_id_to_id(group_name_or_id: Any,
 
 
 def convert_to_json_if_string(value: Any, context: Context) -> Any:
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         try:
             return json.loads(value)
         except ValueError:
@@ -201,7 +201,7 @@ def convert_to_json_if_string(value: Any, context: Context) -> Any:
 
 
 def convert_to_list_if_string(value: Any) -> Any:
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         return [value]
     else:
         return value
@@ -210,7 +210,7 @@ def json_or_string(value: Any) -> Any:
     """
     parse string values as json, return string if that fails
     """
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         try:
             return json.loads(value)
         except ValueError:
@@ -222,7 +222,7 @@ def json_list_or_string(value: Any) -> Any:
     parse string values as json or comma-separated lists, return
     string as a one-element list if that fails
     """
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         try:
             return json.loads(value)
         except ValueError:
@@ -232,6 +232,6 @@ def json_list_or_string(value: Any) -> Any:
 
 
 def remove_whitespace(value: Any, context: Context) -> Any:
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         return value.strip()
     return value

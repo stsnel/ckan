@@ -4,7 +4,6 @@ from ckan.types import Context, Validator
 from logging import getLogger
 from typing import Any, Callable, Container, Dict
 
-import six
 
 from ckan.common import CKANConfig, json, config
 import ckan.plugins as p
@@ -23,7 +22,7 @@ def get_mapview_config() -> Dict[str, Any]:
     '''
     namespace = 'ckanext.spatial.common_map.'
     return {k.replace(namespace, ''): v
-            for k, v in six.iteritems(config)
+            for k, v in config.items()
             if k.startswith(namespace)}
 
 

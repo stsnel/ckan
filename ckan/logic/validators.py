@@ -9,7 +9,6 @@ import string
 import json
 from typing import Any, Container, Dict, Optional, Union
 
-from six import string_types, iteritems
 from urllib.parse import urlparse
 
 import ckan.lib.navl.dictization_functions as df
@@ -362,7 +361,7 @@ def name_validator(value: Any, context: Context) -> Any:
         a valid name
 
     '''
-    if not isinstance(value, string_types):
+    if not isinstance(value, str):
         raise Invalid(_('Names must be strings'))
 
     # check basic textual rules
@@ -488,7 +487,7 @@ def tag_string_convert(key: FlattenKey, data: FlattenDataDict,
     and parses tag names. These are added to the data dict, enumerated. They
     are also validated.'''
 
-    if isinstance(data[key], string_types):
+    if isinstance(data[key], str):
         tags = [tag.strip() \
                 for tag in data[key].split(',') \
                 if tag.strip()]
@@ -596,7 +595,7 @@ def user_name_validator(key: FlattenKey, data: FlattenDataDict,
     model = context['model']
     new_user_name = data[key]
 
-    if not isinstance(new_user_name, string_types):
+    if not isinstance(new_user_name, str):
         raise Invalid(_('User names must be strings'))
 
     user = model.User.get(new_user_name)
@@ -640,7 +639,7 @@ def user_password_validator(key: FlattenKey, data: FlattenDataDict,
 
     if isinstance(value, Missing):
         pass
-    elif not isinstance(value, string_types):
+    elif not isinstance(value, str):
         errors[('password',)].append(_('Passwords must be strings'))
     elif value == '':
         pass
@@ -823,7 +822,7 @@ def list_of_strings(key: FlattenKey, data: FlattenDataDict,
     if not isinstance(value, list):
         raise Invalid(_('Not a list'))
     for x in value:
-        if not isinstance(x, string_types):
+        if not isinstance(x, str):
             raise Invalid('%s: %s' % (_('Not a string'), x))
 
 
@@ -1040,10 +1039,10 @@ def json_object(value: Any) -> Any:
 
 
 def extras_valid_json(extras: Any, context: Context) -> Any:
-    for extra, value in iteritems(extras):
-        try:
+    try:
+        for extra, value in extras.items():
             json.dumps(value)
-        except ValueError as e:
-            raise Invalid(_(u'Could not parse extra \'{name}\' as valid JSON').
-                          format(name=extra))
+    except ValueError as e:
+        raise Invalid(_(u'Could not parse extra \'{name}\' as valid JSON').
+                      format(name=extra))
     return extras

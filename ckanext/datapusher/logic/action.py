@@ -7,7 +7,7 @@ import datetime
 import time
 from typing import Any, Dict, cast
 
-from six.moves.urllib.parse import urljoin  # type: ignore
+from urllib.parse import urljoin
 from dateutil.parser import parse as parse_date
 
 import requests

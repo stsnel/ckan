@@ -5,7 +5,7 @@ from ckan.types import Context, DataDict
 from logging import getLogger
 
 import requests
-from six.moves.urllib.parse import urlsplit  # type: ignore
+from urllib.parse import urlsplit
 from flask import Blueprint, make_response
 
 import ckan.model as model

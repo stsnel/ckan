@@ -8,7 +8,9 @@ Functions and data structures that are needed for the ckan data preview.
 import logging
 from typing import Any, Dict, Iterable, List, Optional
 
-from six.moves.urllib.parse import urlparse  # type: ignore
+from urllib.parse import urlparse
+
+from ckan.common import config
 
 import ckan.plugins as p
 from ckan import logic

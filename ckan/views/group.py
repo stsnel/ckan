@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union, cast
 from typing_extensions import Literal
 
 import six
-from six import string_types
-from six.moves.urllib.parse import urlencode  # type: ignore
+
+from urllib.parse import urlencode
 from datetime import datetime
 
 import ckan.lib.base as base
@@ -256,7 +256,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
             g, u'action', u'') == u'bulk_process' else u'read'
         url = h.url_for(u'.'.join([group_type, action]), id=id)
         params = [(k, v.encode(u'utf-8')
-                   if isinstance(v, string_types) else str(v))
+                   if isinstance(v, str) else str(v))
                   for k, v in params]
         return url + u'?' + urlencode(params)
 
@@ -952,7 +952,7 @@ class BulkProcessView(MethodView):
         # ie7 puts all buttons in form params but puts submitted one twice
 
         form_dict: Dict[str, str] = request.form.to_dict()
-        for key, value in six.iteritems(form_dict):
+        for key, value in form_dict.items():
             if value in [u'private', u'public']:
                 action = key.split(u'.')[-1]
                 break

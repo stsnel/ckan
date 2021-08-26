@@ -8,7 +8,6 @@ import flask
 from flask.views import MethodView
 from flask import Response
 
-import six
 import ckan.lib.base as base
 import ckan.lib.datapreview as lib_datapreview
 import ckan.lib.helpers as h
@@ -215,7 +214,7 @@ class CreateView(MethodView):
 
         # see if we have any data that we are trying to save
         data_provided = False
-        for key, value in six.iteritems(data):
+        for key, value in data.items():
             if (
                     (value or isinstance(value, cgi.FieldStorage))
                     and key != u'resource_type'):

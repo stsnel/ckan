@@ -5,7 +5,7 @@ from typing import Any, Dict, List, cast
 
 import six
 import click
-from six import text_type
+
 
 import ckan.logic as logic
 import ckan.model as model
@@ -121,7 +121,7 @@ def show_user(username: str):
     if not username:
         error_shout(u'Please specify the username for the user')
         return
-    user = model.User.get(text_type(username))
+    user = model.User.get(str(username))
     click.secho(u'User: %s' % user)
 
 

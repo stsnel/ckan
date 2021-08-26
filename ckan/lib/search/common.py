@@ -8,7 +8,6 @@ from typing import Any, Dict, Optional, Tuple
 import pysolr
 import simplejson
 
-from six import string_types
 from six.moves.urllib.parse import quote_plus  # type: ignore
 from pysolr import Solr
 
@@ -98,7 +97,7 @@ def make_connection(decode_dates: bool = True) -> Solr:
 
 def solr_datetime_decoder(d: Dict[str, Any]) -> Dict[str, Any]:
     for k, v in d.items():
-        if isinstance(v, string_types):
+        if isinstance(v, str):
             possible_datetime = re.search(pysolr.DATETIME_REGEX, v)
             if possible_datetime:
                 date_values: Dict[str, Any] = possible_datetime.groupdict()

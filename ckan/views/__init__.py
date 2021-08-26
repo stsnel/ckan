@@ -1,14 +1,13 @@
 # encoding: utf-8
 
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Dict, Optional
 
 from sqlalchemy import inspect
 from ckan.common import asbool
 import six
-from six import text_type
-from six.moves.urllib.parse import quote  # type: ignore
-from flask.wrappers import Response
 
+from urllib.parse import quote
+from flask.wrappers import Response
 
 import ckan.model as model
 import ckan.lib.api_token as api_token
@@ -153,8 +152,7 @@ def identify_user() -> Optional[Response]:
         g.author = g.user
     else:
         g.author = g.remote_addr
-    g.author = text_type(g.author)
-    return None
+    g.author = str(g.author)
 
 
 def _identify_user_default():

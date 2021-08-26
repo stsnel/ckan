@@ -3,7 +3,7 @@
 from typing import Any
 from sqlalchemy import orm, types, Column, Table, ForeignKey
 from sqlalchemy.ext.associationproxy import association_proxy
-from six import text_type
+
 
 import ckan.model.group as group
 import ckan.model.meta as meta
@@ -47,7 +47,7 @@ meta.mapper(GroupExtra, group_extra_table, properties={
 )
 
 def _create_extra(key: str, value: Any):
-    return GroupExtra(key=text_type(key), value=value)
+    return GroupExtra(key=str(key), value=value)
 
 group.Group.extras = association_proxy(
     '_extras', 'value', creator=_create_extra)

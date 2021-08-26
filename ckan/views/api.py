@@ -8,7 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, cast, Union
 from flask import Blueprint, make_response, Response
 
 import six
-from six import text_type
+
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import ImmutableMultiDict
 
@@ -155,7 +155,7 @@ def _get_request_data(try_url_params: bool = False):
            item or a string otherwise
         '''
         out = {}
-        for key, value in six.iteritems(multi_dict.to_dict(flat=False)):
+        for key, value in multi_dict.to_dict(flat=False).items():
             out[key] = value[0] if len(value) == 1 else value
         return out
 
@@ -197,7 +197,7 @@ def _get_request_data(try_url_params: bool = False):
     if request.method == u'PUT' and not request_data:
         raise ValueError(u'Invalid request. Please use the POST method for '
                          'your request')
-    for field_name, file_ in six.iteritems(request.files):
+    for field_name, file_ in request.files.items():
         request_data[field_name] = file_
     log.debug(u'Request data extracted: %r', request_data)
 
@@ -285,14 +285,14 @@ def action(logic_function: str, ver: int = API_DEFAULT_VERSION) -> Response:
                                  u'message': _(u'Access denied')}
         return_dict[u'success'] = False
 
-        if text_type(e):
+        if str(e):
             return_dict[u'error'][u'message'] += u': %s' % e
 
         return _finish(403, return_dict, content_type=u'json')
     except NotFound as e:
         return_dict[u'error'] = {u'__type': u'Not Found Error',
                                  u'message': _(u'Not found')}
-        if text_type(e):
+        if str(e):
             return_dict[u'error'][u'message'] += u': %s' % e
         return_dict[u'success'] = False
         return _finish(404, return_dict, content_type=u'json')

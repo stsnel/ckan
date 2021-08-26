@@ -13,7 +13,7 @@ from typing import (Container, Dict, List, Optional,
 from ckan.common import config, asbool
 import sqlalchemy
 from sqlalchemy import text
-from six import string_types, text_type
+
 
 import ckan
 import ckan.lib.dictization
@@ -1924,7 +1924,7 @@ def package_search(context: Context, data_dict: DataDict) -> ActionResult.Packag
 
         if result_fl:
             for package in query.results:
-                if isinstance(package, text_type):
+                if isinstance(package, str):
                     package = {result_fl[0]: package}
                 extras = cast(Dict[str, Any], package.pop('extras', {}))
                 package.update(extras)
@@ -2100,7 +2100,7 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
             {'fields': _('Do not specify if using "query" parameter')})
 
     elif query is not None:
-        if isinstance(query, string_types):
+        if isinstance(query, str):
             query = [query]
         try:
             # type_ignore_reason: typechecker can't guess number of args
@@ -2117,7 +2117,7 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
         # So maintain that behaviour
         split_terms: Dict[str, List[str]] = {}
         for field, terms in fields.items():
-            if isinstance(terms, string_types):
+            if isinstance(terms, str):
                 terms = terms.split()
             split_terms[field] = terms
         fields = split_terms
@@ -2135,7 +2135,7 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
     resource_fields = model.Resource.get_columns()
     for field, terms in fields.items():
 
-        if isinstance(terms, string_types):
+        if isinstance(terms, str):
             terms = [terms]
 
         if field not in resource_fields:
@@ -2159,7 +2159,7 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
 
             # Treat the has field separately, see docstring.
             if field == 'hash':
-                q = q.filter(model_attr.ilike(text_type(term) + '%'))
+                q = q.filter(model_attr.ilike(str(term) + '%'))
 
             # Resource extras are stored in a json blob.  So searching for
             # matching fields is a bit trickier.  See the docstring.
@@ -2178,7 +2178,7 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
             else:
                 column = model_attr.property.columns[0]
                 if isinstance(column.type, sqlalchemy.UnicodeText):
-                    q = q.filter(model_attr.ilike('%' + text_type(term) + '%'))
+                    q = q.filter(model_attr.ilike('%' + str(term) + '%'))
                 else:
                     q = q.filter(model_attr == term)
 
@@ -2212,7 +2212,7 @@ def _tag_search(
     model = context['model']
 
     terms = data_dict.get('query') or data_dict.get('q') or []
-    if isinstance(terms, string_types):
+    if isinstance(terms, str):
         terms = [terms]
     terms = [t.strip() for t in terms if t.strip()]
 
@@ -2400,7 +2400,7 @@ def term_translation_show(
     # This action accepts `terms` as either a list of strings, or a single
     # string.
     terms = _get_or_bust(data_dict, 'terms')
-    if isinstance(terms, string_types):
+    if isinstance(terms, str):
         terms = [terms]
     if terms:
         q = q.where(trans_table.c.term.in_(terms))
@@ -2409,7 +2409,7 @@ def term_translation_show(
     # string.
     if 'lang_codes' in data_dict:
         lang_codes = _get_or_bust(data_dict, 'lang_codes')
-        if isinstance(lang_codes, string_types):
+        if isinstance(lang_codes, str):
             lang_codes = [lang_codes]
         q = q.where(trans_table.c.lang_code.in_(lang_codes))
 

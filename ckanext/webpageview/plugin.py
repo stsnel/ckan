@@ -4,7 +4,7 @@ from ckan.types import Context
 from typing import Any, Dict
 from ckan.common import CKANConfig
 import logging
-from six import text_type
+
 import ckan.plugins as p
 
 log = logging.getLogger(__name__)

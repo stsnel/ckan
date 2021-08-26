@@ -20,7 +20,7 @@ from typing_extensions import Literal
 
 import six
 
-from six.moves.urllib.parse import urlsplit  # type: ignore
+from urllib.parse import urlsplit
 from sqlalchemy.sql.schema import Table
 from sqlalchemy.sql.selectable import Select
 
@@ -98,7 +98,7 @@ def extras_dict_dictize(
         extras_dict: Dict[str, Any],
         context: Context) -> List[Dict[str, Any]]:
     result_list = []
-    for extra in six.itervalues(extras_dict):
+    for extra in extras_dict.values():
         dictized = d.table_dictize(extra, context)
         if not extra.state == 'active':
             continue

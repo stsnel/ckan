@@ -3,7 +3,7 @@
 from typing import Any, List
 
 import click
-from six import text_type
+
 
 import ckan.model as model
 from ckan.cli import error_shout
@@ -47,14 +47,14 @@ def list_sysadmins():
 @click.argument(u"args", nargs=-1)
 @click.pass_context
 def add(ctx: Any, username: str, args: List[str]):
-    user = model.User.by_name(text_type(username))
+    user = model.User.by_name(str(username))
     if not user:
         click.secho(u'User "%s" not found' % username, fg=u"red")
         if click.confirm(
             u"Create new user: %s?" % username, default=True, abort=True
         ):
             ctx.forward(add_user)
-            user = model.User.by_name(text_type(username))
+            user = model.User.by_name(str(username))
     assert user
     user.sysadmin = True
     model.Session.add(user)
@@ -65,7 +65,7 @@ def add(ctx: Any, username: str, args: List[str]):
 @sysadmin.command(help=u"Removes user from sysadmins.")
 @click.argument(u"username")
 def remove(username: str):
-    user = model.User.by_name(text_type(username))
+    user = model.User.by_name(str(username))
     if not user:
         return error_shout(u'Error: user "%s" not found!' % username)
     user.sysadmin = False

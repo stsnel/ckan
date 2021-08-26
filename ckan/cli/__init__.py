@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, cast
 import click
 import logging
 from logging.config import fileConfig as loggingFileConfig
-from six.moves.configparser import ConfigParser  # type: ignore
+from configparser import ConfigParser
 
 from ckan.exceptions import CkanConfigurationException
 from ckan.types import Config

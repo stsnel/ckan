@@ -1,10 +1,8 @@
 # encoding: utf-8
 
-from ckan.types import Schema
-from six import text_type
-
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from ckan.types import Schema
 
 
 class ExampleIConfigurerPlugin(plugins.SingletonPlugin):

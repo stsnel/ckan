@@ -11,8 +11,6 @@ from jinja2 import ext
 from jinja2.exceptions import TemplateNotFound
 from jinja2.utils import open_if_exists, escape
 
-from six import text_type
-
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 from ckan.common import config
@@ -84,7 +82,7 @@ class CkanInternationalizationExtension(ext.InternationalizationExtension):
                 if isinstance(arg, nodes.Const):
                     # type_ignore_reason: custom property
                     value = arg.value   # type: ignore
-                    if isinstance(value, text_type):
+                    if isinstance(value, str):
                         # type_ignore_reason: custom property
                         arg.value = regularise_html(value)   # type: ignore
         return node

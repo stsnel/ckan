@@ -1,10 +1,11 @@
 # encoding: utf-8
 
-from ckan.types import Context
 from typing import Any, Dict
-from ckan.common import CKANConfig
-from six import text_type
+
 import ckan.plugins as p
+from ckan.types import Context
+from ckan.common import CKANConfig
+
 
 ignore_empty = p.toolkit.get_validator('ignore_empty')
 unicode_safe = p.toolkit.get_validator('unicode_safe')

@@ -1,20 +1,19 @@
 # encoding: utf-8
 
-from ckan.types import Context
 import json
 import logging
 from typing import (
     Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union, cast, overload
 )
+from typing_extensions import Literal
 
-import ckan.common as converters
 import sqlparse
 import six
 
-from six import string_types
-from typing_extensions import Literal
-
+import ckan.common as converters
 import ckan.plugins.toolkit as tk
+from ckan.types import Context
+
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +76,7 @@ def validate_int(i: Any, non_negative: bool = False):
 
 
 def _strip(s: Any):
-    if isinstance(s, string_types) and len(s) and s[0] == s[-1]:
+    if isinstance(s, str) and len(s) and s[0] == s[-1]:
         return s.strip().strip('"')
     return s
 

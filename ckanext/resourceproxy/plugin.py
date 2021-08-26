@@ -3,7 +3,7 @@
 from logging import getLogger
 from typing import Any, Callable, Dict, List
 
-from six.moves.urllib.parse import urlparse  # type: ignore
+from urllib.parse import urlparse
 
 import ckan.lib.helpers as h
 import ckan.plugins as p

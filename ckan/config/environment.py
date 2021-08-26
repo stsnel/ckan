@@ -6,12 +6,11 @@ import logging
 import warnings
 import pytz
 
-from typing import Any, Dict, Optional, Union, cast
+from typing import Dict, Union, cast
 
-import six
 import sqlalchemy
 
-from six.moves.urllib.parse import urlparse  # type: ignore
+from urllib.parse import urlparse
 
 import ckan.model as model
 import ckan.plugins as p
@@ -22,11 +21,10 @@ from ckan.lib.redis import is_redis_available
 import ckan.lib.search as search
 import ckan.logic as logic
 import ckan.authz as authz
-import ckan.lib.jinja_extensions as jinja_extensions
 from ckan.lib.webassets_tools import webassets_init
 from ckan.lib.i18n import build_js_translations
 
-from ckan.common import CKANConfig, _, ungettext, config
+from ckan.common import CKANConfig, _, config
 from ckan.exceptions import CkanConfigurationException
 from ckan.types import Config
 

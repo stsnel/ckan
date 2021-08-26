@@ -4,7 +4,7 @@ import logging
 import datetime
 from typing import Any, Dict, List, Optional, Set, Union, cast
 
-from six import string_types, text_type
+
 
 import ckan.model as model
 from ckan.logic import get_action
@@ -166,7 +166,7 @@ class CreateTestData(object):
                 pkg_dict = {}
                 for field in cls.pkg_core_fields:
                     if field in item:
-                        pkg_dict[field] = text_type(item[field])
+                        pkg_dict[field] = str(item[field])
                 if model.Package.by_name(pkg_dict['name']):
                     log.warning('Cannot create package "%s" as it already exists.' % \
                                     (pkg_dict['name']))
@@ -175,13 +175,13 @@ class CreateTestData(object):
                 model.Session.add(pkg)
                 for attr, val in item.items():
                     if isinstance(val, str):
-                        val = text_type(val)
+                        val = str(val)
                     if attr=='name':
                         continue
                     if attr in cls.pkg_core_fields:
                         pass
                     elif attr == 'download_url':
-                        pkg.add_resource(text_type(val))
+                        pkg.add_resource(str(val))
                     elif attr == 'resources':
                         assert isinstance(val, (list, tuple))
                         for res_dict in val:
@@ -189,19 +189,19 @@ class CreateTestData(object):
                             for k, v in res_dict.items():
                                 if k != 'extras':
                                     if not isinstance(v, datetime.datetime):
-                                        v = text_type(v)
+                                        v = str(v)
                                     non_extras[str(k)] = v
-                            extras = {str(k): text_type(v) for k, v in res_dict.get('extras', {}).items()}
+                            extras = {str(k): str(v) for k, v in res_dict.get('extras', {}).items()}
                             pkg.add_resource(extras=extras, **non_extras)
                     elif attr == 'tags':
-                        if isinstance(val, string_types):
+                        if isinstance(val, str):
                             tags = val.split()
                         elif isinstance(val, list):
                             tags = val
                         else:
                             raise NotImplementedError
                         for tag_name in tags:
-                            tag_name = text_type(tag_name)
+                            tag_name = str(tag_name)
                             tag = model.Tag.by_name(tag_name)
                             if not tag:
                                 tag = model.Tag(name=tag_name)
@@ -211,18 +211,18 @@ class CreateTestData(object):
                             model.Session.flush()
                     elif attr == 'groups':
                         model.Session.flush()
-                        if isinstance(val, string_types):
+                        if isinstance(val, str):
                             group_names = val.split()
                         elif isinstance(val, list):
                             group_names = val
                         else:
                             raise NotImplementedError
                         for group_name in group_names:
-                            group = model.Group.by_name(text_type(group_name))
+                            group = model.Group.by_name(str(group_name))
                             if not group:
                                 if not group_name in new_groups:
                                     group = model.Group(name=
-                                                        text_type(group_name))
+                                                        str(group_name))
                                     model.Session.add(group)
                                     new_group_names.add(group_name)
                                     new_groups[group_name] = group
@@ -257,7 +257,7 @@ class CreateTestData(object):
         needs_commit = False
 
         for group_name in extra_group_names:
-            group = model.Group(name=text_type(group_name))
+            group = model.Group(name=str(group_name))
             model.Session.add(group)
             new_group_names.add(group_name)
             needs_commit = True
@@ -268,8 +268,8 @@ class CreateTestData(object):
 
         # create users that have been identified as being needed
         for user_name in new_user_names:
-            if not model.User.by_name(text_type(user_name)):
-                user = model.User(name=text_type(user_name))
+            if not model.User.by_name(str(user_name)):
+                user = model.User(name=str(user_name))
                 model.Session.add(user)
                 cls.user_refs.append(user_name)
                 needs_commit = True
@@ -280,7 +280,7 @@ class CreateTestData(object):
 
         # setup authz for groups just created
         for group_name in new_group_names:
-            group = model.Group.by_name(text_type(group_name))
+            group = model.Group.by_name(str(group_name))
             cls.group_names.add(group_name)
             needs_commit = True
 
@@ -290,12 +290,12 @@ class CreateTestData(object):
 
         if relationships:
             def get_pkg(pkg_name: str):
-                pkg = model.Package.by_name(text_type(pkg_name))
+                pkg = model.Package.by_name(str(pkg_name))
                 assert pkg
                 return pkg
             for subject_name, relationship, object_name in relationships:
                 get_pkg(subject_name).add_relationship(
-                    text_type(relationship), get_pkg(object_name))
+                    str(relationship), get_pkg(object_name))
                 needs_commit = True
 
             model.repo.commit_and_remove()
@@ -317,12 +317,12 @@ class CreateTestData(object):
         group_attributes = set(('name', 'title', 'description', 'parent_id',
                                 'type', 'is_organization'))
         for group_dict in group_dicts:
-            if model.Group.by_name(text_type(group_dict['name'])):
+            if model.Group.by_name(str(group_dict['name'])):
                 log.warning('Cannot create group "%s" as it already exists.' %
                             group_dict['name'])
                 continue
             pkg_names = group_dict.pop('packages', [])
-            group = model.Group(name=text_type(group_dict['name']))
+            group = model.Group(name=str(group_dict['name']))
             group.type = auth_profile or 'group'
             for key in group_dict:
                 if key in group_attributes:
@@ -331,7 +331,7 @@ class CreateTestData(object):
                     group.extras[key] = group_dict[key]
             assert isinstance(pkg_names, (list, tuple))
             for pkg_name in pkg_names:
-                pkg = model.Package.by_name(text_type(pkg_name))
+                pkg = model.Package.by_name(str(pkg_name))
                 assert pkg, pkg_name
                 member = model.Member(group=group, table_id=pkg.id,
                                       table_name='package')
@@ -360,7 +360,7 @@ class CreateTestData(object):
             model.Session.commit()
             # add it to a parent's group
             if 'parent' in group_dict:
-                parent = model.Group.by_name(text_type(group_dict['parent']))
+                parent = model.Group.by_name(str(group_dict['parent']))
                 assert parent, group_dict['parent']
                 member = model.Member(group=group, table_id=parent.id,
                                       table_name='group', capacity='parent')
@@ -508,8 +508,8 @@ left arrow <
                     user_dict[k] = v
                 else:
                     # avoid unicode warnings
-                    user_dict[k] = text_type(v)
-        user = model.User(name=text_type(name), **user_dict)
+                    user_dict[k] = str(v)
+        user = model.User(name=str(name), **user_dict)
         model.Session.add(user)
         cls.user_refs.append(user_ref)
         return user
@@ -528,7 +528,7 @@ left arrow <
         '''If you create a domain object manually in your test then you
         can name it here (flag it up) and it will be deleted when you next
         call CreateTestData.delete().'''
-        if isinstance(pkg_names, string_types):
+        if isinstance(pkg_names, str):
             pkg_names = [pkg_names]
         cls.pkg_names.extend(pkg_names)
         cls.tag_names.extend(tag_names)
@@ -540,19 +540,19 @@ left arrow <
         '''Purges packages etc. that were created by this class.'''
         for pkg_name in cls.pkg_names:
             model.Session().autoflush = False
-            pkg = model.Package.by_name(text_type(pkg_name))
+            pkg = model.Package.by_name(str(pkg_name))
             if pkg:
                 pkg.purge()
         for tag_name in cls.tag_names:
-            tag = model.Tag.by_name(text_type(tag_name))
+            tag = model.Tag.by_name(str(tag_name))
             if tag:
                 tag.purge()
         for group_name in cls.group_names:
-            group = model.Group.by_name(text_type(group_name))
+            group = model.Group.by_name(str(group_name))
             if group:
                 model.Session.delete(group)
         for user_name in cls.user_refs:
-            user = model.User.get(text_type(user_name))
+            user = model.User.get(str(user_name))
             if user:
                 user.purge()
         model.Session.commit()

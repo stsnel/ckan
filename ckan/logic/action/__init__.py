@@ -4,7 +4,6 @@ import re
 from copy import deepcopy
 from typing import Any, Dict, List, Mapping, cast
 
-import six
 
 from ckan.logic import NotFound
 from ckan.common import _
@@ -62,8 +61,8 @@ def error_summary(error_dict: ErrorDict) -> Dict[str, str]:
                             field_name.replace('_', ' ').capitalize())
         return _(field_name.replace('_', ' '))
 
-    summary: Dict[str, str] = {}
-    for key, error in six.iteritems(cast(Dict[str, List[str]], error_dict)):
+     summary: Dict[str, str] = {}
+    for key, error in cast(Dict[str, List[str]], error_dict).items():
         if key == 'resources':
             summary[_('Resources')] = _('Package resource(s) invalid')
         elif key == 'extras':

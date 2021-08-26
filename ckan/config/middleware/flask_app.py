@@ -16,7 +16,6 @@ from flask.ctx import _AppCtxGlobals
 from flask.sessions import SessionInterface
 from flask_multistatic import MultiStaticFlask
 
-import six
 import webob
 
 from werkzeug.exceptions import default_exceptions, HTTPException
@@ -211,7 +210,7 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
 
     namespace = 'beaker.session.'
     session_opts = {k.replace('beaker.', ''): v
-                    for k, v in six.iteritems(config)
+                    for k, v in config.items()
                     if k.startswith(namespace)}
     if (not session_opts.get('session.data_dir') and
             session_opts.get('session.type', 'file') == 'file'):
@@ -506,7 +505,7 @@ class CKANFlask(MultiStaticFlask):
 
         # Get the new blueprint rules
         bp_rules = itertools.chain.from_iterable(
-            v for k, v in six.iteritems(self.url_map._rules_by_endpoint)
+            v for k, v in self.url_map._rules_by_endpoint.items()
             if k.startswith(u'{0}.'.format(blueprint.name))
         )
 

@@ -8,7 +8,6 @@ import os
 from typing import Any, Dict, List, Tuple, cast
 
 import click
-import six
 
 from ckan.common import config
 from ckan.lib.i18n import build_js_translations
@@ -188,7 +187,7 @@ def check_po_file(path: str):
             ):
                 # typechecker thinks it's a string
                 plurals = cast(Dict[str, str], entry.msgstr_plural)
-                for key in six.iterkeys(plurals):
+                for key in plurals.keys():
                     if key == u'0':
                         error = check_translation(
                             function, entry.msgid,

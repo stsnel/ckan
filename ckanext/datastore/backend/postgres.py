@@ -18,10 +18,10 @@ import json
 from collections import OrderedDict
 
 import six
-from six.moves.urllib.parse import (  # type: ignore
+from urllib.parse import (
     urlencode, unquote, urlunparse, parse_qsl, urlparse
 )
-from six import string_types, text_type, StringIO
+from io import StringIO
 
 import ckan.plugins as p
 import ckan.plugins.toolkit as toolkit
@@ -375,7 +375,7 @@ def _where_clauses(
     filters = data_dict.get('filters', {})
     clauses = []
 
-    for field, value in six.iteritems(filters):
+    for field, value in filters.items():
         if field not in fields_types:
             continue
         field_array_type = _is_array_type(fields_types[field])
@@ -395,13 +395,13 @@ def _where_clauses(
     q = data_dict.get('q')
     full_text = data_dict.get('full_text')
     if q and not full_text:
-        if isinstance(q, string_types):
+        if isinstance(q, str):
             ts_query_alias = _ts_query_alias()
             clause_str = u'_full_text @@ {0}'.format(ts_query_alias)
             clauses.append((clause_str,))
         elif isinstance(q, dict):
             lang = _fts_lang(data_dict.get('language'))
-            for field, value in six.iteritems(q):
+            for field, value in q.items():
                 if field not in fields_types:
                     continue
                 query_field = _ts_query_alias(field)
@@ -429,7 +429,7 @@ def _where_clauses(
         # update clauses with q dict
         _update_where_clauses_on_q_dict(data_dict, fields_types, q, clauses)
 
-    elif full_text and isinstance(q, string_types):
+    elif full_text and isinstance(q, str):
         ts_query_alias = _ts_query_alias()
         clause_str = u'_full_text @@ {0}'.format(ts_query_alias)
         clauses.append((clause_str,))
@@ -441,7 +441,7 @@ def _update_where_clauses_on_q_dict(
         data_dict: Dict[str, str], fields_types: Dict[str, str],
         q: Dict[str, str], clauses: List[Tuple[str]]) -> None:
     lang = _fts_lang(data_dict.get('language'))
-    for field, value in six.iteritems(q):
+    for field, value in q.items():
         if field not in fields_types:
             continue
         query_field = _ts_query_alias(field)
@@ -478,13 +478,13 @@ def _textsearch_query(
     statements: List[str] = []
     rank_columns: Dict[str, str] = {}
     if q and not full_text:
-        if isinstance(q, string_types):
+        if isinstance(q, str):
             query, rank = _build_query_and_rank_statements(
                 lang, q, plain)
             statements.append(query)
             rank_columns[u'rank'] = rank
         elif isinstance(q, dict):
-            for field, value in six.iteritems(q):
+            for field, value in q.items():
                 query, rank = _build_query_and_rank_statements(
                     lang, value, plain, field)
                 statements.append(query)
@@ -496,11 +496,11 @@ def _textsearch_query(
     elif full_text and isinstance(q, dict):
         _update_rank_statements_and_columns(
             statements, rank_columns, lang, full_text, plain)
-        for field, value in six.iteritems(q):
+        for field, value in q.items():
             _update_rank_statements_and_columns(
                 statements, rank_columns, lang, value, plain, field
             )
-    elif full_text and isinstance(q, string_types):
+    elif full_text and isinstance(q, str):
         _update_rank_statements_and_columns(
             statements, rank_columns, lang, full_text, plain
         )
@@ -841,7 +841,7 @@ def convert(data: Any, type_name: str) -> Any:
         return data.isoformat()
     if isinstance(data, (int, float)):
         return data
-    return text_type(data)
+    return str(data)
 
 
 def check_fields(context: Context, fields: Iterable[Dict[str, Any]]):
@@ -1302,10 +1302,10 @@ def validate(context: Context, data_dict: Dict[str, Any]):
     data_dict_copy.pop('records_format', None)
     data_dict_copy.pop('calculate_record_count', None)
 
-    for key, values in six.iteritems(data_dict_copy):
+    for key, values in data_dict_copy.items():
         if not values:
             continue
-        if isinstance(values, string_types):
+        if isinstance(values, str):
             value = values
         elif isinstance(values, (list, tuple)):
             value = values[0]

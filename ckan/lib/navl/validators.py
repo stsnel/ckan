@@ -2,7 +2,7 @@
 
 from typing import Any, Callable, NoReturn
 import six
-from six import text_type
+
 
 import ckan.lib.navl.dictization_functions as df
 
@@ -20,7 +20,7 @@ def keep_extras(key: FlattenKey, data: FlattenDataDict,
                 errors: FlattenErrorDict, context: Context) -> None:
 
     extras = data.pop(key, {})
-    for extras_key, value in six.iteritems(extras):
+    for extras_key, value in extras.items():
         data[key[:-1] + (extras_key,)] = value
 
 
@@ -153,7 +153,7 @@ def convert_int(value: Any) -> int:
 def unicode_only(value: Any) -> str:
     '''Accept only unicode values'''
 
-    if not isinstance(value, text_type):
+    if not isinstance(value, str):
         raise Invalid(_('Must be a Unicode string value'))
     return value
 
@@ -170,7 +170,7 @@ def unicode_safe(value: Any) -> str:
     converts binary strings assuming either UTF-8 or CP1252
     encodings (not ASCII, with occasional decoding errors)
     '''
-    if isinstance(value, text_type):
+    if isinstance(value, str):
         return value
     if hasattr(value, 'filename'):
         # cgi.FieldStorage instance for uploaded files, show the name
@@ -189,7 +189,7 @@ def unicode_safe(value: Any) -> str:
     except Exception:
         # at this point we have given up. Just don't error out
         try:
-            return text_type(value)
+            return str(value)
         except Exception:
             return u'\N{REPLACEMENT CHARACTER}'
 

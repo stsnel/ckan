@@ -7,10 +7,10 @@ from typing import Any, Optional, cast
 
 import click
 import paste.script  # type: ignore
-import routes  # type: ignore
+import routes
 from paste.registry import Registry  # type: ignore
-from six.moves import input  # type: ignore
-from six.moves.urllib.parse import urlparse  # type: ignore
+
+from urllib.parse import urlparse
 
 from ckan.config.middleware import make_app
 from ckan.cli import load_config as _get_config

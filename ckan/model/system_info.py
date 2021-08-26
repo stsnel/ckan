@@ -10,7 +10,7 @@ For more details, check :doc:`maintaining/configuration`.
 from typing import Any, Optional
 
 from sqlalchemy import types, Column, Table
-from six import text_type
+
 
 import ckan.model.meta as meta
 import ckan.model.core as core
@@ -40,7 +40,7 @@ class SystemInfo(core.StatefulObjectMixin,
         super(SystemInfo, self).__init__()
 
         self.key = key
-        self.value = text_type(value)
+        self.value = str(value)
 
 
 meta.mapper(SystemInfo, system_info_table)
@@ -71,12 +71,12 @@ def set_system_info(key: str, value: str) -> bool:
     ''' save data in the system_info table '''
     obj = None
     obj = meta.Session.query(SystemInfo).filter_by(key=key).first()
-    if obj and obj.value == text_type(value):
+    if obj and obj.value == str(value):
         return False
     if not obj:
         obj = SystemInfo(key, value)
     else:
-        obj.value = text_type(value)
+        obj.value = str(value)
 
     meta.Session.add(obj)
     meta.Session.commit()

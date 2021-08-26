@@ -3,7 +3,7 @@
 import datetime
 from typing import Any, Callable, ClassVar, Dict, List, Optional
 
-from six import text_type
+
 from collections import OrderedDict
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy import orm
@@ -189,7 +189,7 @@ class DictProxy(object):
     def __init__(
             self,
             target_key: str, target_dict: Any,
-            data_type: Callable[[Any], Any] = text_type):
+            data_type: Callable[[Any], Any] = str):
         self.target_key = target_key
         self.target_dict = target_dict
         self.data_type = data_type

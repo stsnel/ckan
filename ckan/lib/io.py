@@ -9,7 +9,7 @@ from typing import Any, Union
 
 import six
 
-_FILESYSTEM_ENCODING = six.text_type(
+_FILESYSTEM_ENCODING = str(
     sys.getfilesystemencoding() or sys.getdefaultencoding()
 )
 
@@ -31,7 +31,7 @@ def encode_path(p: Union[str, Any]) -> bytes:
 
     Raises a ``TypeError`` is the input is not a Unicode string.
     '''
-    if not isinstance(p, six.text_type):
+    if not isinstance(p, str):
         raise TypeError(u'Can only encode unicode, not {}'.format(type(p)))
     return six.ensure_text(p).encode(_FILESYSTEM_ENCODING)
 
@@ -51,6 +51,6 @@ def decode_path(p: Union[bytes, Any]) -> str:
     Raises a ``TypeError`` if the input is not a byte string.
     '''
 
-    if not isinstance(p, six.binary_type):
+    if not isinstance(p, bytes):
         raise TypeError(u'Can only decode str, not {}'.format(type(p)))
     return six.ensure_binary(p).decode(_FILESYSTEM_ENCODING)

@@ -7,7 +7,7 @@ from typing import Any, Dict, List, cast
 
 import sqlalchemy
 import six
-from six import text_type
+
 
 import ckan.lib.search as search
 import ckan.lib.navl.dictization_functions
@@ -159,7 +159,7 @@ def datastore_create(context: Context, data_dict: Dict[str, Any]):
     try:
         result = backend.create(context, data_dict)
     except InvalidDataError as err:
-        raise p.toolkit.ValidationError({'message': text_type(err)})
+        raise p.toolkit.ValidationError({'message': str(err)})
 
     if data_dict.get('calculate_record_count', False):
         backend.calculate_record_count(data_dict['resource_id'])  # type: ignore
