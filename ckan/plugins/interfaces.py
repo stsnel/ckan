@@ -5,7 +5,7 @@ extend CKAN.
 
 '''
 from inspect import isclass
-from typing import (Any, Callable, Dict, Iterable, List, Optional, Sequence,
+from typing import (Any, Callable, Dict, Iterable, List, Mapping, Optional, Sequence,
                     TYPE_CHECKING, Tuple, Type, Union)
 from typing_extensions import TypedDict, Literal
 
@@ -1977,7 +1977,7 @@ class IApiToken(Interface):
         """
         return None
 
-    def preprocess_api_token(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def preprocess_api_token(self, data: Mapping[str, Any]) -> Mapping[str, Any]:
         """Handle additional info from API Token.
 
         Allows decoding or extracting any kind of additional

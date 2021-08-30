@@ -2,7 +2,7 @@
 
 import jwt
 import logging
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, Mapping, Optional
 from calendar import timegm
 from datetime import datetime
 
@@ -72,7 +72,7 @@ def postprocess(data: Dict[str, Any], jti: str,
     return data
 
 
-def decode(encoded: str, **kwargs: Any) -> Optional[Dict[str, Any]]:
+def decode(encoded: str, **kwargs: Any) -> Optional[Mapping[str, Any]]:
     for plugin in _get_plugins():
         data = plugin.decode_api_token(encoded, **kwargs)
         if data:
