@@ -1114,7 +1114,7 @@ def resource_show(context: Context, data_dict: DataDict) -> ActionResult.Resourc
         if resource_dict['id'] == id:
             break
     else:
-        log.error('Could not find resource %s after all', id)
+        log.error('Resource %s exists but it is not found in the package it should belong to.', id)
         raise NotFound(_('Resource was not found.'))
 
     return resource_dict

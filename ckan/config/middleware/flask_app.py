@@ -251,6 +251,7 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
     app.config[u'BABEL_TRANSLATION_DIRECTORIES'] = ';'.join(i18n_dirs)
     app.config[u'BABEL_DOMAIN'] = 'ckan'
     app.config[u'BABEL_MULTIPLE_DOMAINS'] = ';'.join(i18n_domains)
+    app.config[u'BABEL_DEFAULT_TIMEZONE'] = str(helpers.get_display_timezone())
 
     babel = CKANBabel(app)
 
@@ -401,8 +402,9 @@ def ckan_after_request(response: Response) -> Response:
 
     r_time = time.time() - g.__timer
     url = request.environ['PATH_INFO']
+    status_code = response.status_code
 
-    log.info(' %s render time %.3f seconds' % (url, r_time))
+    log.info(' %s %s render time %.3f seconds' % (status_code, url, r_time))
 
     return response
 
@@ -536,9 +538,12 @@ def _register_error_handler(app: CKANApp):
     u'''Register error handler'''
 
     def error_handler(e: Exception) -> Tuple[str, Optional[int]]:
-        # type_ignore_reason: inforrect type inference
-        log.error(e, exc_info=sys.exc_info)  # type: ignore
+        debug = asbool(config.get('debug', config.get('DEBUG', False)))
         if isinstance(e, HTTPException):
+            if debug:
+                log.error(e, exc_info=sys.exc_info)  # type: ignore
+            else:
+                log.error(e)
             extra_vars = {
                 u'code': e.code,
                 u'content': e.description,
@@ -547,6 +552,8 @@ def _register_error_handler(app: CKANApp):
 
             return base.render(
                 u'error_document_template.html', extra_vars), e.code
+
+        log.error(e, exc_info=sys.exc_info)  # type: ignore
         extra_vars = {u'code': [500], u'content': u'Internal server error'}
         return base.render(u'error_document_template.html', extra_vars), 500
 
