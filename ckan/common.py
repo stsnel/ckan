@@ -11,25 +11,25 @@
 from collections import MutableMapping
 from typing import (
     Any, Dict, Iterable, List, Optional, Iterator, TYPE_CHECKING,
-    Tuple, TypeVar, Union, cast, overload)
+    Tuple, TypeVar, cast, overload)
 from typing_extensions import Literal
 
 import flask
-import six
-from werkzeug.datastructures import ImmutableMultiDict
 
 from werkzeug.local import Local, LocalProxy
 
 from flask_babel import (gettext as flask_ugettext,
                          ngettext as flask_ungettext)
 
-import simplejson as json
+import simplejson as json  # re-export
 import ckan.lib.maintain as maintain
 
 if TYPE_CHECKING:
     # starting from python 3.7 the following line can be used without any
     # conditions after `annotation` import from `__future__`
     MutableMapping = MutableMapping[str, Any]
+
+
 
 current_app = flask.current_app
 
@@ -130,18 +130,14 @@ class CKANRequest(LocalProxy):
     `is_flask_request`) and at the same time provide all objects methods to be
     able to interact with them transparently.
     '''
-    endpoint: str
-    path: str
-    form: 'ImmutableMultiDict[str, str]'
-    args: 'ImmutableMultiDict[str, str]'
 
     @property
-    def params(self) -> 'ImmutableMultiDict[str, str]':
+    def params(self):
         u''' Special case as Pylons' request.params is used all over the place.
         All new code meant to be run just in Flask (eg views) should always
         use request.args
         '''
-        return self.args
+        return cast(flask.Request, self).args
 
 
 def _get_c():
@@ -161,7 +157,7 @@ local(u'config')
 config = local.config = CKANConfig()
 
 # Proxies to already thread-local safe objects
-request = CKANRequest(_get_request)
+request = cast(flask.Request, CKANRequest(_get_request))
 # Provide a `c`  alias for `g` for backwards compatibility
 g: Any
 c: Any

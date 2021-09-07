@@ -537,16 +537,12 @@ For example: ``bar = toolkit.aslist(config.get('ckan.foo.bar', []))``
     def _get_endpoint(cls) -> Union[Tuple[str, str], Tuple[None, None]]:
         """Returns tuple in format: (controller|blueprint, action|view).
         """
-        import ckan.common as common
-        try:
-            # CKAN >= 2.8
-            endpoint = tuple(
-                common.request.endpoint.split('.'))
-        except AttributeError:
-            try:
-                return common.c.controller, common.c.action
-            except AttributeError:
-                return (None, None)
+        from ckan.common import request
+        endpoint_name = request.endpoint
+        if not endpoint_name:
+            return (None, None)
+
+        endpoint = tuple(endpoint_name.split(".", 1))
         # service routes, like `static`
         if len(endpoint) == 1:
             return (endpoint[0], 'index')

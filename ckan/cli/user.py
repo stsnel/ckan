@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import logging
-from typing import Any, Dict, List, cast
+from typing import Any, List, cast
 
 import six
 import click
@@ -157,13 +157,13 @@ def token():
 @click.argument(u"extras", type=click.UNPROCESSED, nargs=-1)
 @click.option(
     u"--json",
+    "json_str",
     metavar=u"EXTRAS",
-    type=json.loads,
     default=u"{}",
     help=u"Valid JSON object with additional fields for api_token_create",
 )
 def add_token(username: str, token_name: str,
-              extras: List[str], json: Dict[str, Any]):
+              extras: List[str], json_str: str):
     """Create a new API Token for the given user.
 
     Arbitrary fields can be passed in the form `key=value` or using
@@ -176,6 +176,7 @@ def add_token(username: str, token_name: str,
       ckan user token add john_doe new_token x=y --json '{"prop": "value"}'
 
     """
+    data_dict = json.loads(json_str)
     for chunk in extras:
         try:
             key, value = chunk.split(u"=")
@@ -186,11 +187,12 @@ def add_token(username: str, token_name: str,
                 )
             )
             raise click.Abort()
-        json[key] = value
-    json.update({u"user": username, u"name": token_name})
+        data_dict[key] = value
+
+    data_dict.update({u"user": username, u"name": token_name})
     try:
         token = logic.get_action(u"api_token_create")(
-            {u"ignore_auth": True}, json
+            {u"ignore_auth": True}, data_dict
         )
     except logic.NotFound as e:
         error_shout(e)

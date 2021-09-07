@@ -2,7 +2,7 @@
 import logging
 from typing import Any, Dict, Optional, cast
 
-from flask import Blueprint, Response
+from flask import Blueprint
 
 import ckan.lib.base as base
 import ckan.lib.helpers as h
@@ -18,10 +18,13 @@ dashboard = Blueprint(u'dashboard', __name__, url_prefix=u'/dashboard')
 
 
 @dashboard.before_request
-def before_request() -> Optional[Response]:
+def before_request() -> None:
     if not g.userobj:
         h.flash_error(_(u'Not authorized to see this page'))
-        return h.redirect_to(u'user.login')
+
+        # flask types do not mention that it's possible to return a response
+        # from the `before_request` callback
+        return h.redirect_to(u'user.login')  # type: ignore
 
     try:
         context = cast(Context, {
@@ -103,9 +106,9 @@ def index(offset: int = 0) -> str:
     data_dict = {u'user_obj': g.userobj, u'offset': offset}
     extra_vars = _extra_template_variables(context, data_dict)
 
-    q = request.params.get(u'q', u'')
-    filter_type = request.params.get(u'type', u'')
-    filter_id = request.params.get(u'name', u'')
+    q = request.args.get(u'q', u'')
+    filter_type = request.args.get(u'type', u'')
+    filter_id = request.args.get(u'name', u'')
 
     extra_vars[u'followee_list'] = logic.get_action(u'followee_list')(
         context, {

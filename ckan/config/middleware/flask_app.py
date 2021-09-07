@@ -14,6 +14,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
 from flask import Blueprint, send_from_directory, Response
 from flask.ctx import _AppCtxGlobals
 from flask.sessions import SessionInterface
+from flask.typing import BeforeRequestCallable
 from flask_multistatic import MultiStaticFlask
 
 import webob
@@ -226,13 +227,15 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
         jinja_extensions.empty_and_escape
 
     # Common handlers for all requests
-    app.before_request(ckan_before_request)
+    #
+    # flask types do not mention that it's possible to return a response from
+    # the `before_request` callback
+    app.before_request(cast(BeforeRequestCallable, ckan_before_request))
     app.after_request(ckan_after_request)
 
     # Template context processors
     app.context_processor(helper_functions)
     app.context_processor(c_object)
-    app.context_processor(request_object)
 
     app.context_processor(_ungettext_alias)
 
@@ -275,25 +278,6 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
 
     lib_plugins.register_package_blueprints(app)
     lib_plugins.register_group_blueprints(app)
-
-    # Set flask routes in named_routes
-    # TODO: refactor whatever helper is using this to not do it
-    if 'routes.named_routes' not in config:
-        config['routes.named_routes'] = {}
-    for rule in app.url_map.iter_rules():
-        if '.' not in rule.endpoint:
-            continue
-        controller, action = rule.endpoint.split('.')
-        needed = list(rule.arguments - set(rule.defaults or {}))
-        route = {
-            rule.endpoint: {
-                'action': action,
-                'controller': controller,
-                'highlight_actions': action,
-                'needed': needed
-            }
-        }
-        config['routes.named_routes'].update(route)
 
     # Start other middleware
     for plugin in PluginImplementations(IMiddleware):
@@ -421,11 +405,6 @@ def c_object() -> Dict[str, LocalProxy]:
     Expose `c` as an alias of `g` in templates for backwards compatibility
     '''
     return dict(c=g)
-
-
-def request_object():
-    u"""Use CKANRequest object implicitly in templates"""
-    return dict(request=request)
 
 
 class CKAN_Rule(Rule):

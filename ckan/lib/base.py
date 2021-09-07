@@ -7,7 +7,7 @@ Provides the BaseController class for subclassing.
 import logging
 from typing import Any, Dict, NoReturn, Optional
 
-from jinja2.exceptions import TemplateNotFound
+from jinja2.exceptions import TemplateNotFound, TemplatesNotFound
 
 from flask import (
     render_template as flask_render_template,
@@ -84,7 +84,7 @@ def render_snippet(*template_names: str, **kw: Any) -> str:
             # a nested template doesn't exist - don't fallback
             raise exc
     else:
-        raise last_exc or TemplateNotFound(template_names)
+        raise last_exc or TemplatesNotFound(template_names)
 
 
 def render(template_name: str,
@@ -123,7 +123,7 @@ def _allow_caching(cache_force: Optional[bool] = None):
     elif request.environ.get('__no_cache__'):
         allow_cache = False
     # Don't cache if we have set the __no_cache__ param in the query string.
-    elif request.params.get('__no_cache__'):
+    elif request.args.get('__no_cache__'):
         allow_cache = False
     # Don't cache if caching is not enabled in config
     elif not asbool(config.get('ckan.cache_enabled', False)):

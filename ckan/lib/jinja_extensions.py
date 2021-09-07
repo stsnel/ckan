@@ -72,7 +72,7 @@ class CkanInternationalizationExtension(ext.InternationalizationExtension):
     ''' Custom translation to allow cleaned up html '''
 
     def parse(self, parser: Any) -> Any:
-        node = ext.InternationalizationExtension.parse(self, parser)
+        node: Any = ext.InternationalizationExtension.parse(self, parser)
         if isinstance(node, list):
             args = getattr(node[1].nodes[0], 'args', None)
         else:
@@ -185,7 +185,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================
     '''
 
-    def get_source(self, environment: Any, template: str):
+    def get_source(self, environment: Any, template: str) -> Any:
         # if the template name starts with * then this should be
         # treated specially.
         # format is *<search path parent directory>*<template name>
@@ -233,7 +233,7 @@ class BaseExtension(ext.Extension):
     {% tag_name args, kw %}
     after parsing it will call _call(args, kw) which must be defined. '''
 
-    def parse(self, parser: Any) -> None:
+    def parse(self, parser: Any) -> Any:
         stream = parser.stream
         tag = next(stream)
         # get arguments
@@ -258,7 +258,7 @@ class BaseExtension(ext.Extension):
             return self.call_method('_call', args=[
                 nodes.List(args),
                 nodes.Dict(kwargs),
-            ], kwargs=kw)
+            ], kwargs=list(kw))
 
         return nodes.Output([make_call_node()]).set_lineno(tag.lineno)
 

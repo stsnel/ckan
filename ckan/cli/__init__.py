@@ -1,12 +1,12 @@
 # encoding: utf-8
 
 import os
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, Optional, List
 
 import click
 import logging
 from logging.config import fileConfig as loggingFileConfig
-from configparser import ConfigParser
+from configparser import ConfigParser, RawConfigParser
 
 from ckan.exceptions import CkanConfigurationException
 from ckan.types import Config
@@ -47,48 +47,57 @@ class CKANConfigLoader(object):
     def _update_config(self) -> None:
         options = self.parser.options(self.section)
         for option in options:
-            if option not in self.config or option in self.parser.defaults():
-                value = self.parser.get(self.section, option)
-                self.config[option] = value
-                if option in self.parser.defaults():
-                    global_conf = self.config[u'global_conf']
-                    assert isinstance(global_conf, dict)
-                    global_conf[option] = value
+            value = self.parser.get(self.section, option)
+            self.config[option] = value
 
-    def _create_config_object(self) -> None:
-        use_config_path = self.config_file
-        self._read_config_file(use_config_path)
+            # eager interpolation of the `here` variable. Otherwise it will get
+            # shadowed by the higher-level config file.
+            raw = self.parser.get(self.section, option, raw=True)
+            if "%(here)s" in raw:
+                self.parser.set(self.section, option, value)
 
-        # # The global_config key is to keep compatibility with Pylons.
-        # # It can be safely removed when the Flask migration is completed.
-        self.config[u'global_conf'] = cast(
-            Dict[str, Any], self.parser.defaults()).copy()
+    def _unwrap_config_chain(self, filename: str) -> List[str]:
+        """Get all names of files in use-chain.
 
-        self._update_config()
-
-        loaded_files = [use_config_path]
-
+        Parse files using RawConfigParser, because top-level config file can
+        use variaables from the lower-level config files, which are not
+        initialized yet.
+        """
+        parser = RawConfigParser()
+        chain = []
         while True:
-            schema, path = self.parser.get(self.section, u'use').split(u':')
-            if schema == u'config':
-                use_config_path = os.path.join(
-                    os.path.dirname(os.path.abspath(use_config_path)), path)
-                # Avoid circular references
-                if use_config_path in loaded_files:
-                    chain = ' -> '.join(loaded_files + [use_config_path])
-                    raise CkanConfigurationException(
-                        'Circular dependency located in '
-                        f'the configuration chain: {chain}'
-                    )
-                loaded_files.append(use_config_path)
+            parser.read(filename)
+            chain.append(filename)
+            use = parser.get(self.section, "use")
+            if not use:
+                return chain
+            try:
+                schema, next_config = use.split(":", 1)
+            except ValueError:
+                raise CkanConfigurationException(
+                    "Missing colon symbol in the value of `use` " +
+                    f"option inside {filename}: {use}"
+                )
 
-                self._read_config_file(use_config_path)
-                self._update_config()
-            else:
-                break
+            if schema != "config":
+                return chain
+            filename = os.path.join(
+                os.path.dirname(os.path.abspath(filename)), next_config)
+            if filename in chain:
+                joined_chain = ' -> '.join(chain + [filename])
+                raise CkanConfigurationException(
+                    'Circular dependency located in '
+                    f'the configuration chain: {joined_chain}'
+                )
+
+    def _create_config_object(self):
+        chain = self._unwrap_config_chain(self.config_file)
+        for filename in reversed(chain):
+            self._read_config_file(filename)
+            self._update_config()
         log.debug(
             u'Loaded configuration from the following files: %s',
-            loaded_files
+            chain
         )
 
     def get_config(self) -> Config:

@@ -61,9 +61,9 @@ def set_cors_headers_for_response(response: Response) -> Response:
     if config.get(u'ckan.cors.origin_allow_all') \
        and request.headers.get(u'Origin'):
 
-        cors_origin_allowed = None
+        cors_origin_allowed: Optional[str] = None
         if asbool(config.get(u'ckan.cors.origin_allow_all')):
-            cors_origin_allowed = b'*'
+            cors_origin_allowed = '*'
         elif config.get(u'ckan.cors.origin_whitelist') and \
                 request.headers.get(u'Origin') \
                 in config[u'ckan.cors.origin_whitelist'].split(u' '):
@@ -71,12 +71,12 @@ def set_cors_headers_for_response(response: Response) -> Response:
             cors_origin_allowed = request.headers.get(u'Origin')
 
         if cors_origin_allowed is not None:
-            response.headers[b'Access-Control-Allow-Origin'] = \
+            response.headers['Access-Control-Allow-Origin'] = \
                 cors_origin_allowed
-            response.headers[b'Access-Control-Allow-Methods'] = \
-                b'POST, PUT, GET, DELETE, OPTIONS'
-            response.headers[b'Access-Control-Allow-Headers'] = \
-                b'X-CKAN-API-KEY, Authorization, Content-Type'
+            response.headers['Access-Control-Allow-Methods'] = \
+                'POST, PUT, GET, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = \
+                'X-CKAN-API-KEY, Authorization, Content-Type'
 
     return response
 

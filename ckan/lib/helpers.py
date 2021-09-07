@@ -828,7 +828,6 @@ def _link_to(text: str, *args: Any, **kwargs: Any) -> Markup:
             active = ' active'
         else:
             active = ''
-        kwargs.pop('highlight_actions', '')
         return kwargs.pop('class_', '') + active or None
 
     def _create_link_text(text: str, **kwargs: Any):
@@ -1064,21 +1063,16 @@ def _make_menu_item(menu_item: str, title: str, **kw: Any) -> Markup:
 
     This function is called by wrapper functions.
     '''
-    menu_item = map_pylons_to_flask_route_name(menu_item)
-    _menu_items = config['routes.named_routes']
-    if menu_item not in _menu_items:
-        raise Exception('menu item `%s` cannot be found' % menu_item)
-    item = copy.copy(_menu_items[menu_item])
+    controller, action = menu_item.split('.')
+    item = {
+        'action': action,
+        'controller': controller
+    }
     item.update(kw)
     active = _link_active(item)
-
     # Remove highlight controllers so that they won't appear in generated urls.
     item.pop('highlight_controllers', False)
-    needed = item.pop('needed')
-    for need in needed:
-        if need not in kw:
-            raise Exception('menu item `%s` need parameter `%s`'
-                            % (menu_item, need))
+
     link = _link_to(title, menu_item, suppress_active_class=True, **item)
     if active:
         return literal('<li class="active">') + link + literal('</li>')
@@ -1190,7 +1184,7 @@ def get_facet_items_dict(
     for facet_item in search_facets[facet]['items']:
         if not len(facet_item['name'].strip()):
             continue
-        params_items = request.params.items(multi=True)
+        params_items = request.args.items(multi=True)
         if not (facet, facet_item['name']) in params_items:
             facets.append(dict(active=False, **facet_item))
         elif not exclude_active:
@@ -1232,7 +1226,7 @@ def has_more_facets(facet: str,
     for facet_item in search_facets[facet]['items']:
         if not len(facet_item['name'].strip()):
             continue
-        params_items = request.params.items(multi=True)
+        params_items = request.args.items(multi=True)
         if not (facet, facet_item['name']) in params_items:
             facets.append(dict(active=False, **facet_item))
         elif not exclude_active:
@@ -1271,7 +1265,7 @@ def unselected_facet_items(
 @core_helper
 def get_param_int(name: str, default: int = 10) -> int:
     try:
-        return int(request.params.get(name, default))
+        return int(request.args.get(name, default))
     except ValueError:
         return default
 
@@ -2068,7 +2062,7 @@ def add_url_param(alternative_url: Optional[str] = None,
     instead.
     '''
 
-    params_items = request.params.items(multi=True)
+    params_items = request.args.items(multi=True)
     params_nopage = [
         (k, v) for k, v in params_items
         if k != 'page'
@@ -2111,7 +2105,7 @@ def remove_url_param(key: Union[List[str], str],
     else:
         keys = key
 
-    params_items = request.params.items(multi=True)
+    params_items = request.args.items(multi=True)
     params_nopage = [
         (k, v) for k, v in params_items
         if k != 'page'
@@ -2304,7 +2298,7 @@ def get_request_param(parameter_name: str,
     ''' This function allows templates to access query string parameters
     from the request. This is useful for things like sort order in
     searches. '''
-    return request.params.get(parameter_name, default)
+    return request.args.get(parameter_name, default)
 
 
 # find all inner text of html eg `<b>moo</b>` gets `moo` but not of <a> tags

@@ -6,8 +6,6 @@ from collections import OrderedDict
 from typing import Any, Dict, List, Optional, Set, Tuple, Union, cast
 from typing_extensions import Literal
 
-import six
-
 from urllib.parse import urlencode
 from datetime import datetime
 
@@ -129,7 +127,7 @@ def set_org(is_organization: bool) -> None:
 def index(group_type: str, is_organization: bool) -> str:
     extra_vars: Dict[str, Any] = {}
     set_org(is_organization)
-    page = h.get_page_number(request.params) or 1
+    page = h.get_page_number(request.args) or 1
     items_per_page = int(config.get(u'ckan.datasets_per_page', 20))
 
     context = cast(Context, {
@@ -146,8 +144,8 @@ def index(group_type: str, is_organization: bool) -> str:
     except NotAuthorized:
         base.abort(403, _(u'Not authorized to see this page'))
 
-    q = request.params.get(u'q', u'')
-    sort_by = request.params.get(u'sort')
+    q = request.args.get(u'q', u'')
+    sort_by = request.args.get(u'sort')
 
     # TODO: Remove
     # ckan 2.9: Adding variables that were removed from c object for
@@ -224,7 +222,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
         u'extras_as_string': True
     })
 
-    q = request.params.get(u'q', u'')
+    q = request.args.get(u'q', u'')
 
     # TODO: Remove
     # ckan 2.9: Adding variables that were removed from c object for
@@ -244,12 +242,12 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
 
     context['return_query'] = True
 
-    page = h.get_page_number(request.params)
+    page = h.get_page_number(request.args)
 
     # most search operations should reset the page counter:
     params_nopage: List[Tuple[str, Any]] = [
-        (k, v) for k, v in request.params.items(multi=True) if k != u'page']
-    sort_by = request.params.get(u'sort', None)
+        (k, v) for k, v in request.args.items(multi=True) if k != u'page']
+    sort_by = request.args.get(u'sort', None)
 
     def search_url(params: Any) -> str:
         action = u'bulk_process' if getattr(
@@ -369,7 +367,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
         extra_vars["search_facets_limits"] = g.search_facets_limits = {}
         for facet in g.search_facets.keys():
             limit = int(
-                request.params.get(u'_%s_limit' % facet,
+                request.args.get(u'_%s_limit' % facet,
                                    config.get(u'search.facets.default', 10)))
             g.search_facets_limits[facet] = limit
         extra_vars["page"].items = query['results']
@@ -429,7 +427,7 @@ def read(group_type: str,
     data_dict: Dict[str, Any] = {u'id': id, u'type': group_type}
 
     # unicode format (decoded from utf8)
-    q = request.params.get(u'q', u'')
+    q = request.args.get(u'q', u'')
 
     extra_vars["q"] = q
 
@@ -713,7 +711,7 @@ def member_delete(id: str, group_type: str,
                   is_organization: bool) -> Union[Response, str]:
     extra_vars = {}
     set_org(is_organization)
-    if u'cancel' in request.params:
+    if u'cancel' in request.args:
         return h.redirect_to(u'{}.members'.format(group_type), id=id)
 
     context = cast(
@@ -725,7 +723,7 @@ def member_delete(id: str, group_type: str,
         base.abort(403, _(u'Unauthorized to delete group %s members') % u'')
 
     try:
-        user_id = request.params.get(u'user')
+        user_id = request.args.get(u'user')
         if request.method == u'POST':
             _action(u'group_member_delete')(context, {
                 u'id': id,
@@ -1001,8 +999,8 @@ class CreateGroupView(MethodView):
             u'model': model,
             u'session': model.Session,
             u'user': g.user,
-            u'save': u'save' in request.params,
-            u'parent': request.params.get(u'parent', None),
+            u'save': u'save' in request.args,
+            u'parent': request.args.get(u'parent', None),
             u'group_type': group_type
         })
 
@@ -1095,9 +1093,9 @@ class EditGroupView(MethodView):
             u'model': model,
             u'session': model.Session,
             u'user': g.user,
-            u'save': u'save' in request.params,
+            u'save': u'save' in request.args,
             u'for_edit': True,
-            u'parent': request.params.get(u'parent', None),
+            u'parent': request.args.get(u'parent', None),
             u'id': id
         })
 
@@ -1233,7 +1231,7 @@ class DeleteGroupView(MethodView):
         set_org(is_organization)
         context = self._prepare(id)
         group_dict = _action(u'group_show')(context, {u'id': id})
-        if u'cancel' in request.params:
+        if u'cancel' in request.args:
             return h.redirect_to(u'{}.edit'.format(group_type), id=id)
 
         # TODO: Remove
@@ -1307,7 +1305,7 @@ class MembersGroupView(MethodView):
         extra_vars: Dict[str, Any] = {}
         set_org(is_organization)
         context = self._prepare(id)
-        user = request.params.get(u'user')
+        user = request.args.get(u'user')
         data_dict: Dict[str, Any] = {u'id': id}
         data_dict['include_datasets'] = False
         group_dict = _action(u'group_show')(context, data_dict)

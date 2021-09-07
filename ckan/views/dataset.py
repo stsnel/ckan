@@ -13,9 +13,6 @@ from jinja2.exceptions import TemplateNotFound
 from werkzeug.datastructures import MultiDict
 from ckan.common import asbool
 
-import six
-
-
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 import ckan.lib.navl.dictization_functions as dict_fns
@@ -454,7 +451,7 @@ def read(package_type: str, id: str) -> Union[Response, str]:
         u'auth_user_obj': g.userobj
     })
     data_dict = {u'id': id, u'include_tracking': True}
-    activity_id = request.params.get(u'activity_id')
+    activity_id = request.args.get(u'activity_id')
 
     # check if package exists
     try:
@@ -1364,7 +1361,7 @@ class CollaboratorEditView(MethodView):
         except NotFound:
             return base.abort(404, _(u'Resource not found'))
 
-        user = request.params.get(u'user_id')
+        user = request.args.get(u'user_id')
         user_capacity = u'member'
 
         if user:

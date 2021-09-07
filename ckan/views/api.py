@@ -7,10 +7,8 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, cast, Union
 
 from flask import Blueprint, make_response, Response
 
-import six
-
 from werkzeug.exceptions import BadRequest
-from werkzeug.datastructures import ImmutableMultiDict
+from werkzeug.datastructures import MultiDict
 
 import ckan.model as model
 from ckan.common import json, _, g, request
@@ -150,7 +148,7 @@ def _get_request_data(try_url_params: bool = False):
         be a list of strings, otherwise just a string.
 
     '''
-    def mixed(multi_dict: "ImmutableMultiDict[str, Any]") -> Dict[str, Any]:
+    def mixed(multi_dict: "MultiDict[str, Any]") -> Dict[str, Any]:
         u'''Return a dict with values being lists if they have more than one
            item or a string otherwise
         '''
@@ -472,7 +470,7 @@ def i18n_js_translations(
                              u'base', u'i18n', u'{0}.js'.format(lang)))
     if not os.path.exists(source):
         return u'{}'
-    translations = json.load(open(source, u'r'))
+    translations = json.load(open(source, u'r', encoding='utf-8'))
     return _finish_ok(translations)
 
 
