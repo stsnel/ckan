@@ -198,7 +198,7 @@ SequenceT = TypeVar('SequenceT', List[Any], Tuple[Any])
 
 
 @overload
-def aslist(obj: Union[str, List[str]],
+def aslist(obj: str,
            sep: Optional[str] = None,
            strip: bool = True) -> List[str]:
     ...

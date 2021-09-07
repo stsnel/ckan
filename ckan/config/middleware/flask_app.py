@@ -243,7 +243,7 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
         cast(Tuple[str, str], (_ckan_i18n_dir, u'ckan'))
     ] + [
         (p.i18n_directory(), p.i18n_domain())
-        for p in PluginImplementations(ITranslation)
+        for p in reversed(list(PluginImplementations(ITranslation)))
     ]
 
     i18n_dirs, i18n_domains = zip(*pairs)
@@ -541,9 +541,9 @@ def _register_error_handler(app: CKANApp):
         debug = asbool(config.get('debug', config.get('DEBUG', False)))
         if isinstance(e, HTTPException):
             if debug:
-                log.error(e, exc_info=sys.exc_info)  # type: ignore
+                log.debug(e, exc_info=sys.exc_info)  # type: ignore
             else:
-                log.error(e)
+                log.info(e)
             extra_vars = {
                 u'code': e.code,
                 u'content': e.description,

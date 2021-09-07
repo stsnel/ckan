@@ -1,13 +1,18 @@
 # encoding: utf-8
 
 ''' This module contains code that helps in maintaining the Ckan codebase. '''
+
 import inspect
 import time
 import logging
 import re
+import warnings
 from typing import Any, Callable, List, Optional, TypeVar, Union, cast
 
+from ckan.exceptions import CkanDeprecationWarning
+
 RT = TypeVar("RT", bound=Callable[..., Any])
+
 log = logging.getLogger(__name__)
 
 
@@ -35,9 +40,15 @@ def deprecated(
 
         def wrapped(*args: Any, **kw: Any):
             since_msg = f'since CKAN v{since}' if since else ''
-            log.warning('Function %s() in module %s has been deprecated %s'
-                        'and will be removed in a later release of ckan. %s'
-                        % (fn.__name__, fn.__module__, since_msg, message))
+            msg = (
+                'Function %s() in module %s has been deprecated %s'
+                ' and will be removed in a later release of ckan. %s'
+                % (fn.__name__, fn.__module__, since_msg, message)
+            )
+
+            log.warning(msg)
+            warnings.warn(msg, CkanDeprecationWarning, stacklevel=2)
+
             return fn(*args, **kw)
         return cast(RT, wrapped)
 

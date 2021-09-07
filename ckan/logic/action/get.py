@@ -1043,7 +1043,9 @@ def package_show(context: Context, data_dict: DataDict) -> ActionResult.PackageS
             model.TrackingSummary.get_for_package(package_dict['id']))
 
         for resource_dict in package_dict['resources']:
-            _add_tracking_summary_to_resource_dict(resource_dict, model)
+            summary =  model.TrackingSummary.get_for_resource(
+                resource_dict['url'])
+            resource_dict['tracking_summary'] = summary
 
     if context.get('for_view'):
         for item in plugins.PluginImplementations(plugins.IPackageController):
@@ -1072,17 +1074,9 @@ def package_show(context: Context, data_dict: DataDict) -> ActionResult.PackageS
     return package_dict
 
 
-def _add_tracking_summary_to_resource_dict(
-        resource_dict: Dict[str, Any], model: Model):
-    '''Add page-view tracking summary data to the given resource dict.
-
-    '''
-    tracking_summary = model.TrackingSummary.get_for_resource(
-        resource_dict['url'])
-    resource_dict['tracking_summary'] = tracking_summary
-
-
-def resource_show(context: Context, data_dict: DataDict) -> ActionResult.ResourceShow:
+def resource_show(
+        context: Context,
+        data_dict: DataDict) -> ActionResult.ResourceShow:
     '''Return the metadata of a resource.
 
     :param id: the id of the resource
