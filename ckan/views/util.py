@@ -1,11 +1,11 @@
 # encoding: utf-8
 
-from flask import Blueprint, Response
+from flask import Blueprint
 
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 from ckan.common import _, request
-
+from ckan.types import Response
 
 util = Blueprint(u'util', __name__)
 

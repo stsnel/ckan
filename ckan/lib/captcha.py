@@ -1,9 +1,9 @@
 # encoding: utf-8
 
 import requests
-from flask import Request
 
 from ckan.common import config
+from ckan.types import Request
 
 
 def check_recaptcha(request: Request) -> None:

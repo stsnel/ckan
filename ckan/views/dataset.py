@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 from datetime import datetime
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
 
-from flask import Blueprint, Response
+from flask import Blueprint
 from flask.views import MethodView
 from jinja2.exceptions import TemplateNotFound
 from werkzeug.datastructures import MultiDict
@@ -24,7 +24,7 @@ from ckan.common import _, config, g, request
 from ckan.views.home import CACHE_PARAMETERS
 from ckan.lib.plugins import lookup_package_plugin
 from ckan.lib.search import SearchError, SearchQueryError, SearchIndexError
-from ckan.types import Context
+from ckan.types import Context, Response
 
 
 NotFound = logic.NotFound

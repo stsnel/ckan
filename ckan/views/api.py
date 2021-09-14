@@ -5,7 +5,7 @@ import logging
 import html
 from typing import Any, Callable, Dict, List, Optional, Tuple, cast, Union
 
-from flask import Blueprint, make_response, Response
+from flask import Blueprint, make_response
 
 from werkzeug.exceptions import BadRequest
 from werkzeug.datastructures import MultiDict
@@ -18,7 +18,7 @@ from ckan.lib.base import render
 from ckan.lib.navl.dictization_functions import DataError
 from ckan.logic import get_action, ValidationError, NotFound, NotAuthorized
 from ckan.lib.search import SearchError, SearchIndexError, SearchQueryError
-from ckan.types import Context
+from ckan.types import Context, Response
 
 
 log = logging.getLogger(__name__)

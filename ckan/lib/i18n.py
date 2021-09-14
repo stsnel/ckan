@@ -49,13 +49,14 @@ from babel.core import (LOCALE_ALIASES,  # type: ignore
                         get_locale_identifier,
                         UnknownLocaleError)
 from babel.support import Translations
-from flask import Request
 
 import polib
 
 from ckan.common import config, aslist
 from ckan.plugins import PluginImplementations
 from ckan.plugins.interfaces import ITranslation
+from ckan.types import Request
+
 
 log = logging.getLogger(__name__)
 

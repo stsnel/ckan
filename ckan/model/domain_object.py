@@ -103,7 +103,7 @@ class DomainObject(object):
         are converted to strings for json compatibilty
         """
         _dict = OrderedDict()
-        table = orm.class_mapper(self.__class__).mapped_table
+        table = orm.class_mapper(self.__class__).persist_selectable
         for col in table.c:
             val = getattr(self, col.name)
             if isinstance(val, datetime.date):
@@ -130,7 +130,7 @@ class DomainObject(object):
         """
         changed = set()
         skipped = dict(_dict)
-        table = orm.class_mapper(self.__class__).mapped_table
+        table = orm.class_mapper(self.__class__).persist_selectable
         for col in table.c:
             if col.name.startswith('_'):
                 continue
@@ -156,7 +156,7 @@ class DomainObject(object):
 
     def __repr__(self):
         repr = u'<%s' % self.__class__.__name__
-        table = orm.class_mapper(self.__class__).mapped_table
+        table = orm.class_mapper(self.__class__).persist_selectable
         for col in table.c:
             try:
                 repr += u' %s=%s' % (col.name, getattr(self, col.name))

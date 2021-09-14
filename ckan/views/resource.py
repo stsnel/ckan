@@ -6,7 +6,6 @@ from typing import Any, Dict, Tuple, cast, Optional, Union
 
 import flask
 from flask.views import MethodView
-from flask import Response
 
 import ckan.lib.base as base
 import ckan.lib.datapreview as lib_datapreview
@@ -22,7 +21,7 @@ from ckan.views.dataset import (
     _get_pkg_template, _get_package_type, _setup_template_variables
 )
 
-from ckan.types import Context
+from ckan.types import Context, Response
 
 Blueprint = flask.Blueprint
 NotFound = logic.NotFound

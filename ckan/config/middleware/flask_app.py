@@ -11,7 +11,7 @@ import logging
 from logging.handlers import SMTPHandler
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
 
-from flask import Blueprint, send_from_directory, Response
+from flask import Blueprint, send_from_directory
 from flask.ctx import _AppCtxGlobals
 from flask.sessions import SessionInterface
 from flask.typing import BeforeRequestCallable
@@ -54,7 +54,7 @@ from ckan.views import (identify_user,
                         handle_i18n,
                         set_ckan_current_url,
                         )
-from ckan.types import CKANApp, Config
+from ckan.types import CKANApp, Config, Response
 
 log = logging.getLogger(__name__)
 

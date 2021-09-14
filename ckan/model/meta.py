@@ -46,7 +46,7 @@ def ckan_before_flush(session: Any, flush_context: Any, instances: Any):
                                 'changed': set()}
 
     changed = [obj for obj in session.dirty if
-        session.is_modified(obj, include_collections=False, passive=True)]
+        session.is_modified(obj, include_collections=False)]
 
     session._object_cache['new'].update(session.new)
     session._object_cache['deleted'].update(session.deleted)

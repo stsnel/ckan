@@ -15,6 +15,7 @@ from typing import (
 
 from typing_extensions import Protocol, TypedDict
 from blinker import Signal
+from flask.wrappers import Response, Request  # re-export
 
 from .logic import (
     ActionResult

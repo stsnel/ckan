@@ -2,10 +2,12 @@
 
 import logging
 import json
+import unicodedata
 from typing import Dict, Optional, Tuple, Type, cast, Any, List
 
+
 from urllib.parse import urlparse
-from flask import Blueprint, make_response, Response
+from flask import Blueprint, make_response
 
 from dateutil.tz import tzutc
 from feedgen.feed import FeedGenerator
@@ -15,7 +17,7 @@ import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
 import ckan.plugins as plugins
-from ckan.types import Context, DataDict, PFeed
+from ckan.types import Context, DataDict, PFeed, Response
 
 log = logging.getLogger(__name__)
 
@@ -140,6 +142,12 @@ def output_feed(
     author_name = config.get(u'ckan.feeds.author_name', u'').strip() or \
         config.get(u'ckan.site_id', u'').strip()
 
+    def remove_control_characters(s: str):
+        if not s:
+            return ""
+
+        return "".join(ch for ch in s if unicodedata.category(ch)[0] != "C")
+
     # TODO: language
     feed_class: Type[PFeed] = CKANFeed
     for plugin in plugins.PluginImplementations(plugins.IFeed):
@@ -174,7 +182,7 @@ def output_feed(
                 id=pkg['id'],
                 ver=3,
                 _external=True),
-            description=pkg.get(u'notes', u''),
+            description=remove_control_characters(pkg.get(u'notes', u'')),
             updated=h.date_str_to_datetime(pkg.get(u'metadata_modified', '')),
             published=h.date_str_to_datetime(pkg.get(u'metadata_created', '')),
             unique_id=_create_atom_id(u'/dataset/%s' % pkg['id']),

@@ -220,16 +220,6 @@ def user_update(context: Context, data_dict: DataDict) -> AuthResult:
                         (user, user_obj.id)}
 
 
-def user_generate_apikey(context: Context, data_dict: DataDict) -> AuthResult:
-    user = context['user']
-    user_obj = logic_auth.get_user_object(context, data_dict)
-    if user == user_obj.name:
-        # Allow users to update only their own user accounts.
-        return {'success': True}
-    return {'success': False, 'msg': _('User {0} not authorized to update user'
-            ' {1}'.format(user, user_obj.id))}
-
-
 def task_status_update(context: Context, data_dict: DataDict) -> AuthResult:
     # sysadmins only
     user = context['user']

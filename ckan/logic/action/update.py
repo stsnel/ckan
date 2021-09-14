@@ -905,38 +905,6 @@ def user_update(context: Context, data_dict: DataDict) -> ActionResult.UserUpdat
     return user_dict
 
 
-def user_generate_apikey(context: Context, data_dict: DataDict) -> ActionResult.UserGenerateApikey:
-    '''Cycle a user's API key
-
-    :param id: the name or id of the user whose key needs to be updated
-    :type id: string
-
-    :returns: the updated user
-    :rtype: dictionary
-    '''
-    model = context['model']
-    schema = context.get('schema') or schema_.default_generate_apikey_user_schema()
-    context['schema'] = schema
-    # check if user id in data_dict
-    id = _get_or_bust(data_dict, 'id')
-
-    # check if user exists
-    user_obj = model.User.get(id)
-    if user_obj is None:
-        raise NotFound('User was not found.')
-    context['user_obj'] = user_obj
-
-    # check permission
-    _check_access('user_generate_apikey', context, data_dict)
-
-    # change key
-    old_data = _get_action('user_show')(context, data_dict)
-    # type_ignore_reason: unresolved import
-    old_data['apikey'] = model.types.make_uuid()  # type: ignore
-    data_dict = old_data
-    return _get_action('user_update')(context, data_dict)
-
-
 def task_status_update(
         context: Context, data_dict: DataDict) -> ActionResult.TaskStatusUpdate:
     '''Update a task status.

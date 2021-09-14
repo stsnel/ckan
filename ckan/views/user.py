@@ -2,7 +2,7 @@
 import logging
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
-from flask import Blueprint, Response
+from flask import Blueprint
 from flask.views import MethodView
 from ckan.common import asbool
 from six import ensure_str
@@ -20,7 +20,7 @@ import ckan.model as model
 import ckan.plugins as plugins
 from ckan import authz
 from ckan.common import _, config, g, request
-from ckan.types import Context, ErrorDict, Schema
+from ckan.types import Context, ErrorDict, Schema, Response
 
 log = logging.getLogger(__name__)
 
@@ -569,32 +569,6 @@ def delete(id: str) -> Response:
         return h.redirect_to(user_index)
 
 
-def generate_apikey(id: Optional[str] = None) -> Response:
-    u'''Cycle the API key of a user'''
-    context = cast(Context, {
-        u'model': model,
-        u'session': model.Session,
-        u'user': g.user,
-        u'auth_user_obj': g.userobj,
-    })
-    if id is None:
-        if g.userobj:
-            id = g.userobj.id
-        else:
-            base.abort(400, _(u'No user specified'))
-    data_dict = {u'id': id}
-
-    try:
-        result = logic.get_action(u'user_generate_apikey')(context, data_dict)
-    except logic.NotAuthorized:
-        base.abort(403, _(u'Unauthorized to edit user %s') % u'')
-    except logic.NotFound:
-        base.abort(404, _(u'User not found'))
-
-    h.flash_success(_(u'Profile updated'))
-    return h.redirect_to(u'user.read', id=result[u'name'])
-
-
 def activity(id: str, offset: int = 0) -> str:
     u'''Render this user's public activity stream page.'''
 
@@ -927,11 +901,6 @@ user.add_url_rule(u'/logged_out', view_func=logged_out)
 user.add_url_rule(u'/logged_out_redirect', view_func=logged_out_page)
 
 user.add_url_rule(u'/delete/<id>', view_func=delete, methods=(u'POST', ))
-
-user.add_url_rule(
-    u'/generate_key', view_func=generate_apikey, methods=(u'POST', ))
-user.add_url_rule(
-    u'/generate_key/<id>', view_func=generate_apikey, methods=(u'POST', ))
 
 user.add_url_rule(u'/activity/<id>', view_func=activity)
 user.add_url_rule(u'/activity/<id>/<int:offset>', view_func=activity)
