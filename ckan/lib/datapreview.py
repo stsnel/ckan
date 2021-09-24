@@ -156,7 +156,7 @@ def get_default_view_plugins(
 def add_views_to_resource(context: Context,
                           resource_dict: Dict[str, Any],
                           dataset_dict: Optional[Dict[str, Any]] = None,
-                          view_types: List[str] = [],
+                          view_types: Optional[List[str]] = None,
                           create_datastore_views: bool = False
                           ) -> List[Dict[str, Any]]:
     '''
@@ -230,7 +230,7 @@ def add_views_to_resource(context: Context,
 def add_views_to_dataset_resources(
         context: Context,
         dataset_dict: Dict[str, Any],
-        view_types: List[str] = [],
+        view_types: Optional[List[str]] = None,
         create_datastore_views: bool = False) -> List[Dict[str, Any]]:
     '''
     Creates the provided views on all resources of the provided dataset

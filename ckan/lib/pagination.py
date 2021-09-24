@@ -272,9 +272,9 @@ class BasePage(List[Any]):
               symbol_last: str = u">>",
               symbol_previous: str = u"<",
               symbol_next: str = u">",
-              link_attr: Dict[str, str] = {u"class": u"pager_link"},
-              curpage_attr: Dict[str, str] = {u"class": u"pager_curpage"},
-              dotdot_attr: Dict[str, str] = {u"class": u"pager_dotdot"},
+              link_attr: Optional[Dict[str, str]] = None,
+              curpage_attr: Optional[Dict[str, str]] = None,
+              dotdot_attr: Optional[Dict[str, str]] = None,
               **kwargs: Any) -> Markup:
         """Return string with links to other pages (e.g. "1 2 [3] 4 5 6 7").
 
@@ -456,6 +456,13 @@ class BasePage(List[Any]):
         to the page you are currently displaying.
 
         """
+        if curpage_attr is None:
+            curpage_attr = {u"class": u"pager_curpage"}
+        if link_attr is None:
+            link_attr = {u"class": u"pager_link"}
+        if dotdot_attr is None:
+            dotdot_attr = {u"class": u"pager_dotdot"}
+
         self.curpage_attr = curpage_attr
         self.separator = separator
         self.pager_kwargs = kwargs

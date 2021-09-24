@@ -312,7 +312,7 @@ class User(core.StatefulObjectMixin,
         return query
 
     @classmethod
-    def user_ids_for_name_or_id(cls, user_list: List[str]=[]) -> List[str]:
+    def user_ids_for_name_or_id(cls, user_list: Iterable[str]=()) -> List[str]:
         '''
         This function returns a list of ids from an input that can be a list of
         names or ids

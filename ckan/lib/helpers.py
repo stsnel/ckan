@@ -2032,15 +2032,23 @@ def _create_url_with_params(params: Optional[Iterable[Tuple[str, Any]]] = None,
                             controller: Optional[str] = None,
                             action: Optional[str] = None,
                             extras: Optional[Dict[str, Any]] = None):
-    ''' internal function for building urls with parameters. '''
+    """internal function for building urls with parameters."""
+    if extras is None:
+        if not controller and not action:
+            # it's an url for the current page. Let's keep all interlal params,
+            # like <package_type>
+            extras = dict(request.view_args or {})
+        else:
+            extras = {}
+
+    blueprint, view = p.toolkit.get_endpoint()
     if not controller:
-        controller = getattr(c, 'controller', None) or request.blueprint
+        controller = getattr(g, "controller", blueprint)
     if not action:
-        action = getattr(c, 'action', None) or p.toolkit.get_endpoint()[1]
-    if not extras:
-        extras = {}
+        action = getattr(g, "action", view)
+
     assert controller is not None and action is not None
-    endpoint = controller + '.' + action
+    endpoint = controller + "." + action
     url = url_for(endpoint, **extras)
     return _url_with_params(url, params)
 

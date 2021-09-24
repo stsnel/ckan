@@ -123,7 +123,7 @@ def mail_recipient(recipient_name: str,
                    subject: str,
                    body: str,
                    body_html: Optional[str] = None,
-                   headers: Dict[str, Any] = {}) -> None:
+                   headers: Optional[Dict[str, Any]] = None) -> None:
     '''Sends an email'''
     site_title = config.get('ckan.site_title', '')
     site_url = config.get('ckan.site_url', '')
@@ -136,7 +136,7 @@ def mail_user(recipient: model.User,
               subject: str,
               body: str,
               body_html: Optional[str] = None,
-              headers: Dict[str, Any] = {}) -> None:
+              headers: Optional[Dict[str, Any]] = None) -> None:
     '''Sends an email to a CKAN user'''
     if (recipient.email is None) or not len(recipient.email):
         raise MailerException(_("No recipient email address available!"))

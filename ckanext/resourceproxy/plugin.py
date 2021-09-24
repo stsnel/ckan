@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from logging import getLogger
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Container, Dict, List
 
 from urllib.parse import urlparse
 
@@ -15,14 +15,16 @@ from ckanext.resourceproxy import blueprint
 log = getLogger(__name__)
 
 
-def get_proxified_resource_url(data_dict: Dict[str, Any],
-                               proxy_schemes: List[str] = [u'http', u'https']):
-    u'''
+def get_proxified_resource_url(
+    data_dict: Dict[str, Any],
+    proxy_schemes: Container[str] = ("http", "https"),
+):
+    """
     :param data_dict: contains a resource and package dict
     :type data_dict: dictionary
     :param proxy_schemes: list of url schemes to proxy for.
     :type data_dict: list
-    '''
+    """
     url = data_dict[u'resource'][u'url']
     if not p.plugin_loaded(u'resource_proxy'):
         return url
@@ -72,7 +74,7 @@ class ResourceProxy(p.SingletonPlugin):
         resource_view: Any,
         resource: Any,
         package: Any,
-        proxy_schemes: List[str] = [u'http', u'https']
+        proxy_schemes: Container[str] = ('http', 'https')
     ):
         u'''
         Returns the proxy url if its availiable

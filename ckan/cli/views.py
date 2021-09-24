@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import itertools
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import click
 import json
@@ -221,8 +221,8 @@ def _get_view_plugins(view_plugin_types: List[str],
 
 
 def _search_datasets(
-        page: int = 1, view_types: List[str] = [],
-        dataset: List[str] = [], search: str = u"",
+        page: int = 1, view_types: Optional[List[str]] = None,
+        dataset: Optional[List[str]] = None, search: str = u"",
         no_default_filters: bool = False
 ):
     """
@@ -230,6 +230,8 @@ def _search_datasets(
 
     Results can be paginated using the `page` parameter
     """
+    if not view_types:
+        view_types = []
 
     n = _page_size
 

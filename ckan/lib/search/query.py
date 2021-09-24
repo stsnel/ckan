@@ -176,9 +176,9 @@ class SearchQuery(object):
 
     def run(self,
             query: Optional[Union[str, Dict[str, Any]]] = None,
-            terms: List[str] = [],
-            fields: Dict[str, Any] = {},
-            facet_by: List[str] = [],
+            terms: Optional[List[str]] = None,
+            fields: Optional[Dict[str, Any]] = None,
+            facet_by: Optional[List[str]] = None,
             options: Optional[QueryOptions] = None,
             **kwargs: Any) -> NoReturn:
         raise SearchError("SearchQuery.run() not implemented!")
@@ -234,7 +234,7 @@ class TagSearchQuery(SearchQuery):
 class ResourceSearchQuery(SearchQuery):
     """Search for resources."""
     def run(self,
-            fields: Dict[str, Any] = {},
+            fields: Optional[Dict[str, Any]] = None,
             options: Optional[QueryOptions] = None,
             **kwargs: Any) -> Dict[str, Any]:
         if options is None:
@@ -252,11 +252,12 @@ class ResourceSearchQuery(SearchQuery):
         # action.
         query: List[str] = []
 
-        for field, terms in fields.items():
-            if isinstance(terms, str):
-                terms = terms.split()
-            for term in terms:
-                query.append(':'.join([field, term]))
+        if fields:
+            for field, terms in fields.items():
+                if isinstance(terms, str):
+                    terms = terms.split()
+                for term in terms:
+                    query.append(':'.join([field, term]))
 
         data_dict = {
             'query': query,
