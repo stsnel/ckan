@@ -443,14 +443,11 @@ def default_user_schema(
 
 
 @validator_args
-def user_new_form_schema(user_both_passwords_entered: Validator,
-                         user_password_validator: Validator,
-                         user_passwords_match: Validator,
-                         email_is_unique: Validator,
-                         unicode_safe: Validator):
+def user_new_form_schema(
+        unicode_safe: Validator, user_both_passwords_entered: Validator,
+        user_password_validator: Validator, user_passwords_match: Validator):
     schema = default_user_schema()
 
-    schema['email'] = [email_is_unique]
     schema['password1'] = [unicode_safe, user_both_passwords_entered,
                            user_password_validator, user_passwords_match]
     schema['password2'] = [unicode_safe]
@@ -459,13 +456,11 @@ def user_new_form_schema(user_both_passwords_entered: Validator,
 
 
 @validator_args
-def user_edit_form_schema(ignore_missing: Validator, unicode_safe: Validator,
-                          user_password_validator: Validator,
-                          user_passwords_match: Validator,
-                          email_is_unique: Validator):
+def user_edit_form_schema(
+        ignore_missing: Validator, unicode_safe: Validator,
+        user_password_validator: Validator, user_passwords_match: Validator):
     schema = default_user_schema()
 
-    schema['email'] = [email_is_unique]
     schema['password'] = [ignore_missing]
     schema['password1'] = [ignore_missing, unicode_safe,
                            user_password_validator, user_passwords_match]
@@ -485,8 +480,6 @@ def default_update_user_schema(
 
     schema['name'] = [
         ignore_missing, name_validator, user_name_validator, unicode_safe]
-    schema['email'] = [
-        not_empty, strip_value, email_validator, email_is_unique, unicode_safe]
     schema['password'] = [
         user_password_validator, ignore_missing, unicode_safe]
 

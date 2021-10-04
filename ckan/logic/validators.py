@@ -35,7 +35,6 @@ missing = df.missing
 
 def owner_org_validator(key: FlattenKey, data: FlattenDataDict,
                         errors: FlattenErrorDict, context: Context) -> Any:
-
     value = data.get(key)
 
     if value is missing or value is None:

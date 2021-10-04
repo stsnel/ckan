@@ -2033,7 +2033,7 @@ def _create_url_with_params(params: Optional[Iterable[Tuple[str, Any]]] = None,
                             action: Optional[str] = None,
                             extras: Optional[Dict[str, Any]] = None):
     """internal function for building urls with parameters."""
-    if extras is None:
+    if not extras:
         if not controller and not action:
             # it's an url for the current page. Let's keep all interlal params,
             # like <package_type>

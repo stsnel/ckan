@@ -1401,12 +1401,10 @@ def tag_show(context: Context, data_dict: DataDict) -> ActionResult.TagShow:
 def user_show(context: Context, data_dict: DataDict) -> ActionResult.UserShow:
     '''Return a user account.
 
-    Either the ``id`` or the ``user_obj`` parameter must be given.
+    Either the ``id`` should be passed or the user should be logged in.
 
     :param id: the id or name of the user (optional)
     :type id: string
-    :param user_obj: the user dictionary of the user (optional)
-    :type user_obj: user dictionary
     :param include_datasets: Include a list of datasets the user has created.
         If it is the same user or a sysadmin requesting, it includes datasets
         that are draft or private.
@@ -1433,12 +1431,12 @@ def user_show(context: Context, data_dict: DataDict) -> ActionResult.UserShow:
     '''
     model = context['model']
 
+    if 'user' in context and 'id' not in data_dict:
+        data_dict['id'] = context.get('user')
+
     id = data_dict.get('id', None)
-    provided_user = data_dict.get('user_obj', None)
     if id:
         user_obj = model.User.get(id)
-    elif provided_user:
-        user_obj = provided_user
     else:
         user_obj = None
 
