@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
-from typing import Any, List
+from typing import Any
 
 import click
 
@@ -50,7 +51,7 @@ class ConfigOption(click.ParamType):
 @click.argument(u'options', nargs=-1, type=ConfigOption())
 def config_tool(
         config_filepath: str,
-        options: List[Any], section: str, edit: bool,
+        options: list[Any], section: str, edit: bool,
         merge_filepath: str) -> None:
     u'''Tool for editing options in a CKAN config file
 

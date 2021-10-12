@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
+from typing_extensions import TypeAlias
 
 from sqlalchemy.engine.base import Engine
 from ckan.types import Context, ErrorDict
@@ -6,7 +8,7 @@ import copy
 import logging
 import sys
 from typing import (
-    Any, Callable, Container, Dict, Iterable, List, Optional, Tuple, Union,
+    Any, Callable, Container, Iterable, Optional, Union,
     cast)
 import sqlalchemy
 import os
@@ -153,21 +155,21 @@ def _dispose_engines():
     _engines = {}
 
 
-def _pluck(field: str, arr: List[Dict[str, Any]]):
+def _pluck(field: str, arr: list[dict[str, Any]]):
     return [x[field] for x in arr]
 
 
-def _rename_json_field(data_dict: Dict[str, Any]):
+def _rename_json_field(data_dict: dict[str, Any]):
     '''Rename json type to a corresponding type for the datastore since
     pre 9.2 postgres versions do not support native json'''
     return _rename_field(data_dict, 'json', 'nested')
 
 
-def _unrename_json_field(data_dict: Dict[str, Any]):
+def _unrename_json_field(data_dict: dict[str, Any]):
     return _rename_field(data_dict, 'nested', 'json')
 
 
-def _rename_field(data_dict: Dict[str, Any], term: Any, replace: Any):
+def _rename_field(data_dict: dict[str, Any], term: Any, replace: Any):
     fields = data_dict.get('fields', [])
     for i, field in enumerate(fields):
         if 'type' in field and field['type'] == term:
@@ -188,8 +190,8 @@ def _get_fields_types(
 
 
 def _result_fields(fields_types: 'OrderedDict[str, str]',
-                   field_info: Dict[str, Any], fields: Optional[List[str]]
-                   ) -> List[Dict[str, Any]]:
+                   field_info: dict[str, Any], fields: Optional[list[str]]
+                   ) -> list[dict[str, Any]]:
     u'''
     return a list of field information based on the fields present,
     passed and query passed.
@@ -250,7 +252,7 @@ def _guess_type(field: Any):
     return 'text'
 
 
-def _get_unique_key(context: Context, data_dict: Dict[str, Any]) -> List[str]:
+def _get_unique_key(context: Context, data_dict: dict[str, Any]) -> list[str]:
     sql_get_unique_key = '''
     SELECT
         a.attname AS column_names
@@ -295,7 +297,7 @@ def _get_fields(connection: Any, resource_id: str):
     return a list of {'id': column_name, 'type': column_type} dicts
     for the passed resource_id, excluding '_'-prefixed columns.
     '''
-    fields: List[Dict[str, Any]] = []
+    fields: list[dict[str, Any]] = []
     all_fields = connection.execute(
         u'SELECT * FROM "{0}" LIMIT 1'.format(resource_id)
     )
@@ -370,8 +372,8 @@ def _validate_record(record: Any, num: int, field_names: Iterable[str]):
 
 
 def _where_clauses(
-        data_dict: Dict[str, Any], fields_types: Dict[str, Any]
-) -> List[Any]:
+        data_dict: dict[str, Any], fields_types: dict[str, Any]
+) -> list[Any]:
     filters = data_dict.get('filters', {})
     clauses = []
 
@@ -438,8 +440,8 @@ def _where_clauses(
 
 
 def _update_where_clauses_on_q_dict(
-        data_dict: Dict[str, str], fields_types: Dict[str, str],
-        q: Dict[str, str], clauses: List[Tuple[str]]) -> None:
+        data_dict: dict[str, str], fields_types: dict[str, str],
+        q: dict[str, str], clauses: list[tuple[str]]) -> None:
     lang = _fts_lang(data_dict.get('language'))
     for field, value in q.items():
         if field not in fields_types:
@@ -460,8 +462,8 @@ def _update_where_clauses_on_q_dict(
 
 
 def _textsearch_query(
-        lang: str, q: Optional[Union[str, Dict[str, str], Any]], plain: bool,
-        full_text: Optional[str]) -> Tuple[str, Dict[str, str]]:
+        lang: str, q: Optional[Union[str, dict[str, str], Any]], plain: bool,
+        full_text: Optional[str]) -> tuple[str, dict[str, str]]:
     u'''
     :param lang: language for to_tsvector
     :param q: string to search _full_text or dict to search columns
@@ -475,8 +477,8 @@ def _textsearch_query(
     if not (q or full_text):
         return '', {}
 
-    statements: List[str] = []
-    rank_columns: Dict[str, str] = {}
+    statements: list[str] = []
+    rank_columns: dict[str, str] = {}
     if q and not full_text:
         if isinstance(q, str):
             query, rank = _build_query_and_rank_statements(
@@ -510,7 +512,7 @@ def _textsearch_query(
 
 
 def _update_rank_statements_and_columns(
-        statements: List[str], rank_columns: Dict[str, str], lang: str,
+        statements: list[str], rank_columns: dict[str, str], lang: str,
         query: str, plain: bool, field: Optional[str] = None):
     query, rank = _build_query_and_rank_statements(
         lang, query, plain, field)
@@ -550,8 +552,8 @@ def _fts_lang(lang: Optional[str] = None) -> str:
     return lang or default_fts_lang
 
 
-def _sort(sort: Union[None, str, List[str]], fields_types: Container[str],
-          rank_columns: Dict[str, Any]) -> List[str]:
+def _sort(sort: Union[None, str, list[str]], fields_types: Container[str],
+          rank_columns: dict[str, Any]) -> list[str]:
     u'''
     :param sort: string or list sort parameter passed to datastore_search,
         use None if not given
@@ -587,7 +589,7 @@ def _ts_query_alias(field: Optional[str] = None):
     return identifier(query_alias)
 
 
-def _get_aliases(context: Context, data_dict: Dict[str, Any]):
+def _get_aliases(context: Context, data_dict: dict[str, Any]):
     '''Get a list of aliases for a resource.'''
     res_id = data_dict['resource_id']
     alias_sql = sqlalchemy.text(
@@ -606,7 +608,7 @@ def _get_resources(context: Context, alias: str):
     return [x[0] for x in results]
 
 
-def create_alias(context: Context, data_dict: Dict[str, Any]):
+def create_alias(context: Context, data_dict: dict[str, Any]):
     values: Optional[str] = data_dict.get('aliases')
     aliases = datastore_helpers.get_list(values)
     alias = None
@@ -652,9 +654,9 @@ def _get_fts_index_method() -> str:
 
 
 def _build_fts_indexes(
-        connection: Any, data_dict: Dict[str, Any],
-        sql_index_str_method: str, fields: List[Dict[str, Any]]):
-    fts_indexes: List[str] = []
+        connection: Any, data_dict: dict[str, Any],
+        sql_index_str_method: str, fields: list[dict[str, Any]]):
+    fts_indexes: list[str] = []
     resource_id = data_dict['resource_id']
     # FIXME: This is repeated on the plugin.py, we should keep it DRY
     default_fts_lang = config.get('ckan.datastore.default_fts_lang')
@@ -690,7 +692,7 @@ def _build_fts_indexes(
     return fts_indexes
 
 
-def _drop_indexes(context: Context, data_dict: Dict[str, Any],
+def _drop_indexes(context: Context, data_dict: dict[str, Any],
                   unique: bool = False):
     sql_drop_index = u'DROP INDEX "{0}" CASCADE'
     sql_get_index_string = u"""
@@ -761,7 +763,7 @@ def _execute_single_statement(
     return results
 
 
-def _insert_links(data_dict: Dict[str, Any], limit: int, offset: int):
+def _insert_links(data_dict: dict[str, Any], limit: int, offset: int):
     '''Adds link to the next/prev part (same limit, offset=offset+limit)
     and the resource page.'''
     data_dict['_links'] = {}
@@ -778,8 +780,8 @@ def _insert_links(data_dict: Dict[str, Any], limit: int, offset: int):
 
     arguments = dict(parse_qsl(query))
     arguments_start = dict(arguments)
-    arguments_prev: Dict[str, Any] = dict(arguments)
-    arguments_next: Dict[str, Any] = dict(arguments)
+    arguments_prev: dict[str, Any] = dict(arguments)
+    arguments_next: dict[str, Any] = dict(arguments)
     if 'offset' in arguments_start:
         arguments_start.pop('offset')
     arguments_next['offset'] = int(offset) + int(limit)
@@ -800,8 +802,8 @@ def _insert_links(data_dict: Dict[str, Any], limit: int, offset: int):
 
 
 def _where(
-        where_clauses_and_values: List[Tuple[Any, ...]]
-) -> Tuple[str, List[Any]]:
+        where_clauses_and_values: list[tuple[Any, ...]]
+) -> tuple[str, list[Any]]:
     '''Return a SQL WHERE clause from list with clauses and values
 
     :param where_clauses_and_values: list of tuples with format
@@ -844,7 +846,7 @@ def convert(data: Any, type_name: str) -> Any:
     return str(data)
 
 
-def check_fields(context: Context, fields: Iterable[Dict[str, Any]]):
+def check_fields(context: Context, fields: Iterable[dict[str, Any]]):
     '''Check if field types are valid.'''
     for field in fields:
         if field.get('type') and not _is_valid_pg_type(context, field['type']):
@@ -859,10 +861,10 @@ def check_fields(context: Context, fields: Iterable[Dict[str, Any]]):
             })
 
 
-Indexes = Optional[List[Union[str, List[str]]]]
+Indexes: TypeAlias = "Optional[list[Union[str, list[str]]]]"
 
 
-def create_indexes(context: Context, data_dict: Dict[str, Any]):
+def create_indexes(context: Context, data_dict: dict[str, Any]):
     connection = context['connection']
 
     indexes: Indexes = cast(Indexes, datastore_helpers.get_list(
@@ -931,7 +933,7 @@ def create_indexes(context: Context, data_dict: Dict[str, Any]):
             connection.execute(sql_index_string)
 
 
-def create_table(context: Context, data_dict: Dict[str, Any]):
+def create_table(context: Context, data_dict: dict[str, Any]):
     '''Creates table, columns and column info (stored as comments).
 
     :param resource_id: The resource ID (i.e. postgres table name)
@@ -1026,7 +1028,7 @@ def create_table(context: Context, data_dict: Dict[str, Any]):
         (sql_string + u';'.join(info_sql)).replace(u'%', u'%%'))
 
 
-def alter_table(context: Context, data_dict: Dict[str, Any]):
+def alter_table(context: Context, data_dict: dict[str, Any]):
     '''Adds new columns and updates column info (stored as comments).
 
     :param resource_id: The resource ID (i.e. postgres table name)
@@ -1116,7 +1118,7 @@ def alter_table(context: Context, data_dict: Dict[str, Any]):
             u';'.join(alter_sql).replace(u'%', u'%%'))
 
 
-def insert_data(context: Context, data_dict: Dict[str, Any]):
+def insert_data(context: Context, data_dict: dict[str, Any]):
     """
 
     :raises InvalidDataError: if there is an invalid value in the given data
@@ -1127,7 +1129,7 @@ def insert_data(context: Context, data_dict: Dict[str, Any]):
     return result
 
 
-def upsert_data(context: Context, data_dict: Dict[str, Any]):
+def upsert_data(context: Context, data_dict: dict[str, Any]):
     '''insert all data from records'''
     if not data_dict.get('records'):
         return
@@ -1273,7 +1275,7 @@ def upsert_data(context: Context, data_dict: Dict[str, Any]):
                         u'_records_row': num})
 
 
-def validate(context: Context, data_dict: Dict[str, Any]):
+def validate(context: Context, data_dict: dict[str, Any]):
     fields_types = _get_fields_types(
         context['connection'], data_dict['resource_id'])
     data_dict_copy = copy.deepcopy(data_dict)
@@ -1321,12 +1323,12 @@ def validate(context: Context, data_dict: Dict[str, Any]):
     return True
 
 
-def search_data(context: Context, data_dict: Dict[str, Any]):
+def search_data(context: Context, data_dict: dict[str, Any]):
     validate(context, data_dict)
     fields_types = _get_fields_types(
         context['connection'], data_dict['resource_id'])
 
-    query_dict: Dict[str, Any] = {
+    query_dict: dict[str, Any] = {
         'select': [],
         'sort': [],
         'where': []
@@ -1491,7 +1493,7 @@ def _execute_single_statement_copy_to(
     cursor.close()
 
 
-def format_results(context: Context, results: Any, data_dict: Dict[str, Any],
+def format_results(context: Context, results: Any, data_dict: dict[str, Any],
                    rows_max: int):
     result_fields = []
     for field in results.cursor.description:
@@ -1515,7 +1517,7 @@ def format_results(context: Context, results: Any, data_dict: Dict[str, Any],
     return _unrename_json_field(data_dict)
 
 
-def delete_data(context: Context, data_dict: Dict[str, Any]):
+def delete_data(context: Context, data_dict: dict[str, Any]):
     validate(context, data_dict)
     fields_types = _get_fields_types(
         context['connection'], data_dict['resource_id'])
@@ -1538,7 +1540,7 @@ def delete_data(context: Context, data_dict: Dict[str, Any]):
 
 
 def _create_triggers(connection: Any, resource_id: str,
-                     triggers: Iterable[Dict[str, Any]]):
+                     triggers: Iterable[dict[str, Any]]):
     u'''
     Delete existing triggers on table then create triggers
 
@@ -1578,7 +1580,7 @@ def _create_fulltext_trigger(connection: Any, resource_id: str):
             table=identifier(resource_id)))
 
 
-def upsert(context: Context, data_dict: Dict[str, Any]):
+def upsert(context: Context, data_dict: dict[str, Any]):
     '''
     This method combines upsert insert and update on the datastore. The method
     that will be used is defined in the mehtod variable.
@@ -1632,7 +1634,7 @@ def upsert(context: Context, data_dict: Dict[str, Any]):
         context['connection'].close()
 
 
-def search(context: Context, data_dict: Dict[str, Any]):
+def search(context: Context, data_dict: dict[str, Any]):
     backend = DatastorePostgresqlBackend.get_active_backend()
     engine = backend._get_read_engine()  # type: ignore
     context['connection'] = engine.connect()
@@ -1660,7 +1662,7 @@ def search(context: Context, data_dict: Dict[str, Any]):
         context['connection'].close()
 
 
-def search_sql(context: Context, data_dict: Dict[str, Any]):
+def search_sql(context: Context, data_dict: dict[str, Any]):
     backend = DatastorePostgresqlBackend.get_active_backend()
     engine = backend._get_read_engine()  # type: ignore
 
@@ -1885,14 +1887,14 @@ class DatastorePostgresqlBackend(DatastoreBackend):
             int(rows_max)
 
     def datastore_delete(
-            self, context: Context, data_dict: Dict[str, Any],
-            fields_types: Dict[str, Any], query_dict: Dict[str, Any]):
+            self, context: Context, data_dict: dict[str, Any],
+            fields_types: dict[str, Any], query_dict: dict[str, Any]):
         query_dict['where'] += _where_clauses(data_dict, fields_types)
         return query_dict
 
     def datastore_search(
-            self, context: Context, data_dict: Dict[str, Any],
-            fields_types: Dict[str, Any], query_dict: Dict[str, Any]):
+            self, context: Context, data_dict: dict[str, Any],
+            fields_types: dict[str, Any], query_dict: dict[str, Any]):
 
         fields: str = data_dict.get('fields', '')
 
@@ -1958,7 +1960,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
 
         return query_dict
 
-    def delete(self, context: Context, data_dict: Dict[str, Any]):
+    def delete(self, context: Context, data_dict: dict[str, Any]):
         engine = self._get_write_engine()
         context['connection'] = engine.connect()
         _cache_types(context['connection'])
@@ -1982,7 +1984,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
         finally:
             context['connection'].close()
 
-    def create(self, context: Context, data_dict: Dict[str, Any]):
+    def create(self, context: Context, data_dict: dict[str, Any]):
         '''
         The first row will be used to guess types not in the fields and the
         guessed types will be added to the headers permanently.
@@ -2062,15 +2064,15 @@ class DatastorePostgresqlBackend(DatastoreBackend):
         finally:
             context['connection'].close()
 
-    def upsert(self, context: Context, data_dict: Dict[str, Any]):
+    def upsert(self, context: Context, data_dict: dict[str, Any]):
         data_dict['connection_url'] = self.write_url
         return upsert(context, data_dict)
 
-    def search(self, context: Context, data_dict: Dict[str, Any]):
+    def search(self, context: Context, data_dict: dict[str, Any]):
         data_dict['connection_url'] = self.write_url
         return search(context, data_dict)
 
-    def search_sql(self, context: Context, data_dict: Dict[str, Any]):
+    def search_sql(self, context: Context, data_dict: dict[str, Any]):
         sql = toolkit.get_or_bust(data_dict, 'sql')
         data_dict['connection_url'] = self.read_url
 
@@ -2088,7 +2090,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
         res_exists = results.rowcount > 0
         return res_exists
 
-    def resource_id_from_alias(self, alias: str) -> Tuple[bool, Optional[str]]:
+    def resource_id_from_alias(self, alias: str) -> tuple[bool, Optional[str]]:
         real_id = None
         resources_sql = sqlalchemy.text(
             u'''SELECT alias_of FROM "_table_metadata" WHERE name = :id''')
@@ -2102,7 +2104,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
     # def resource_info(self, id):
     #     pass
 
-    def resource_fields(self, id: str) -> Dict[str, Any]:
+    def resource_fields(self, id: str) -> dict[str, Any]:
 
         info = {'meta': {}, 'fields': []}
 
@@ -2250,7 +2252,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
             raise DatastoreException(err)
 
 
-def create_function(name: str, arguments: Iterable[Dict[str, Any]],
+def create_function(name: str, arguments: Iterable[dict[str, Any]],
                     rettype: Any, definition: str, or_replace: bool):
     sql = u'''
         CREATE {or_replace} FUNCTION

@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.common import CKANConfig
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 import ckan.plugins as plugins
 
 # Our custom template helper function.
@@ -36,7 +37,7 @@ class ExampleITemplateHelpersPlugin(plugins.SingletonPlugin):
 
     # Tell CKAN what custom template helper functions this plugin provides,
     # see the ITemplateHelpers plugin interface.
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         return {
             'example_helper': example_helper,
             'dump_json': dump_json

@@ -1,10 +1,10 @@
 # encoding: utf-8
-
+from __future__ import annotations
 
 import logging
 import os
 import sys
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, TypeVar, cast
+from typing import Any, Optional, TYPE_CHECKING, TypeVar, cast
 
 from flask import Blueprint
 
@@ -28,17 +28,17 @@ GroupPlugin = TypeVar('GroupPlugin')
 OrganizationPlugin = TypeVar('OrganizationPlugin')
 
 # Mapping from package-type strings to IDatasetForm instances
-_package_plugins: Dict[str, 'plugins.IDatasetForm'] = {}
+_package_plugins: dict[str, 'plugins.IDatasetForm'] = {}
 # The fallback behaviour
 _default_package_plugin: Optional['plugins.IDatasetForm'] = None
 
 # Mapping from group-type strings to IGroupForm instances
-_group_plugins: Dict[str, 'plugins.IGroupForm'] = {}
+_group_plugins: dict[str, 'plugins.IGroupForm'] = {}
 # The fallback behaviour
 _default_group_plugin: Optional['plugins.IGroupForm'] = None
 _default_organization_plugin: Optional['plugins.IGroupForm'] = None
 # Mapping from group-type strings to controllers
-_group_controllers: Dict[str, str] = {}
+_group_controllers: dict[str, str] = {}
 
 
 def reset_package_plugins() -> None:
@@ -358,17 +358,17 @@ class DefaultDatasetForm(object):
        being registered.
 
     '''
-    def create_package_schema(self) -> Dict[str, Any]:
+    def create_package_schema(self) -> dict[str, Any]:
         return ckan.logic.schema.default_create_package_schema()
 
-    def update_package_schema(self) -> Dict[str, Any]:
+    def update_package_schema(self) -> dict[str, Any]:
         return ckan.logic.schema.default_update_package_schema()
 
-    def show_package_schema(self) -> Dict[str, Any]:
+    def show_package_schema(self) -> dict[str, Any]:
         return ckan.logic.schema.default_show_package_schema()
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: Dict[str, Any]) -> None:
+                                 data_dict: dict[str, Any]) -> None:
         data_dict.update({'available_only': True})
 
         ## This is messy as auths take domain object not data_dict
@@ -483,7 +483,7 @@ class DefaultGroupForm(object):
         return 'group/new_group_form.html'
 
     def form_to_db_schema_options(self,
-                                  options: Dict[str, Any]) -> Dict[str, Any]:
+                                  options: dict[str, Any]) -> dict[str, Any]:
         ''' This allows us to select different schemas for different
         purpose eg via the web interface or via the api or creation vs
         updating. It is optional and if not available form_to_db_schema
@@ -503,21 +503,21 @@ class DefaultGroupForm(object):
         else:
             return self.form_to_db_schema()
 
-    def form_to_db_schema_api_create(self) -> Dict[str, Any]:
+    def form_to_db_schema_api_create(self) -> dict[str, Any]:
         return ckan.logic.schema.default_group_schema()
 
-    def form_to_db_schema_api_update(self) -> Dict[str, Any]:
+    def form_to_db_schema_api_update(self) -> dict[str, Any]:
         return ckan.logic.schema.default_update_group_schema()
 
-    def form_to_db_schema(self) -> Dict[str, Any]:
+    def form_to_db_schema(self) -> dict[str, Any]:
         return ckan.logic.schema.group_form_schema()
 
-    def db_to_form_schema(self) -> Dict[str, Any]:
+    def db_to_form_schema(self) -> dict[str, Any]:
         '''This is an interface to manipulate data from the database
         into a format suitable for the form (optional)'''
 
     def db_to_form_schema_options(self,
-                                  options: Dict[str, Any]) -> Dict[str, Any]:
+                                  options: dict[str, Any]) -> dict[str, Any]:
         '''This allows the selection of different schemas for different
         purposes.  It is optional and if not available, ``db_to_form_schema``
         should be used.
@@ -529,7 +529,7 @@ class DefaultGroupForm(object):
             return schema
         return self.db_to_form_schema()
 
-    def check_data_dict(self, data_dict: Dict[str, Any]) -> None:
+    def check_data_dict(self, data_dict: dict[str, Any]) -> None:
         '''Check if the return data is correct, mostly for checking out
         if spammers are submitting only part of the form
 
@@ -552,7 +552,7 @@ class DefaultGroupForm(object):
         pass
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: Dict[str, Any]) -> None:
+                                 data_dict: dict[str, Any]) -> None:
         c.is_sysadmin = ckan.authz.is_sysadmin(c.user)
 
         ## This is messy as auths take domain object not data_dict
@@ -579,7 +579,7 @@ class DefaultOrganizationForm(DefaultGroupForm):
         return 'organization/new_organization_form.html'
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: Dict[str, Any]) -> None:
+                                 data_dict: dict[str, Any]) -> None:
         pass
 
     def new_template(self) -> str:
@@ -624,7 +624,7 @@ class DefaultTranslation(object):
         module = sys.modules[extension_module_name]
         return os.path.join(os.path.dirname(module.__file__), 'i18n')
 
-    def i18n_locales(self) -> List[str]:
+    def i18n_locales(self) -> list[str]:
         '''Change the list of locales that this plugin handles
 
         By default the will assume any directory in subdirectory in the
@@ -654,7 +654,7 @@ class DefaultPermissionLabels(object):
     - users can read datasets belonging to their orgs "member-(org id)"
     - users can read datasets where they are collaborators "collaborator-(dataset id)"
     '''
-    def get_dataset_labels(self, dataset_obj: Package) -> List[str]:
+    def get_dataset_labels(self, dataset_obj: Package) -> list[str]:
         if dataset_obj.state == u'active' and not dataset_obj.private:
             return [u'public']
 
@@ -671,7 +671,7 @@ class DefaultPermissionLabels(object):
 
         return labels
 
-    def get_user_dataset_labels(self, user_obj: User) -> List[str]:
+    def get_user_dataset_labels(self, user_obj: User) -> list[str]:
         labels = [u'public']
         if not user_obj:
             return labels

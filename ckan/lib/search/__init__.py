@@ -1,12 +1,13 @@
 # encoding: utf-8
 
-from __future__ import print_function
+from __future__ import annotations
+
 import logging
 import sys
 import cgitb
 import warnings
 import xml.dom.minidom
-from typing import Collection, Dict, Any, Optional, Type, cast, overload
+from typing import Collection, Any, Optional, Type, cast, overload
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -59,11 +60,11 @@ DEFAULT_OPTIONS = {
     'callback': None,  # simply passed through
 }
 
-_INDICES: Dict[str, Type[SearchIndex]] = {
+_INDICES: dict[str, Type[SearchIndex]] = {
     'package': PackageSearchIndex
 }
 
-_QUERIES: Dict[str, Type[SearchQuery]] = {
+_QUERIES: dict[str, Type[SearchQuery]] = {
     'tag': TagSearchQuery,
     'resource': ResourceSearchQuery,
     'package': PackageSearchQuery
@@ -123,7 +124,7 @@ def query_for(_type: Any) -> SearchQuery:
         raise SearchError("Unknown search type: %s" % _type)
 
 
-def dispatch_by_operation(entity_type: str, entity: Dict[str, Any],
+def dispatch_by_operation(entity_type: str, entity: dict[str, Any],
                           operation: str) -> None:
     """Call the appropriate index method for a given notification."""
     try:
@@ -278,7 +279,7 @@ def check() -> None:
         print((pkg.metadata_modified.strftime('%Y-%m-%d'), pkg.name))
 
 
-def show(package_reference: str) -> Dict[str, Any]:
+def show(package_reference: str) -> dict[str, Any]:
     package_query = query_for(model.Package)
     return package_query.get_index(package_reference)
 

@@ -1,8 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
+
 import cgi
 import json
 import logging
-from typing import Any, Dict, Tuple, cast, Optional, Union
+from typing import Any, cast, Optional, Union
 
 import flask
 from flask.views import MethodView
@@ -239,7 +241,7 @@ class CreateView(MethodView):
                 msg = _(u'You must add at least one data resource')
                 # On new templates do not use flash message
 
-                errors: Dict[str, Any] = {}
+                errors: dict[str, Any] = {}
                 error_summary = {_(u'Error'): msg}
                 return self.get(package_type, id, data, errors, error_summary)
 
@@ -296,9 +298,9 @@ class CreateView(MethodView):
     def get(self,
             package_type: str,
             id: str,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None) -> str:
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None) -> str:
         # get resources for sidebar
         context = cast(Context, {
             u'model': model,
@@ -400,9 +402,9 @@ class EditView(MethodView):
             package_type: str,
             id: str,
             resource_id: str,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None) -> str:
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None) -> str:
         context = self._prepare(id)
         pkg_dict = get_action(u'package_show')(context, {u'id': id})
 
@@ -627,7 +629,7 @@ def view(package_type: str,
 # FIXME: could anyone think about better name?
 class EditResourceViewView(MethodView):
     def _prepare(
-            self, id: str, resource_id: str) -> Tuple[Context, Dict[str, Any]]:
+            self, id: str, resource_id: str) -> tuple[Context, dict[str, Any]]:
         context = cast(Context, {
             u'model': model,
             u'session': model.Session,
@@ -665,7 +667,7 @@ class EditResourceViewView(MethodView):
         g.pkg = pkg
         g.resource = resource
 
-        extra_vars: Dict[str, Any] = dict(
+        extra_vars: dict[str, Any] = dict(
             data={},
             errors={},
             error_summary={},
@@ -732,7 +734,7 @@ class EditResourceViewView(MethodView):
             id: str,
             resource_id: str,
             view_id: Optional[str] = None,
-            post_extra: Optional[Dict[str, Any]] = None) -> str:
+            post_extra: Optional[dict[str, Any]] = None) -> str:
         context, extra_vars = self._prepare(id, resource_id)
         to_preview = extra_vars[u'to_preview']
         if post_extra:
@@ -804,7 +806,7 @@ class EditResourceViewView(MethodView):
         return base.render(u'package/new_view.html', extra_vars)
 
 
-def _parse_recline_state(params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+def _parse_recline_state(params: dict[str, Any]) -> Optional[dict[str, Any]]:
     state_version = int(params.get(u'state_version', u'1'))
     if state_version != 1:
         return None

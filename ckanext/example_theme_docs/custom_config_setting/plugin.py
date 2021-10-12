@@ -1,7 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.common import CKANConfig, config
@@ -54,7 +54,7 @@ class ExampleThemePlugin(plugins.SingletonPlugin):
         # that CKAN will use this plugin's custom templates.
         toolkit.add_template_directory(config, 'templates')
 
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         '''Register the most_popular_groups() function above as a template
         helper function.
 

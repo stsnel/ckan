@@ -1,11 +1,12 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
 import re
 import logging
 from typing import (
-    Any, Dict, Generic, Iterable, Iterator, List, Optional, Tuple,
-    TypeVar, Union
+    Any, Generic, Iterable, Iterator, Optional,
+    TypeVar, Union, Dict
 )
 
 import requests
@@ -82,7 +83,7 @@ class License(Generic[TLicense]):
     @maintain.deprecated("License.as_dict() is deprecated and will be "
                          "removed in a future version of CKAN. Instead, "
                          "please use attribute access.", since="2.4.0")
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         '''NB This method is deprecated and will be removed in a future version
         of CKAN. Instead, please use attribute access.
         '''
@@ -103,7 +104,7 @@ class License(Generic[TLicense]):
 
 class LicenseRegister(object):
     """Dictionary-like interface to a group of licenses."""
-    licenses: List[License["DefaultLicense"]]
+    licenses: list[License["DefaultLicense"]]
 
     def __init__(self) -> None:
         group_url = config.get('licenses_group_url', None)
@@ -149,7 +150,7 @@ class LicenseRegister(object):
         self._create_license_list(license_data, license_url)
 
     def _create_license_list(
-            self, license_data: Union[Iterable[TLicense], Dict[str, TLicense]],
+            self, license_data: Union[Iterable[TLicense], dict[str, TLicense]],
             license_url: str=''):
         if isinstance(license_data, dict):
             self.licenses = [License(entity) for entity in license_data.values()]
@@ -175,13 +176,13 @@ class LicenseRegister(object):
     ) -> Union[License["DefaultLicense"], Any]:
         return self.__getitem__(key, default)
 
-    def keys(self) -> List[str]:
+    def keys(self) -> list[str]:
         return [license.id for license in self.licenses]
 
-    def values(self) -> List[License["DefaultLicense"]]:
+    def values(self) -> list[License["DefaultLicense"]]:
         return self.licenses
 
-    def items(self) -> List[Tuple[str, License["DefaultLicense"]]]:
+    def items(self) -> list[tuple[str, License["DefaultLicense"]]]:
         return [(license.id, license) for license in self.licenses]
 
     def __iter__(self) -> Iterator[str]:
@@ -212,7 +213,7 @@ class DefaultLicense(Dict[str, Any]):
     def title(self) -> str:
         return ""
 
-    _keys: List[str] = ['domain_content',
+    _keys: list[str] = ['domain_content',
             'id',
             'domain_data',
             'domain_software',
@@ -236,7 +237,7 @@ class DefaultLicense(Dict[str, Any]):
         else:
             raise KeyError(key)
 
-    def copy(self) -> Dict[str, Any]:
+    def copy(self) -> dict[str, Any]:
         ''' create a dict of the license used by the licenses api '''
         out = {}
         for key in self._keys:

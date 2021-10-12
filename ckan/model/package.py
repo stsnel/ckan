@@ -1,17 +1,16 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from typing import (
-    ClassVar, Dict, Iterable,
-    List,
+    ClassVar, Iterable,
     Optional,
     TYPE_CHECKING,
-    Tuple,
-    Union,
     Any, cast,
 )
 
 import datetime
 import logging
+from typing_extensions import TypeAlias
 from sqlalchemy.ext.associationproxy import AssociationProxy
 
 from sqlalchemy.sql import and_, or_
@@ -38,7 +37,7 @@ if TYPE_CHECKING:
     )
 
 
-PrintableRelationship = Tuple["Package", str, Optional[str]]
+PrintableRelationship: TypeAlias = "tuple[Package, str, Optional[str]]"
 
 logger = logging.getLogger(__name__)
 
@@ -112,11 +111,11 @@ class Package(core.StatefulObjectMixin,
     private: bool
     state: str
 
-    package_tags: List["PackageTag"]
-    package_tag_all: List["PackageTag"]
+    package_tags: list["PackageTag"]
+    package_tag_all: list["PackageTag"]
 
-    resources_all: List["Resource"]
-    _extras: Dict[str, Any]  # List['PackageExtra']
+    resources_all: list["Resource"]
+    _extras: dict[str, Any]  # list['PackageExtra']
     extras: AssociationProxy
 
     relationships_as_subject: 'PackageRelationship'
@@ -124,7 +123,7 @@ class Package(core.StatefulObjectMixin,
 
     _license_register: ClassVar['_license.LicenseRegister']
 
-    text_search_fields: List[str] = ['name', 'title']
+    text_search_fields: list[str] = ['name', 'title']
 
     def __init__(self, **kw: Any) -> None:
         from ckan import model
@@ -156,12 +155,12 @@ class Package(core.StatefulObjectMixin,
     # Todo: Make sure package names can't be changed to look like package IDs?
 
     @property
-    def resources(self) -> List["Resource"]:
+    def resources(self) -> list["Resource"]:
         return [resource for resource in
                 self.resources_all
                 if resource.state != 'deleted']
 
-    def related_packages(self) -> List["Package"]:
+    def related_packages(self) -> list["Package"]:
         return [self]
 
     def add_resource(
@@ -220,7 +219,7 @@ class Package(core.StatefulObjectMixin,
         assert tag is not None
         self.add_tag(tag)
 
-    def get_tags(self, vocab: Optional["Vocabulary"] = None) -> List["Tag"]:
+    def get_tags(self, vocab: Optional["Vocabulary"] = None) -> list["Tag"]:
         """Return a sorted list of this package's tags
 
         Tags are sorted by their names.
@@ -255,7 +254,7 @@ class Package(core.StatefulObjectMixin,
         return False
 
     def as_dict(self, ref_package_by: str='name',
-                ref_group_by: str='name') -> Dict[str, Any]:
+                ref_group_by: str='name') -> dict[str, Any]:
         _dict = domain_object.DomainObject.as_dict(self)
         # Set 'license' in _dict to cater for old clients.
         # Todo: Remove from Version 2?
@@ -325,7 +324,7 @@ class Package(core.StatefulObjectMixin,
     def get_relationships(
             self, with_package: Optional["Package"]=None, type:
             Optional[str]=None, active: bool=True,
-            direction: str='both') -> List["PackageRelationship"]:
+            direction: str='both') -> list["PackageRelationship"]:
         '''Returns relationships this package has.
         Keeps stored type/ordering (not from pov of self).'''
         assert direction in ('both', 'forward', 'reverse')
@@ -358,18 +357,18 @@ class Package(core.StatefulObjectMixin,
 
     def get_relationships_with(
             self, other_package: "Package", type: Optional[str]=None,
-            active: bool=True) -> List["PackageRelationship"]:
+            active: bool=True) -> list["PackageRelationship"]:
         return self.get_relationships(with_package=other_package,
                                       type=type,
                                       active=active)
 
-    def get_relationships_printable(self) -> List[PrintableRelationship]:
+    def get_relationships_printable(self) -> list[PrintableRelationship]:
         '''Returns a list of tuples describing related packages, including
         non-direct relationships (such as siblings).
         @return: e.g. [(annakarenina, u"is a parent"), ...]
         '''
         from ckan.model.package_relationship import PackageRelationship
-        rel_list: List[PrintableRelationship] = []
+        rel_list: list[PrintableRelationship] = []
         for rel in self.get_relationships():
             if rel.subject == self:
                 type_printable = PackageRelationship.make_type_printable(rel.type)
@@ -409,7 +408,7 @@ class Package(core.StatefulObjectMixin,
         return cls._license_register
 
     @classmethod
-    def get_license_options(cls) -> List[Tuple[str, str]]:
+    def get_license_options(cls) -> list[tuple[str, str]]:
         register = cls.get_license_register()
         return [(l.title, l.id) for l in register.values()]
 
@@ -452,11 +451,11 @@ class Package(core.StatefulObjectMixin,
         return group in self.get_groups()
 
     def get_groups(self, group_type: Optional[str]=None,
-                   capacity: Optional[str]=None) -> List["Group"]:
+                   capacity: Optional[str]=None) -> list["Group"]:
         import ckan.model as model
 
         # Gets [ (group, capacity,) ...]
-        pairs: List[Tuple[model.Group, str]] = model.Session.query(
+        pairs: list[tuple[model.Group, str]] = model.Session.query(
             model.Group,model.Member.capacity
         ). join(
             model.Member, model.Member.group_id == model.Group.id and
@@ -533,7 +532,7 @@ class Package(core.StatefulObjectMixin,
 
     @property
     @maintain.deprecated(since="2.9.0")
-    def extras_list(self) -> List['PackageExtra']:
+    def extras_list(self) -> list['PackageExtra']:
         '''DEPRECATED in 2.9
 
         Returns a list of the dataset's extras, as PackageExtra object

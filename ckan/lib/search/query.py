@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import re
 import logging
-from typing import Any, Dict, List, NoReturn, Optional, Union, cast
+from typing import Any, NoReturn, Optional, Union, cast, Dict
 import six
 import pysolr
 
@@ -21,7 +22,7 @@ from ckan.types import Context
 
 log = logging.getLogger(__name__)
 
-_open_licenses: Optional[List[str]] = None
+_open_licenses: Optional[list[str]] = None
 
 VALID_SOLR_PARAMETERS = set([
     'q', 'fl', 'fq', 'rows', 'sort', 'start', 'wt', 'qf', 'bf', 'boost',
@@ -41,7 +42,7 @@ def escape_legacy_argument(val: str) -> str:
 
 
 def convert_legacy_parameters_to_solr(
-        legacy_params: Dict[str, Any]) -> Dict[str, Any]:
+        legacy_params: dict[str, Any]) -> dict[str, Any]:
     '''API v1 and v2 allowed search params that the SOLR syntax does not
     support, so use this function to convert those to SOLR syntax.
     See tests for examples.
@@ -51,7 +52,7 @@ def convert_legacy_parameters_to_solr(
     options = QueryOptions(**legacy_params)
     options.validate()
     solr_params = legacy_params.copy()
-    solr_q_list: List[str] = []
+    solr_q_list: list[str] = []
     if solr_params.get('q'):
         solr_q_list.append(solr_params['q'].replace('+', ' '))
     non_solr_params = set(legacy_params.keys()) - VALID_SOLR_PARAMETERS
@@ -148,15 +149,15 @@ class SearchQuery(object):
     to be used for only one query, i.e. it sets state. Definitely not thread-safe.
     """
     count: int
-    results: List[Any]
-    facets: Dict[str, Any]
+    results: list[Any]
+    facets: dict[str, Any]
 
     def __init__(self) -> None:
         self.results = []
         self.count = 0
 
     @property
-    def open_licenses(self) -> List[str]:
+    def open_licenses(self) -> list[str]:
         # this isn't exactly the very best place to put these, but they stay
         # there persistently.
         # TODO: figure out if they change during run-time.
@@ -168,17 +169,17 @@ class SearchQuery(object):
                     _open_licenses.append(license.id)
         return _open_licenses
 
-    def get_all_entity_ids(self, max_results: int=1000) -> List[str]:
+    def get_all_entity_ids(self, max_results: int=1000) -> list[str]:
         """
         Return a list of the IDs of all indexed packages.
         """
         return []
 
     def run(self,
-            query: Optional[Union[str, Dict[str, Any]]] = None,
-            terms: Optional[List[str]] = None,
-            fields: Optional[Dict[str, Any]] = None,
-            facet_by: Optional[List[str]] = None,
+            query: Optional[Union[str, dict[str, Any]]] = None,
+            terms: Optional[list[str]] = None,
+            fields: Optional[dict[str, Any]] = None,
+            facet_by: Optional[list[str]] = None,
             options: Optional[QueryOptions] = None,
             **kwargs: Any) -> NoReturn:
         raise SearchError("SearchQuery.run() not implemented!")
@@ -190,10 +191,10 @@ class SearchQuery(object):
 class TagSearchQuery(SearchQuery):
     """Search for tags."""
     def run(self,
-            query: Optional[Union[str, List[str]]] = None,
-            fields: Optional[Dict[str, Any]] = None,
+            query: Optional[Union[str, list[str]]] = None,
+            fields: Optional[dict[str, Any]] = None,
             options: Optional[QueryOptions] = None,
-            **kwargs: Any) -> Dict[str, Any]:
+            **kwargs: Any) -> dict[str, Any]:
         query = [] if query is None else query
         fields = {} if fields is None else fields
 
@@ -234,9 +235,9 @@ class TagSearchQuery(SearchQuery):
 class ResourceSearchQuery(SearchQuery):
     """Search for resources."""
     def run(self,
-            fields: Optional[Dict[str, Any]] = None,
+            fields: Optional[dict[str, Any]] = None,
             options: Optional[QueryOptions] = None,
-            **kwargs: Any) -> Dict[str, Any]:
+            **kwargs: Any) -> dict[str, Any]:
         if options is None:
             options = QueryOptions(**kwargs)
         else:
@@ -250,7 +251,7 @@ class ResourceSearchQuery(SearchQuery):
 
         # Transform fields into structure required by the resource_search
         # action.
-        query: List[str] = []
+        query: list[str] = []
 
         if fields:
             for field, terms in fields.items():
@@ -281,7 +282,7 @@ class ResourceSearchQuery(SearchQuery):
 
 
 class PackageSearchQuery(SearchQuery):
-    def get_all_entity_ids(self, max_results: int = 1000) -> List[str]:
+    def get_all_entity_ids(self, max_results: int = 1000) -> list[str]:
         """
         Return a list of the IDs of all indexed packages.
         """
@@ -293,7 +294,7 @@ class PackageSearchQuery(SearchQuery):
         data = conn.search(query, fq=fq, rows=max_results, fl='id')
         return [r.get('id') for r in data.docs]
 
-    def get_index(self, reference: str) -> Dict[str, Any]:
+    def get_index(self, reference: str) -> dict[str, Any]:
         query = {
             'rows': 1,
             'q': 'name:"%s" OR id:"%s"' % (reference, reference),
@@ -323,9 +324,9 @@ class PackageSearchQuery(SearchQuery):
             return solr_response.docs[0]
 
     def run(self,
-            query: Dict[str, Any],
-            permission_labels: Optional[List[str]] = None,
-            **kwargs: Any) -> Dict[str, Any]:
+            query: dict[str, Any],
+            permission_labels: Optional[list[str]] = None,
+            **kwargs: Any) -> dict[str, Any]:
         '''
         Performs a dataset search using the given query.
 

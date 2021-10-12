@@ -1,10 +1,11 @@
 # encoding: utf-8
 
 '''API functions for deleting data from CKAN.'''
+from __future__ import annotations
 
 from ckan.types.logic import ActionResult
 import logging
-from typing import Any, List, Type, cast
+from typing import Any, Type, cast
 
 import sqlalchemy as sqla
 import six
@@ -208,7 +209,7 @@ def resource_delete(context: Context, data_dict: DataDict) -> ActionResult.Resou
     try:
         pkg_dict = _get_action('package_update')(context, pkg_dict)
     except ValidationError as e:
-        errors = cast(List[ErrorDict], e.error_dict['resources'])[-1]
+        errors = cast("list[ErrorDict]", e.error_dict['resources'])[-1]
         raise ValidationError(errors)
 
     for plugin in plugins.PluginImplementations(plugins.IResourceController):
@@ -803,7 +804,7 @@ def unfollow_group(context: Context, data_dict: DataDict) -> None:
 
 
 @ckan.logic.validate(ckan.logic.schema.job_clear_schema)
-def job_clear(context: Context, data_dict: DataDict) -> List[str]:
+def job_clear(context: Context, data_dict: DataDict) -> list[str]:
     '''Clear background job queues.
 
     Does not affect jobs that are already being processed.

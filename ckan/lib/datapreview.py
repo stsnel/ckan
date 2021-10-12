@@ -4,9 +4,10 @@
 
 Functions and data structures that are needed for the ckan data preview.
 """
+from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Iterable, Optional
 
 from urllib.parse import urlparse
 
@@ -24,7 +25,7 @@ log = logging.getLogger(__name__)
 DEFAULT_RESOURCE_VIEW_TYPES = ['image_view', 'recline_view']
 
 
-def res_format(resource: Dict[str, Any]) -> Optional[str]:
+def res_format(resource: dict[str, Any]) -> Optional[str]:
     ''' The assumed resource format in lower case. '''
     if not resource['url']:
         return None
@@ -55,7 +56,7 @@ def compare_domains(urls: Iterable[str]) -> bool:
     return True
 
 
-def on_same_domain(data_dict: Dict[str, Any]) -> bool:
+def on_same_domain(data_dict: dict[str, Any]) -> bool:
     # compare CKAN domain and resource URL
     ckan_url = config.get('ckan.site_url', '//localhost:5000')
     resource_url = data_dict['resource']['url']
@@ -75,7 +76,7 @@ def get_view_plugin(view_type: Optional[str]) -> Optional[p.IResourceView]:
     return None
 
 
-def get_view_plugins(view_types: Iterable[str]) -> List[p.IResourceView]:
+def get_view_plugins(view_types: Iterable[str]) -> list[p.IResourceView]:
     '''
     Returns a list of the view plugins associated with the given view_types.
     '''
@@ -89,7 +90,7 @@ def get_view_plugins(view_types: Iterable[str]) -> List[p.IResourceView]:
 
 
 def get_allowed_view_plugins(
-        data_dict: Dict[str, Any]) -> List[p.IResourceView]:
+        data_dict: dict[str, Any]) -> list[p.IResourceView]:
     '''
     Returns a list of view plugins that work against the resource provided
 
@@ -107,7 +108,7 @@ def get_allowed_view_plugins(
 
 
 def get_default_view_plugins(
-        get_datastore_views: bool = False) -> List[p.IResourceView]:
+        get_datastore_views: bool = False) -> list[p.IResourceView]:
     '''
     Returns the list of view plugins to be created by default on new resources
 
@@ -154,11 +155,11 @@ def get_default_view_plugins(
 
 
 def add_views_to_resource(context: Context,
-                          resource_dict: Dict[str, Any],
-                          dataset_dict: Optional[Dict[str, Any]] = None,
-                          view_types: Optional[List[str]] = None,
+                          resource_dict: dict[str, Any],
+                          dataset_dict: Optional[dict[str, Any]] = None,
+                          view_types: Optional[list[str]] = None,
                           create_datastore_views: bool = False
-                          ) -> List[Dict[str, Any]]:
+                          ) -> list[dict[str, Any]]:
     '''
     Creates the provided views (if necessary) on the provided resource
 
@@ -229,9 +230,9 @@ def add_views_to_resource(context: Context,
 
 def add_views_to_dataset_resources(
         context: Context,
-        dataset_dict: Dict[str, Any],
-        view_types: Optional[List[str]] = None,
-        create_datastore_views: bool = False) -> List[Dict[str, Any]]:
+        dataset_dict: dict[str, Any],
+        view_types: Optional[list[str]] = None,
+        create_datastore_views: bool = False) -> list[dict[str, Any]]:
     '''
     Creates the provided views on all resources of the provided dataset
 

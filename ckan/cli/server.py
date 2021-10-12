@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.exceptions import CkanDeprecationWarning
 import logging
 import warnings
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 import click
 from werkzeug.serving import run_simple
@@ -44,7 +45,7 @@ DEFAULT_PORT = 5000
     " automatically generate a new one (on each server reload).")
 @click.pass_context
 def run(ctx: Any, host: str, port: str, disable_reloader: bool, threaded: bool,
-        extra_files: List[str], processes: int, ssl_cert: Optional[str],
+        extra_files: list[str], processes: int, ssl_cert: Optional[str],
         ssl_key: Optional[str]):
     u"""Runs the Werkzeug development server"""
 

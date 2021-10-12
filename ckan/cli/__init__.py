@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import os
-from typing import Any, Dict, Optional, List
+from typing import Any, Optional
 
 import click
 import logging
@@ -34,7 +35,7 @@ class CKANConfigLoader(object):
         self._update_defaults(defaults)
         self._create_config_object()
 
-    def _update_defaults(self, new_defaults: Dict[str, Any]) -> None:
+    def _update_defaults(self, new_defaults: dict[str, Any]) -> None:
         for key, value in new_defaults.items():
             # type_ignore_reason: using implementation details
             self.parser._defaults[key] = value  # type: ignore
@@ -56,7 +57,7 @@ class CKANConfigLoader(object):
             if "%(here)s" in raw:
                 self.parser.set(self.section, option, value)
 
-    def _unwrap_config_chain(self, filename: str) -> List[str]:
+    def _unwrap_config_chain(self, filename: str) -> list[str]:
         """Get all names of files in use-chain.
 
         Parse files using RawConfigParser, because top-level config file can

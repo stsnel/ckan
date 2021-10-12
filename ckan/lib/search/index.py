@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import socket
 import string
@@ -8,7 +9,7 @@ import json
 import datetime
 import re
 from dateutil.parser import parse
-from typing import Any, Dict, List, NoReturn, Optional, cast
+from typing import Any, NoReturn, Optional, cast
 
 import six
 import pysolr
@@ -74,15 +75,15 @@ class SearchIndex(object):
     def __init__(self) -> None:
         pass
 
-    def insert_dict(self, data: Dict[str, Any]) -> None:
+    def insert_dict(self, data: dict[str, Any]) -> None:
         """ Insert new data from a dictionary. """
         return self.update_dict(data)
 
-    def update_dict(self, data: Dict[str, Any], defer_commit: bool = False) -> None:
+    def update_dict(self, data: dict[str, Any], defer_commit: bool = False) -> None:
         """ Update data from a dictionary. """
         log.debug("NOOP Index: %s" % ",".join(data.keys()))
 
-    def remove_dict(self, data: Dict[str, Any]) -> None:
+    def remove_dict(self, data: dict[str, Any]) -> None:
         """ Delete an index entry uniquely identified by ``data``. """
         log.debug("NOOP Delete: %s" % ",".join(data.keys()))
 
@@ -97,16 +98,16 @@ class SearchIndex(object):
 class NoopSearchIndex(SearchIndex): pass
 
 class PackageSearchIndex(SearchIndex):
-    def remove_dict(self, pkg_dict: Dict[str, Any]) -> None:
+    def remove_dict(self, pkg_dict: dict[str, Any]) -> None:
         self.delete_package(pkg_dict)
 
     def update_dict(self,
-                    pkg_dict: Dict[str, Any],
+                    pkg_dict: dict[str, Any],
                     defer_commit: bool = False) -> None:
         self.index_package(pkg_dict, defer_commit)
 
     def index_package(self,
-                      pkg_dict: Optional[Dict[str, Any]],
+                      pkg_dict: Optional[dict[str, Any]],
                       defer_commit: bool = False) -> None:
         if pkg_dict is None:
             return
@@ -213,7 +214,7 @@ class PackageSearchIndex(SearchIndex):
                 pkg_dict[nkey] = pkg_dict.get(nkey, []) + [resource.get(okey, u'')]
         pkg_dict.pop('resources', None)
 
-        rel_dict: Dict[str, List[Any]] = collections.defaultdict(list)
+        rel_dict: dict[str, list[Any]] = collections.defaultdict(list)
         subjects = pkg_dict.pop("relationships_as_subject", [])
         objects = pkg_dict.pop("relationships_as_object", [])
         for rel in objects:
@@ -330,7 +331,7 @@ class PackageSearchIndex(SearchIndex):
             log.exception(e)
             raise SearchIndexError(e)
 
-    def delete_package(self, pkg_dict: Dict[str, Any]) -> None:
+    def delete_package(self, pkg_dict: dict[str, Any]) -> None:
         conn = make_connection()
         query = "+%s:%s AND +(id:\"%s\" OR name:\"%s\") AND +site_id:\"%s\"" % \
                 (TYPE_FIELD, PACKAGE_TYPE, pkg_dict.get('id'), pkg_dict.get('id'), config.get('ckan.site_id'))

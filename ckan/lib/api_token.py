@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
 import jwt
 import logging
-from typing import Any, Dict, Iterable, Mapping, Optional
+from typing import Any, Iterable, Mapping, Optional
 from calendar import timegm
 from datetime import datetime
 
@@ -65,8 +66,8 @@ def get_schema() -> Schema:
     return schema
 
 
-def postprocess(data: Dict[str, Any], jti: str,
-                data_dict: Dict[str, Any]) -> Dict[str, Any]:
+def postprocess(data: dict[str, Any], jti: str,
+                data_dict: dict[str, Any]) -> dict[str, Any]:
     for plugin in _get_plugins():
         data = plugin.postprocess_api_token(data, jti, data_dict)
     return data
@@ -93,7 +94,7 @@ def decode(encoded: str, **kwargs: Any) -> Optional[Mapping[str, Any]]:
     return data
 
 
-def encode(data: Dict[str, Any], **kwargs: Any) -> bytes:
+def encode(data: dict[str, Any], **kwargs: Any) -> bytes:
     for plugin in _get_plugins():
         token = plugin.encode_api_token(data, **kwargs)
         if token:
@@ -109,7 +110,7 @@ def encode(data: Dict[str, Any], **kwargs: Any) -> bytes:
     return token
 
 
-def add_extra(result: Dict[str, Any]) -> Dict[str, Any]:
+def add_extra(result: dict[str, Any]) -> dict[str, Any]:
     for plugin in _get_plugins():
         result = plugin.add_extra_fields(result)
     return result

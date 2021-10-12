@@ -1,11 +1,12 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import polib
 import re
 import logging
 import os
 
-from typing import Any, Dict, List, Tuple, cast
+from typing import Any, cast
 
 import click
 
@@ -83,7 +84,7 @@ def mangle():
     u'check-po', short_help=u'Check po files for common mistakes'
 )
 @click.argument(u'files', nargs=-1, type=click.Path(exists=True))
-def check_po(files: List[str]):
+def check_po(files: list[str]):
     for file in files:
         errors = check_po_file(file)
         for msgid, msgstr in errors:
@@ -100,7 +101,7 @@ def check_po(files: List[str]):
     'with the ones on the pot file'
 )
 @click.argument(u'files', nargs=-1, type=click.Path(exists=True))
-def sync_po_msgids(files: List[str]):
+def sync_po_msgids(files: list[str]):
     i18n_path = get_i18n_path()
     pot_path = os.path.join(i18n_path, u'ckan.pot')
     po = polib.pofile(pot_path)
@@ -116,7 +117,7 @@ def normalize_string(s: str):
     return re.sub(r'\s\s+', ' ', s).strip()
 
 
-def sync_po_file_msgids(entries_to_change: Dict[str, Any], path: str):
+def sync_po_file_msgids(entries_to_change: dict[str, Any], path: str):
 
     po = polib.pofile(path)
     cnt = 0
@@ -178,7 +179,7 @@ def check_translation(validator: Any, msgid: str, msgstr: str):
 
 
 def check_po_file(path: str):
-    errors: List[Tuple[str, str]] = []
+    errors: list[tuple[str, str]] = []
     po = polib.pofile(path)
     for entry in po.translated_entries():
         if entry.msgid_plural and entry.msgstr_plural:
@@ -186,7 +187,7 @@ def check_po_file(path: str):
                 simple_conv_specs, mapping_keys, replacement_fields
             ):
                 # typechecker thinks it's a string
-                plurals = cast(Dict[str, str], entry.msgstr_plural)
+                plurals = cast("dict[str, str]", entry.msgstr_plural)
                 for key in plurals.keys():
                     if key == u'0':
                         error = check_translation(

@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import os
 import logging
 import html
-from typing import Any, Callable, Dict, List, Optional, Tuple, cast, Union
+from typing import Any, Callable, Optional, cast, Union
 
 from flask import Blueprint, make_response
 
@@ -42,7 +43,7 @@ api = Blueprint(u'api', __name__, url_prefix=u'/api')
 def _finish(status_int: int,
             response_data: Any = None,
             content_type: str = u'text',
-            headers: Optional[Dict[str, Any]] = None) -> Response:
+            headers: Optional[dict[str, Any]] = None) -> Response:
     u'''When a controller method has completed, call this method
     to prepare the response.
 
@@ -148,7 +149,7 @@ def _get_request_data(try_url_params: bool = False):
         be a list of strings, otherwise just a string.
 
     '''
-    def mixed(multi_dict: "MultiDict[str, Any]") -> Dict[str, Any]:
+    def mixed(multi_dict: "MultiDict[str, Any]") -> dict[str, Any]:
         u'''Return a dict with values being lists if they have more than one
            item or a string otherwise
         '''
@@ -161,7 +162,7 @@ def _get_request_data(try_url_params: bool = False):
         raise ValueError(u'Invalid request. Please use POST method '
                          'for your request')
 
-    request_data: Union[Dict[str, Any], Any] = {}
+    request_data: Union[dict[str, Any], Any] = {}
     if request.method in [u'POST', u'PUT'] and request.form:
         values = list(request.form.values())
         if (len(values) == 1 and
@@ -231,7 +232,7 @@ def action(logic_function: str, ver: int = API_DEFAULT_VERSION) -> Response:
          u'api_version': ver, u'auth_user_obj': g.userobj})
     model.Session()._context = context
 
-    return_dict: Dict[str, Any] = {
+    return_dict: dict[str, Any] = {
         u'help': url_for(u'api.action',
                          logic_function=u'help_show',
                          ver=ver,
@@ -493,7 +494,7 @@ api.add_url_rule(u'/<int(min=3, max={0}):ver>/action/<logic_function>'.format(
 
 # Util API
 
-util_rules: List[Tuple[str, Callable[..., Union[str, Response]]]] = [
+util_rules: list[tuple[str, Callable[..., Union[str, Response]]]] = [
     (u'/util/dataset/autocomplete', dataset_autocomplete),
     (u'/util/user/autocomplete', user_autocomplete),
     (u'/util/tag/autocomplete', tag_autocomplete),

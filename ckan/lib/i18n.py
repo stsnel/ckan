@@ -35,13 +35,14 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
+from __future__ import annotations
 
 import collections
 import json
 import logging
 import os
 import os.path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 import six
 from babel import Locale
@@ -80,7 +81,7 @@ def get_ckan_i18n_dir() -> str:
     return path
 
 
-def get_locales_from_config() -> Set[str]:
+def get_locales_from_config() -> set[str]:
     ''' despite the name of this function it gets the locales defined by
     the config AND also the locals available subject to the config. '''
     locales_offered = config.get('ckan.locales_offered', '').split()
@@ -97,7 +98,7 @@ def get_locales_from_config() -> Set[str]:
     return all_locales
 
 
-def _get_locales() -> List[str]:
+def _get_locales() -> list[str]:
     # FIXME this wants cleaning up and merging with get_locales_from_config()
     assert not config.get('lang'), \
         ('"lang" config option not supported - please use ckan.locale_default '
@@ -152,13 +153,13 @@ def _get_locales() -> List[str]:
     return ordered_list
 
 
-available_locales: Optional[List[Locale]] = None
-locales: Optional[List[str]] = None
-locales_dict: Optional[Dict[str, Optional[Locale]]] = None
-_non_translated_locals: Optional[List[str]] = None
+available_locales: Optional[list[Locale]] = None
+locales: Optional[list[str]] = None
+locales_dict: Optional[dict[str, Optional[Locale]]] = None
+_non_translated_locals: Optional[list[str]] = None
 
 
-def get_locales() -> List[str]:
+def get_locales() -> list[str]:
     ''' Get list of available locales
     e.g. [ 'en', 'de', ... ]
     '''
@@ -168,7 +169,7 @@ def get_locales() -> List[str]:
     return locales
 
 
-def non_translated_locals() -> List[str]:
+def non_translated_locals() -> list[str]:
     ''' These are the locales that are available but for which there are
     no translations. returns a list like ['en', 'de', ...] '''
     global _non_translated_locals
@@ -178,7 +179,7 @@ def non_translated_locals() -> List[str]:
     return _non_translated_locals
 
 
-def get_locales_dict() -> Dict[str, Optional[Locale]]:
+def get_locales_dict() -> dict[str, Optional[Locale]]:
     ''' Get a dict of the available locales
     e.g.  { 'en' : Locale('en'), 'de' : Locale('de'), ... } '''
     global locales_dict
@@ -190,7 +191,7 @@ def get_locales_dict() -> Dict[str, Optional[Locale]]:
     return locales_dict
 
 
-def get_available_locales() -> List[Locale]:
+def get_available_locales() -> list[Locale]:
     ''' Get a list of the available locales
     e.g.  [ Locale('en'), Locale('de'), ... ] '''
     global available_locales
@@ -250,7 +251,7 @@ def set_lang(language_code: str) -> None:
         language_code = config.get('ckan.locale_default', 'en')
 
 
-def _get_js_translation_entries(filename: str) -> Set[str]:
+def _get_js_translation_entries(filename: str) -> set[str]:
     '''
     Extract IDs of PO entries that are used in JavaScript files.
 
@@ -270,8 +271,8 @@ def _get_js_translation_entries(filename: str) -> Set[str]:
 
 
 def _build_js_translation(
-        lang: str, source_filenames: List[str],
-        entries: Set[Any], dest_filename: str):
+        lang: str, source_filenames: list[str],
+        entries: set[Any], dest_filename: str):
     '''
     Build JavaScript translations for a single language.
 
@@ -326,7 +327,7 @@ def build_js_translations() -> None:
     # Collect all language codes (an extension might add support for a
     # language that isn't supported by CKAN core, yet).
     langs = set()
-    i18n_dirs: Dict[str, str] = collections.OrderedDict([
+    i18n_dirs: dict[str, str] = collections.OrderedDict([
         (ckan_i18n_dir, u'ckan')])
     for item in os.listdir(ckan_i18n_dir):
         if os.path.isdir(os.path.join(ckan_i18n_dir, item)):

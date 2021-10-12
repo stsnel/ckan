@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Optional, TYPE_CHECKING, Type, TypeVar
+from typing import Any, Iterable, Optional, TYPE_CHECKING, Type, TypeVar
 
 import datetime
 import re
@@ -70,15 +71,15 @@ class User(core.StatefulObjectMixin,
     sysadmin: bool
     state: str
     image_url: str
-    plugin_extras: Dict[str, Any]
+    plugin_extras: dict[str, Any]
 
-    api_tokens: List['ApiToken']
+    api_tokens: list['ApiToken']
 
     VALID_NAME = re.compile(r"^[a-zA-Z0-9_\-]{3,255}$")
     DOUBLE_SLASH = re.compile(r':\/([^/])')
 
     @classmethod
-    def by_email(cls: Type[TUser], email: str) -> List["TUser"]:
+    def by_email(cls: Type[TUser], email: str) -> list["TUser"]:
         return meta.Session.query(cls).filter_by(email=email).all()
 
     @classmethod
@@ -89,7 +90,7 @@ class User(core.StatefulObjectMixin,
         return query.first()
 
     @classmethod
-    def all(cls: Type[TUser]) -> List["TUser"]:
+    def all(cls: Type[TUser]) -> list["TUser"]:
         '''Return all users in this CKAN instance.
 
         :rtype: list of ckan.model.user.User objects
@@ -206,7 +207,7 @@ class User(core.StatefulObjectMixin,
     def check_name_available(cls, name: str) -> bool:
         return cls.by_name(name) == None
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         _dict = domain_object.DomainObject.as_dict(self)
         del _dict['password']
         return _dict
@@ -261,12 +262,12 @@ class User(core.StatefulObjectMixin,
 
         return len(guser.intersection(gids)) > 0
 
-    def get_group_ids(self, group_type: Optional[str]=None, capacity: Optional[str]=None) -> List[str]:
+    def get_group_ids(self, group_type: Optional[str]=None, capacity: Optional[str]=None) -> list[str]:
         ''' Returns a list of group ids that the current user belongs to '''
         return [g.id for g in
                 self.get_groups(group_type=group_type, capacity=capacity)]
 
-    def get_groups(self, group_type: Optional[str]=None, capacity: Optional[str]=None) -> List['Group']:
+    def get_groups(self, group_type: Optional[str]=None, capacity: Optional[str]=None) -> list['Group']:
         import ckan.model as model
 
         q = meta.Session.query(model.Group)\
@@ -312,7 +313,7 @@ class User(core.StatefulObjectMixin,
         return query
 
     @classmethod
-    def user_ids_for_name_or_id(cls, user_list: Iterable[str]=()) -> List[str]:
+    def user_ids_for_name_or_id(cls, user_list: Iterable[str]=()) -> list[str]:
         '''
         This function returns a list of ids from an input that can be a list of
         names or ids

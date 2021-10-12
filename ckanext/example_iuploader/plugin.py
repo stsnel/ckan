@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import os
-from typing import Any, Dict
+from typing import Any
 
 from ckan import plugins
 from ckan.lib.uploader import ResourceUpload as DefaultResourceUpload
@@ -10,7 +11,7 @@ from ckan.lib.uploader import ResourceUpload as DefaultResourceUpload
 class ExampleIUploader(plugins.SingletonPlugin):
     plugins.implements(plugins.IUploader, inherit=True)
 
-    def get_resource_uploader(self, data_dict: Dict[str, Any]):
+    def get_resource_uploader(self, data_dict: dict[str, Any]):
         return ResourceUpload(data_dict)
 
 

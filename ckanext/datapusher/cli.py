@@ -1,10 +1,11 @@
 # encoding: utf-8
 
-from __future__ import print_function
+from __future__ import annotations
+
 from ckan.types import Context
 
 import logging
-from typing import List, cast
+from typing import cast
 
 import click
 
@@ -85,7 +86,7 @@ def submit(package: str, yes: bool):
         _submit(resource_ids)
 
 
-def _submit(resources: List[str]):
+def _submit(resources: list[str]):
     click.echo(u'Submitting {} datastore resources'.format(len(resources)))
     user = tk.get_action(u'get_site_user')(cast(Context, {
         u'model': model,

@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
-from typing import Any, List, cast
+from typing import Any, cast
 
 import six
 import click
@@ -28,7 +29,7 @@ def user():
 @click.argument(u'username')
 @click.argument(u'args', nargs=-1)
 @click.pass_context
-def add_user(ctx: Any, username: str, args: List[str]):
+def add_user(ctx: Any, username: str, args: list[str]):
     u'''Add new user if we use ckan sysadmin add
     or ckan user add
     '''
@@ -163,7 +164,7 @@ def token():
     help=u"Valid JSON object with additional fields for api_token_create",
 )
 def add_token(username: str, token_name: str,
-              extras: List[str], json_str: str):
+              extras: list[str], json_str: str):
     """Create a new API Token for the given user.
 
     Arbitrary fields can be passed in the form `key=value` or using

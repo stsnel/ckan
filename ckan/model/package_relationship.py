@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar
+from typing import Any, Optional, Type, TypeVar
 
 from sqlalchemy import orm, types, Column, Table, ForeignKey
 
@@ -55,34 +56,34 @@ class PackageRelationship(core.StatefulObjectMixin,
     object: _package.Package
     subject: _package.Package
 
-    all_types: Optional[List[str]]
-    fwd_types: Optional[List[str]]
-    rev_types: Optional[List[str]]
+    all_types: Optional[list[str]]
+    fwd_types: Optional[list[str]]
+    rev_types: Optional[list[str]]
 
     # List of (type, corresponding_reverse_type)
     # e.g. (A "depends_on" B, B has a "dependency_of" A)
     # don't forget to add specs to Solr's schema.xml
-    types: List[Tuple[str, str]] = [(u'depends_on', u'dependency_of'),
+    types: list[tuple[str, str]] = [(u'depends_on', u'dependency_of'),
              (u'derives_from', u'has_derivation'),
              (u'links_to', u'linked_from'),
              (u'child_of', u'parent_of'),
              ]
 
-    types_printable: List[Tuple[str, str]] = \
+    types_printable: list[tuple[str, str]] = \
             [(_(u'depends on %s'), _(u'is a dependency of %s')),
              (_(u'derives from %s'), _(u'has derivation %s')),
              (_(u'links to %s'), _(u'is linked from %s')),
              (_(u'is a child of %s'), _(u'is a parent of %s')),
              ]
 
-    inferred_types_printable: Dict[str, str] = \
+    inferred_types_printable: dict[str, str] = \
             {'sibling':_('has sibling %s')}
 
     def __repr__(self):
         return '<%sPackageRelationship %s %s %s>' % ("*" if self.active != core.State.ACTIVE else "",
                                                      self.subject.name, self.type, self.object.name)
 
-    def as_dict(self, package: Optional[_package.Package]=None, ref_package_by: str='id') -> Dict[str, str]:
+    def as_dict(self, package: Optional[_package.Package]=None, ref_package_by: str='id') -> dict[str, str]:
         """Returns full relationship info as a dict from the point of view
         of the given package if specified.
         e.g. {'subject':u'annakarenina',
@@ -103,7 +104,7 @@ class PackageRelationship(core.StatefulObjectMixin,
                 'object':object_ref,
                 'comment':self.comment}
 
-    def as_tuple(self, package: _package.Package) -> Tuple[str, _package.Package]:
+    def as_tuple(self, package: _package.Package) -> tuple[str, _package.Package]:
         '''Returns basic relationship info as a tuple from the point of view
         of the given package with the object package object.
         e.g. rel.as_tuple(warandpeace) gives (u'depends_on', annakarenina)
@@ -132,21 +133,21 @@ class PackageRelationship(core.StatefulObjectMixin,
         return meta.Session.query(cls).filter(cls.object_package_id==package.id)
 
     @classmethod
-    def get_forward_types(cls) -> List[str]:
+    def get_forward_types(cls) -> list[str]:
         if not hasattr(cls, 'fwd_types'):
             cls.fwd_types = [fwd for fwd, rev in cls.types]
         assert cls.fwd_types is not None
         return cls.fwd_types
 
     @classmethod
-    def get_reverse_types(cls) -> List[str]:
+    def get_reverse_types(cls) -> list[str]:
         if not hasattr(cls, 'rev_types'):
             cls.rev_types = [rev for fwd, rev in cls.types]
         assert cls.rev_types is not None
         return cls.rev_types
 
     @classmethod
-    def get_all_types(cls) -> List[str]:
+    def get_all_types(cls) -> list[str]:
         if not hasattr(cls, 'all_types'):
             cls.all_types = []
             for fwd, rev in cls.types:

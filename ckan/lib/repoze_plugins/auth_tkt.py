@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
 import math
 import os
-from typing import Any, List, Optional, Union
+from typing import Any, Optional, Union
 
 import six
 
@@ -41,7 +42,7 @@ class CkanAuthTktCookiePlugin(repoze_auth_tkt.AuthTktCookiePlugin):
         self.httponly = httponly
         self.samesite = samesite
 
-    def _get_cookies(self, *args: Any, **kwargs: Any) -> List[SimpleCookie]:
+    def _get_cookies(self, *args: Any, **kwargs: Any) -> list[SimpleCookie]:
         u'''
         Override method in superclass to ensure HttpOnly is set appropriately.
         '''

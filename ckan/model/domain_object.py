@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
 import six
 from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar
+from typing import Any, Callable, Optional, Set, Type, TypeVar
 
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -36,7 +37,7 @@ DomainObjectOperation = Enum('new', 'changed', 'deleted')
 class DomainObject(object):
     name: str
 
-    text_search_fields: List[str] = []
+    text_search_fields: list[str] = []
     Session = meta.Session
 
     def __init__(self, **kwargs: Any) -> None:
@@ -97,7 +98,7 @@ class DomainObject(object):
         self.Session().autoflush = False
         self.Session.delete(self)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """
         returns: ordered dict with fields from table. Date/time values
         are converted to strings for json compatibilty
@@ -114,7 +115,7 @@ class DomainObject(object):
         return _dict
 
     def from_dict(self,
-                  _dict: Dict[str, Any]) -> Tuple[Set[Any], Dict[str, Any]]:
+                  _dict: dict[str, Any]) -> tuple[set[Any], dict[str, Any]]:
         """
         Loads data from dict into table.
 

@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
 import logging
 import re
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 import pysolr
 import simplejson
@@ -51,7 +52,7 @@ class SolrSettings(object):
         cls._is_initialised = True
 
     @classmethod
-    def get(cls) -> Tuple[str, Optional[str], Optional[str]]:
+    def get(cls) -> tuple[str, Optional[str], Optional[str]]:
         if not cls._is_initialised:
             raise SearchIndexError('SOLR URL not initialised')
         if not cls._url:
@@ -95,12 +96,12 @@ def make_connection(decode_dates: bool = True) -> Solr:
         return pysolr.Solr(solr_url, timeout=timeout)
 
 
-def solr_datetime_decoder(d: Dict[str, Any]) -> Dict[str, Any]:
+def solr_datetime_decoder(d: dict[str, Any]) -> dict[str, Any]:
     for k, v in d.items():
         if isinstance(v, str):
             possible_datetime = re.search(pysolr.DATETIME_REGEX, v)
             if possible_datetime:
-                date_values: Dict[str, Any] = possible_datetime.groupdict()
+                date_values: dict[str, Any] = possible_datetime.groupdict()
                 for dk, dv in date_values.items():
                     date_values[dk] = int(dv)
 

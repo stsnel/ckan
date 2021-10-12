@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context
-from typing import Any, Dict
+from typing import Any
 from ckan.common import CKANConfig
 import logging
 
@@ -26,7 +27,7 @@ class ImageView(p.SingletonPlugin):
             'ckan.preview.image_formats',
             DEFAULT_IMAGE_FORMATS).split()
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         return {'name': 'image_view',
                 'title': p.toolkit._('Image'),
                 'icon': 'picture-o',
@@ -36,12 +37,12 @@ class ImageView(p.SingletonPlugin):
                 'default_title': p.toolkit._('Image'),
                 }
 
-    def can_view(self, data_dict: Dict[str, Any]):
+    def can_view(self, data_dict: dict[str, Any]):
         return (data_dict['resource'].get('format', '').lower()
                 in self.formats)
 
-    def view_template(self, context: Context, data_dict: Dict[str, Any]):
+    def view_template(self, context: Context, data_dict: dict[str, Any]):
         return 'image_view.html'
 
-    def form_template(self, context: Context, data_dict: Dict[str, Any]):
+    def form_template(self, context: Context, data_dict: dict[str, Any]):
         return 'image_form.html'

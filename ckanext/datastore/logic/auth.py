@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-from typing import Any, Dict, cast
 from ckan.types import AuthResult, Context, DataDict
 import ckan.plugins as p
 

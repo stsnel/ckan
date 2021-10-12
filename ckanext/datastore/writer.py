@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from contextlib import contextmanager
 from email.utils import encode_rfc2231
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 from simplejson import dumps
 import six
 
@@ -14,7 +15,7 @@ from codecs import BOM_UTF8
 
 
 @contextmanager
-def csv_writer(response: Any, fields: List[Dict[str, Any]],
+def csv_writer(response: Any, fields: list[dict[str, Any]],
                name: Optional[str] = None, bom: bool = False):
     u'''Context manager for writing UTF-8 CSV data to response
 
@@ -40,7 +41,7 @@ def csv_writer(response: Any, fields: List[Dict[str, Any]],
 
 
 @contextmanager
-def tsv_writer(response: Any, fields: List[Dict[str, Any]],
+def tsv_writer(response: Any, fields: list[dict[str, Any]],
                name: Optional[str] = None, bom: bool = False):
     u'''Context manager for writing UTF-8 TSV data to response
 
@@ -73,12 +74,12 @@ class TextWriter(object):
     def __init__(self, response: Any):
         self.response = response
 
-    def write_records(self, records: List[Any]):
+    def write_records(self, records: list[Any]):
         self.response.write(records)
 
 
 @contextmanager
-def json_writer(response: Any, fields: List[Dict[str, Any]],
+def json_writer(response: Any, fields: list[dict[str, Any]],
                 name: Optional[str] = None, bom: bool = False):
     u'''Context manager for writing UTF-8 JSON data to response
 
@@ -110,7 +111,7 @@ class JSONWriter(object):
         self.response = response
         self.first = True
 
-    def write_records(self, records: List[Any]):
+    def write_records(self, records: list[Any]):
         for r in records:
             if self.first:
                 self.first = False
@@ -123,7 +124,7 @@ class JSONWriter(object):
 
 
 @contextmanager
-def xml_writer(response: Any, fields: List[Dict[str, Any]],
+def xml_writer(response: Any, fields: list[dict[str, Any]],
                name: Optional[str] = None, bom: bool = False):
     u'''Context manager for writing UTF-8 XML data to response
 
@@ -152,7 +153,7 @@ class XMLWriter(object):
     _key_attr = u'key'
     _value_tag = u'value'
 
-    def __init__(self, response: Any, columns: List[str]):
+    def __init__(self, response: Any, columns: list[str]):
         self.response = response
         self.id_col = columns[0] == u'_id'
         if self.id_col:
@@ -177,7 +178,7 @@ class XMLWriter(object):
         if key_attr is not None:
             element.attrib[self._key_attr] = str(key_attr)
 
-    def write_records(self, records: List[Any]):
+    def write_records(self, records: list[Any]):
         for r in records:
             root = Element(u'row')
             if self.id_col:

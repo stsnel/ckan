@@ -1,10 +1,11 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import inspect
 import logging
 import os
 import contextlib
-from typing import Dict, Optional
+from typing import Optional
 
 import click
 from itertools import groupby
@@ -92,7 +93,7 @@ def pending_migrations(apply: bool):
             _run_migrations(plugin)
 
 
-def _get_pending_plugins() -> Dict[str, int]:
+def _get_pending_plugins() -> dict[str, int]:
     from alembic.command import history
     plugins = [(plugin, state)
                for plugin, state

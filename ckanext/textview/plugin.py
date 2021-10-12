@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 
 from ckan.common import CKANConfig, json
@@ -18,7 +19,7 @@ DEFAULT_JSON_FORMATS = ['json']
 DEFAULT_JSONP_FORMATS = ['jsonp']
 
 
-def get_formats(config: CKANConfig) -> Dict[str, List[str]]:
+def get_formats(config: CKANConfig) -> dict[str, list[str]]:
 
     out = {}
 
@@ -72,7 +73,7 @@ class TextView(p.SingletonPlugin):
                 'default_title': p.toolkit._('Text'),
                 }
 
-    def can_view(self, data_dict: Dict[str, Any]):
+    def can_view(self, data_dict: dict[str, Any]):
         resource = data_dict['resource']
         format_lower = resource.get('format', '').lower()
         proxy_enabled = p.plugin_loaded('resource_proxy')
@@ -84,7 +85,7 @@ class TextView(p.SingletonPlugin):
         return False
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: Dict[str, Any]):
+                                 data_dict: dict[str, Any]):
         metadata = {'text_formats': self.text_formats,
                     'json_formats': self.json_formats,
                     'jsonp_formats': self.jsonp_formats,
@@ -99,8 +100,8 @@ class TextView(p.SingletonPlugin):
                 'resource_json': json.dumps(data_dict['resource']),
                 'resource_url': json.dumps(url)}
 
-    def view_template(self, context: Context, data_dict: Dict[str, Any]):
+    def view_template(self, context: Context, data_dict: dict[str, Any]):
         return 'text_view.html'
 
-    def form_template(self, context: Context, data_dict: Dict[str, Any]):
+    def form_template(self, context: Context, data_dict: dict[str, Any]):
         return 'text_form.html'

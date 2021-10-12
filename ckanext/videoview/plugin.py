@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 import ckan.plugins as p
 from ckan.types import Context
@@ -25,7 +26,7 @@ class VideoView(p.SingletonPlugin):
             'ckan.preview.video_formats',
             DEFAULT_VIDEO_FORMATS).split()
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         return {'name': 'video_view',
                 'title': p.toolkit._('Video'),
                 'icon': 'file-video-o',
@@ -36,12 +37,12 @@ class VideoView(p.SingletonPlugin):
                 'default_title': p.toolkit._('Video'),
                 }
 
-    def can_view(self, data_dict: Dict[str, Any]):
+    def can_view(self, data_dict: dict[str, Any]):
         return (data_dict['resource'].get('format', '').lower()
                 in self.formats)
 
-    def view_template(self, context: Context, data_dict: Dict[str, Any]):
+    def view_template(self, context: Context, data_dict: dict[str, Any]):
         return 'video_view.html'
 
-    def form_template(self, context: Context, data_dict: Dict[str, Any]):
+    def form_template(self, context: Context, data_dict: dict[str, Any]):
         return 'video_form.html'

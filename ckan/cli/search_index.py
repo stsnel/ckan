@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import multiprocessing as mp
-from typing import Any, List
+from typing import Any
 
 import click
 import sqlalchemy as sa
@@ -88,11 +89,11 @@ def rebuild_fast():
     for row in result:
         package_ids.append(row[0])
 
-    def start(ids: List[str]):
+    def start(ids: list[str]):
         from ckan.lib.search import rebuild
         rebuild(package_ids=ids)
 
-    def chunks(list_: List[Any], n: int):
+    def chunks(list_: list[Any], n: int):
         u""" Yield n successive chunks from list_"""
         newn = int(len(list_) / n)
         for i in range(0, n - 1):

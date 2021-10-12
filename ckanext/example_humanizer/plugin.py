@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 import ckan.plugins as p
 
 
@@ -8,7 +9,7 @@ class ExampleHumanizerPlugin(p.SingletonPlugin, p.toolkit.DefaultGroupForm):
     p.implements(p.ITemplateHelpers)
     p.implements(p.IGroupForm)
 
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         return {
             u'humanize_entity_type': humanize_entity_type
         }

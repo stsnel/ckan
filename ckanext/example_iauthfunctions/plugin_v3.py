@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import (
     AuthFunction, AuthResult, Context, ContextValidator, DataDict)
-from typing import Dict, Optional, cast
+from typing import Optional, cast
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
@@ -38,5 +39,5 @@ def group_create(
 class ExampleIAuthFunctionsPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IAuthFunctions)
 
-    def get_auth_functions(self) -> Dict[str, AuthFunction]:
+    def get_auth_functions(self) -> dict[str, AuthFunction]:
         return {'group_create': group_create}

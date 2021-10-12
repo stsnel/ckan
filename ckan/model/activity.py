@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, Optional, Type, TypeVar
 
 from sqlalchemy import (
     orm,
@@ -61,13 +62,13 @@ class Activity(domain_object.DomainObject):
     object_id: str
     revision_id: str
     activity_type: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
     activity_detail: 'ActivityDetail'
 
     def __init__(
             self, user_id: str, object_id: str, activity_type: str,
-            data: Optional[Dict[str, Any]]=None) -> None:
+            data: Optional[dict[str, Any]]=None) -> None:
         self.id = _types.make_uuid()
         self.timestamp = datetime.datetime.utcnow()
         self.user_id = user_id
@@ -97,12 +98,12 @@ class ActivityDetail(domain_object.DomainObject):
     object_id: str
     object_type: str
     activity_type: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
     activity: Activity
     def __init__(
             self, activity_id: str, object_id: str, object_type: str,
-            activity_type: str, data: Optional[Dict[str, Any]] = None) -> None:
+            activity_type: str, data: Optional[dict[str, Any]] = None) -> None:
         self.activity_id = activity_id
         self.object_id = object_id
         self.object_type = object_type
@@ -113,7 +114,7 @@ class ActivityDetail(domain_object.DomainObject):
             self.data = data
 
     @classmethod
-    def by_activity_id(cls: Type[TActivityDetail], activity_id: str) -> List["TActivityDetail"]:
+    def by_activity_id(cls: Type[TActivityDetail], activity_id: str) -> list["TActivityDetail"]:
         return ckan.model.Session.query(cls) \
             .filter_by(activity_id=activity_id).all()
 
@@ -150,7 +151,7 @@ def _activities_union_all(*qlist: 'Query[Activity]') -> 'Query[Activity]':
 
 
 def _activities_at_offset(q: 'Query[Activity]',
-                          limit: int, offset: int) -> List[Activity]:
+                          limit: int, offset: int) -> list[Activity]:
     '''
     Return a list of all activities at an offset with a limit.
     '''
@@ -181,7 +182,7 @@ def _user_activity_query(user_id: str, limit: int) -> 'Query[Activity]':
 
 
 def user_activity_list(user_id: str, limit: int,
-                       offset: int) -> List[Activity]:
+                       offset: int) -> list[Activity]:
     '''Return user_id's public activity stream.
 
     Return a list of all activities from or about the given user, i.e. where
@@ -212,8 +213,8 @@ def _package_activity_query(package_id: str) -> 'Query[Activity]':
 def package_activity_list(
         package_id: str, limit: int, offset: int,
         include_hidden_activity: bool = False,
-        activity_types: Optional[List[str]] = None,
-        exclude_activity_types: Optional[List[str]] = None) -> List[Activity]:
+        activity_types: Optional[list[str]] = None,
+        exclude_activity_types: Optional[list[str]] = None) -> list[Activity]:
     '''Return the given dataset (package)'s public activity stream.
 
     Returns all activities about the given dataset, i.e. where the given
@@ -338,7 +339,7 @@ def _organization_activity_query(
 
 def group_activity_list(
         group_id: str, limit: int, offset: int,
-        include_hidden_activity: bool = False) -> List[Activity]:
+        include_hidden_activity: bool = False) -> list[Activity]:
 
     '''Return the given group's public activity stream.
 
@@ -356,7 +357,7 @@ def group_activity_list(
 
 def organization_activity_list(
         group_id: str, limit: int, offset: int,
-        include_hidden_activity: bool = False) -> List[Activity]:
+        include_hidden_activity: bool = False) -> list[Activity]:
     '''Return the given org's public activity stream.
 
     Returns activities where the given org or one of its datasets is the
@@ -434,7 +435,7 @@ def _activities_from_everything_followed_by_user_query(
 
 
 def activities_from_everything_followed_by_user(
-        user_id: str, limit: int, offset: int) -> List[Activity]:
+        user_id: str, limit: int, offset: int) -> list[Activity]:
     '''Return activities from everything that the given user is following.
 
     Returns all activities where the object of the activity is anything
@@ -455,7 +456,7 @@ def _dashboard_activity_query(user_id: str, limit: int) -> 'Query[Activity]':
 
 
 def dashboard_activity_list(
-        user_id: str, limit: int, offset: int) -> List[Activity]:
+        user_id: str, limit: int, offset: int) -> list[Activity]:
     '''Return the given user's dashboard activity stream.
 
     Returns activities from the user's public activity stream, plus
@@ -486,7 +487,7 @@ def _changed_packages_activity_query() -> 'Query[Activity]':
 
 
 def recently_changed_packages_activity_list(
-        limit: int, offset: int) -> List[Activity]:
+        limit: int, offset: int) -> list[Activity]:
     '''Return the site-wide stream of recently changed package activities.
 
     This activity stream includes recent 'new package', 'changed package' and
@@ -514,7 +515,7 @@ def _filter_activitites_from_users(q: 'Query[Activity]') -> 'Query[Activity]':
     return q
 
 def _filter_activitites_from_type(
-        q: "Query[Activity]", types: List[str], include: bool = True):
+        q: "Query[Activity]", types: list[str], include: bool = True):
     '''Adds a filter to an existing query object to include or exclude
     (include=False) activities based on a list of types.
 
@@ -529,7 +530,7 @@ def _filter_activitites_from_type(
         )
     return q
 
-def _activity_stream_get_filtered_users() -> List[str]:
+def _activity_stream_get_filtered_users() -> list[str]:
     '''
     Get the list of users from the :ref:`ckan.hide_activity_from_users` config
     option and return a list of their ids. If the config is not specified,

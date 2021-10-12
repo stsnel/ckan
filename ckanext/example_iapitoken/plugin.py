@@ -3,7 +3,9 @@
 level.
 
 """
-from typing import Any, Dict
+from __future__ import annotations
+
+from typing import Any
 from ckan.types import Schema
 import json
 from datetime import datetime
@@ -25,7 +27,7 @@ class ExampleIApiTokenPlugin(p.SingletonPlugin):
     def create_api_token_schema(self, schema: Schema):
         return schema
 
-    def encode_api_token(self, data: Dict[str, Any], **kwargs: Any):
+    def encode_api_token(self, data: dict[str, Any], **kwargs: Any):
         for k, v in data.items():
             if isinstance(v, datetime):
                 data[k] = v.timestamp()
@@ -35,12 +37,12 @@ class ExampleIApiTokenPlugin(p.SingletonPlugin):
     def decode_api_token(self, token: str, **kwargs: Any):
         return json.loads(token)
 
-    def postprocess_api_token(self, data: Dict[str, Any], jti: str,
-                              data_dict: Dict[str, Any]):
+    def postprocess_api_token(self, data: dict[str, Any], jti: str,
+                              data_dict: dict[str, Any]):
         data[u"jti"] = u"!" + jti + u"!"
         return data
 
-    def preprocess_api_token(self, data: Dict[str, Any]):
+    def preprocess_api_token(self, data: dict[str, Any]):
         """Decode token. If it has `last_access` remove it.
         """
         token = data[u"jti"][1:-1]
@@ -51,6 +53,6 @@ class ExampleIApiTokenPlugin(p.SingletonPlugin):
             model.ApiToken.revoke(token)
         return data
 
-    def add_extra_fields(self, data_dict: Dict[str, Any]):
+    def add_extra_fields(self, data_dict: dict[str, Any]):
         data_dict[u"hello"] = u"world"
         return data_dict

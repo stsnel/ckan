@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import copy
 import datetime
 from secrets import token_urlsafe
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from sqlalchemy import types, Column, Table, ForeignKey, orm
 from sqlalchemy.dialects.postgresql import JSONB
@@ -40,7 +41,7 @@ class ApiToken(domain_object.DomainObject):
     user_id: Optional[str]
     created_at: datetime.datetime
     last_access: Optional[datetime.datetime]
-    plugin_extras: Dict[str, Any]
+    plugin_extras: dict[str, Any]
     owner: Optional[user.User]
 
     def __init__(

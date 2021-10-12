@@ -1,7 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
-from typing import Dict
 
 from sqlalchemy import types, Column, Table, text
 
@@ -39,7 +39,7 @@ class TrackingSummary(domain_object.DomainObject):
     tracking_date: datetime.datetime
 
     @classmethod
-    def get_for_package(cls, package_id: str) -> Dict[str, int]:
+    def get_for_package(cls, package_id: str) -> dict[str, int]:
         obj = meta.Session.query(cls).autoflush(False)
         obj = obj.filter_by(package_id=package_id)
         data = obj.order_by(text('tracking_date desc')).first()
@@ -51,7 +51,7 @@ class TrackingSummary(domain_object.DomainObject):
 
 
     @classmethod
-    def get_for_resource(cls, url: str) -> Dict[str, int]:
+    def get_for_resource(cls, url: str) -> dict[str, int]:
         obj = meta.Session.query(cls).autoflush(False)
         data = obj.filter_by(url=url).order_by(text('tracking_date desc')).first()
         if data:

@@ -4,8 +4,10 @@
 
 Provides the BaseController class for subclassing.
 """
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict, NoReturn, Optional
+from typing import Any, NoReturn, Optional
 
 from jinja2.exceptions import TemplateNotFound, TemplatesNotFound
 
@@ -29,7 +31,7 @@ APIKEY_HEADER_NAME_DEFAULT = 'X-CKAN-API-Key'
 
 def abort(status_code: int,
           detail: str = '',
-          headers: Optional[Dict[str, Any]] = None,
+          headers: Optional[dict[str, Any]] = None,
           comment: Optional[str] = None) -> NoReturn:
     '''Abort the current request immediately by returning an HTTP exception.
 
@@ -88,7 +90,7 @@ def render_snippet(*template_names: str, **kw: Any) -> str:
 
 
 def render(template_name: str,
-           extra_vars: Optional[Dict[str, Any]] = None) -> str:
+           extra_vars: Optional[dict[str, Any]] = None) -> str:
     '''Render a template and return the output.
 
     This is CKAN's main template rendering function.

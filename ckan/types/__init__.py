@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
 from functools import partial
 from typing import (
     Any,
     Callable,
-    Dict,
     Iterable,
-    List,
     Mapping,
     Optional,
-    Tuple,
     Union,
 )
 
-from typing_extensions import Protocol, TypedDict
+from typing_extensions import Protocol, TypeAlias, TypedDict
 from blinker import Signal
 from flask.wrappers import Response, Request  # re-export
 
@@ -24,19 +22,19 @@ from .model import (
     Model, AlchemySession, Query
 )  # re-export
 
-Config = Dict[str, Union[str, Mapping[str, str]]]
+Config: TypeAlias = "dict[str, Union[str, Mapping[str, str]]]"
 CKANApp = Any
 
 # dictionary passed to actions
-DataDict = Dict[str, Any]
+DataDict: TypeAlias = "dict[str, Any]"
 # dictionary passed to the ValidationError
-ErrorDict = Dict[str, Union[int, str, List[Union[str, Dict[str, Any]]]]]
+ErrorDict: TypeAlias = "dict[str, Union[int, str, list[Union[str, dict[str, Any]]]]]"
 
-FlattenKey = Tuple[Any, ...]
-FlattenDataDict = Dict[FlattenKey, Any]
-FlattenErrorDict = Dict[FlattenKey, List[str]]
+FlattenKey: TypeAlias = "tuple[Any, ...]"
+FlattenDataDict: TypeAlias = "dict[FlattenKey, Any]"
+FlattenErrorDict: TypeAlias = "dict[FlattenKey, list[str]]"
 
-SignalMapping = Dict[Signal, Iterable[Union[Any, Dict[str, Any]]]]
+SignalMapping: TypeAlias = "dict[Signal, Iterable[Union[Any, dict[str, Any]]]]"
 
 
 class Context(TypedDict, total=False):
@@ -52,11 +50,11 @@ class Context(TypedDict, total=False):
     session: AlchemySession
 
     __auth_user_obj_checked: bool
-    __auth_audit: List[Tuple[str, int]]
+    __auth_audit: list[tuple[str, int]]
     auth_user_obj: Optional["Model.User"]
     user_obj: "Model.User"
 
-    schema_keys: List[Any]
+    schema_keys: list[Any]
     revision_id: Optional[Any]
     revision_date: Optional[Any]
 
@@ -103,12 +101,12 @@ class Context(TypedDict, total=False):
     resource_view: "Model.ResourceView"
     relationship: "Model.PackageRelationship"
     api_version: int
-    dataset_counts: Dict[str, Any]
-    limits: Dict[str, Any]
+    dataset_counts: dict[str, Any]
+    limits: dict[str, Any]
     metadata_modified: str
     with_capacity: bool
 
-    table_names: List[str]
+    table_names: list[str]
 
 
 class AuthResult(TypedDict, total=False):
@@ -129,7 +127,7 @@ DataValidator = Callable[
 Validator = Union[ValueValidator, ContextValidator, DataValidator]
 ValidatorFactory = Callable[..., Validator]
 
-Schema = Dict[str, Union[List[Validator], "Schema"]]
+Schema: TypeAlias = "dict[str, Union[list[Validator], Schema]]"
 
 # Function that accepts arbitary number of validators(decorated by
 # ckan.logic.schema.validator_args) and returns Schema dictionary
@@ -196,7 +194,7 @@ class PUploader(Protocol):
 
     def update_data_dict(
         self,
-        data_dict: Dict[str, Any],
+        data_dict: dict[str, Any],
         url_field: str,
         file_field: str,
         clear_field: str,
@@ -211,7 +209,7 @@ class PResourceUploader(Protocol):
     mimetype: Optional[str]
     filesize: int
 
-    def __init__(self, resource: Dict[str, Any]) -> None:
+    def __init__(self, resource: dict[str, Any]) -> None:
         ...
 
     def get_path(self, id: str) -> str:

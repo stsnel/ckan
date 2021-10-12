@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import warnings
 import logging
@@ -6,7 +7,7 @@ import os
 import re
 from time import sleep
 from os.path import splitext
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 from sqlalchemy import MetaData, Table
 from sqlalchemy.exc import ProgrammingError
@@ -173,7 +174,7 @@ class Repository():
         os.path.dirname(ckan.migration.__file__),
         u"alembic.ini"
     )
-    _alembic_output: List[Tuple[str, ...]]
+    _alembic_output: list[tuple[str, ...]]
 
     # note: tables_created value is not sustained between instantiations
     #       so only useful for tests. The alternative is to use
@@ -265,7 +266,7 @@ class Repository():
         self._alembic_output.append(args)
 
     def take_alembic_output(self,
-                            with_reset: bool=True) -> List[Tuple[str, ...]]:
+                            with_reset: bool=True) -> list[tuple[str, ...]]:
         output = self._alembic_output
         if with_reset:
             self.reset_alembic_output()
@@ -364,7 +365,7 @@ def is_id(id_string: str) -> bool:
 
 
 def parse_db_config(
-        config_key: str=u'sqlalchemy.url') -> Optional[Dict[str, str]]:
+        config_key: str=u'sqlalchemy.url') -> Optional[dict[str, str]]:
     u''' Takes a config key for a database connection url and parses it into
     a dictionary. Expects a url like:
 

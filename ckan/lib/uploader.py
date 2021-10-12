@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import os
 import cgi
@@ -6,7 +7,7 @@ import datetime
 import logging
 import magic
 import mimetypes
-from typing import Any, Dict, IO, Optional, Union
+from typing import Any, IO, Optional, Union
 from urllib.parse import urlparse
 
 from werkzeug.datastructures import FileStorage as FlaskFileStorage
@@ -66,7 +67,7 @@ def get_uploader(upload_to: str,
     return upload
 
 
-def get_resource_uploader(data_dict: Dict[str, Any]) -> PResourceUploader:
+def get_resource_uploader(data_dict: dict[str, Any]) -> PResourceUploader:
     '''Query IUploader plugins and return a resource uploader instance.'''
     upload = None
     for plugin in plugins.PluginImplementations(plugins.IUploader):
@@ -147,7 +148,7 @@ class Upload(object):
         if old_filename:
             self.old_filepath = os.path.join(self.storage_path, old_filename)
 
-    def update_data_dict(self, data_dict: Dict[str, Any], url_field: str,
+    def update_data_dict(self, data_dict: dict[str, Any], url_field: str,
                          file_field: str, clear_field: str) -> None:
         ''' Manipulate data from the data_dict.  url_field is the name of the
         field where the upload is going to be. file_field is name of the key
@@ -214,7 +215,7 @@ class Upload(object):
 class ResourceUpload(object):
     mimetype: Optional[str]
 
-    def __init__(self, resource: Dict[str, Any]) -> None:
+    def __init__(self, resource: dict[str, Any]) -> None:
         path = get_storage_path()
         config_mimetype_guess = config.get('ckan.mimetype_guess', 'file_ext')
 

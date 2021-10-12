@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, List
+from typing import Any
 from ckan import plugins
 from ckan.lib.plugins import DefaultPermissionLabels
 from ckan.plugins.toolkit import get_action
@@ -16,7 +17,7 @@ class ExampleIPermissionLabelsPlugin(
     '''
     plugins.implements(plugins.IPermissionLabels)
 
-    def get_dataset_labels(self, dataset_obj: Any) -> List[str]:
+    def get_dataset_labels(self, dataset_obj: Any) -> list[str]:
         u'''
         Use creator-*, admin-* labels for proposed datasets
         '''
@@ -29,7 +30,7 @@ class ExampleIPermissionLabelsPlugin(
         return super(ExampleIPermissionLabelsPlugin, self).get_dataset_labels(
             dataset_obj)
 
-    def get_user_dataset_labels(self, user_obj: Any) -> List[str]:
+    def get_user_dataset_labels(self, user_obj: Any) -> list[str]:
         u'''
         Include admin-* labels for users in addition to default labels
         creator-*, member-* and public

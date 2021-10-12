@@ -1,65 +1,67 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
 from typing import (
-    Any, Dict, List, Optional, Tuple, Union
+    Any, List, Optional, Tuple, Union
 )
 from typing_extensions import TypeAlias
 
 from ..model import Query, Model
 
+AnyDict: TypeAlias = "dict[str, Any]"
 ###############################################################################
 #                                     get                                     #
 ###############################################################################
 PackageList = List[str]
-CurrentPackageListWithResources = List[Dict[str, Any]]
+CurrentPackageListWithResources = List[AnyDict]
 MemberList = List[Tuple[Any, ...]]
-PackageCollaboratorList = List[Dict[str, Any]]
+PackageCollaboratorList = List[AnyDict]
 PackageCollaboratorListForUser = PackageCollaboratorList
-GroupList = List[Dict[str, Any]]
-OrganizationList = List[Dict[str, Any]]
-GroupListAuthz = List[Dict[str, Any]]
-OrganizationListForUser = List[Dict[str, Any]]
-LicenseList = List[Dict[str, Any]]
-TagList = Union[List[Dict[str, Any]], List[str]]
-UserList = Union[List[Dict[str, Any]], List[str], "Query[Model.User]"]
-PackageRelationshipsList = List[Dict[str, Any]]
-PackageShow = Dict[str, Any]
-ResourceShow = Dict[str, Any]
-ResourceViewShow = Dict[str, Any]
-ResourceViewList = List[Dict[str, Any]]
-GroupShow = Dict[str, Any]
-OrganizationShow = Dict[str, Any]
-GroupPackageShow = List[Dict[str, Any]]
-TagShow = Dict[str, Any]
-UserShow = Dict[str, Any]
-PackageAutocomplete = List[Dict[str, Any]]
+GroupList = List[AnyDict]
+OrganizationList = List[AnyDict]
+GroupListAuthz = List[AnyDict]
+OrganizationListForUser = List[AnyDict]
+LicenseList = List[AnyDict]
+TagList = Union[List[AnyDict], List[str]]
+UserList = Union[List[AnyDict], List[str], "Query[Model.User]"]
+PackageRelationshipsList = List[AnyDict]
+PackageShow = AnyDict
+ResourceShow = AnyDict
+ResourceViewShow = AnyDict
+ResourceViewList = List[AnyDict]
+GroupShow = AnyDict
+OrganizationShow = AnyDict
+GroupPackageShow = List[AnyDict]
+TagShow = AnyDict
+UserShow = AnyDict
+PackageAutocomplete = List[AnyDict]
 FormatAutocomplete = List[str]
-UserAutocomplete = List[Dict[str, Any]]
-GroupAutocomplete = List[Dict[str, Any]]
-OrganizationAutocomplete = List[Dict[str, Any]]
-PackageSearch = Dict[str, Any]
-ResourceSearch = Dict[str, Any]
-TagSearch = Dict[str, Any]
+UserAutocomplete = List[AnyDict]
+GroupAutocomplete = List[AnyDict]
+OrganizationAutocomplete = List[AnyDict]
+PackageSearch = AnyDict
+ResourceSearch = AnyDict
+TagSearch = AnyDict
 TagAutocomplete = List[str]
-TaskStatusShow = Dict[str, Any]
-TermTranslationShow = List[Dict[str, Any]]
-GetSiteUser = Dict[str, Any]
-StatusShow = Dict[str, Any]
-VocabularyList = List[Dict[str, Any]]
-VocabularyShow = Dict[str, Any]
-UserActivityList = List[Dict[str, Any]]
-PackageActivityList = List[Dict[str, Any]]
-GroupActivityList = List[Dict[str, Any]]
-OrganizationActivityList = List[Dict[str, Any]]
-RecentlyChangedPackagesActivityList = List[Dict[str, Any]]
+TaskStatusShow = AnyDict
+TermTranslationShow = List[AnyDict]
+GetSiteUser = AnyDict
+StatusShow = AnyDict
+VocabularyList = List[AnyDict]
+VocabularyShow = AnyDict
+UserActivityList = List[AnyDict]
+PackageActivityList = List[AnyDict]
+GroupActivityList = List[AnyDict]
+OrganizationActivityList = List[AnyDict]
+RecentlyChangedPackagesActivityList = List[AnyDict]
 UserFollowerCount = int
 DatasetFollowerCount = int
 GroupFollowerCount = int
 OrganizationFollowerCount = int
-UserFollowerList = List[Dict[str, Any]]
-DatasetFollowerList = List[Dict[str, Any]]
-GroupFollowerList = List[Dict[str, Any]]
-OrganizationFollowerList = List[Dict[str, Any]]
+UserFollowerList = List[AnyDict]
+DatasetFollowerList = List[AnyDict]
+GroupFollowerList = List[AnyDict]
+OrganizationFollowerList = List[AnyDict]
 AmFollowingUser = bool
 AmFollowingDataset = bool
 AmFollowingGroup = bool
@@ -67,49 +69,49 @@ FolloweeCount = int
 UserFolloweeCount = int
 DatasetFolloweeCount = int
 GroupFolloweeCount = int
-FolloweeList = List[Dict[str, Any]]
-UserFolloweeList = List[Dict[str, Any]]
-DatasetFolloweeList = List[Dict[str, Any]]
-GroupFolloweeList = List[Dict[str, Any]]
-OrganizationFolloweeList = List[Dict[str, Any]]
-DashboardActivityList = List[Dict[str, Any]]
+FolloweeList = List[AnyDict]
+UserFolloweeList = List[AnyDict]
+DatasetFolloweeList = List[AnyDict]
+GroupFolloweeList = List[AnyDict]
+OrganizationFolloweeList = List[AnyDict]
+DashboardActivityList = List[AnyDict]
 DashboardNewActivitiesCount = int
-ActivityShow = Dict[str, Any]
-ActivityDataShow = Dict[str, Any]
-ActivityDiff = Dict[str, Any]
-MemberRolesList = List[Dict[str, Any]]
+ActivityShow = AnyDict
+ActivityDataShow = AnyDict
+ActivityDiff = AnyDict
+MemberRolesList = List[AnyDict]
 HelpShow = Optional[str]
 ConfigOptionShow = Any
 ConfigOptionList = List[str]
-JobList = List[Dict[str, Any]]
-JobShow = Dict[str, Any]
-ApiTokenList = List[Dict[str, Any]]
+JobList = List[AnyDict]
+JobShow = AnyDict
+ApiTokenList = List[AnyDict]
 
 ###############################################################################
 #                                    create                                   #
 ###############################################################################
-PackageCreate = Union[Dict[str, Any], str]
-ResourceCreate = Dict[str, Any]
-ResourceViewCreate = Dict[str, Any]
-ResourceCreateDefaultResourceViews = List[Dict[str, Any]]
-PackageCreateDefaultResourceViews = List[Dict[str, Any]]
-PackageRelationshipCreate = Dict[str, Any]
-MemberCreate = Dict[str, Any]
-PackageCollaboratorCreate = Dict[str, Any]
-GroupCreate = Union[str, Dict[str, Any]]
-OrganizationCreate = Union[str, Dict[str, Any]]
-UserCreate = Dict[str, Any]
-UserInvite = Dict[str, Any]
-VocabularyCreate = Dict[str, Any]
-ActivityCreate = Optional[Dict[str, Any]]
-TagCreate = Dict[str, Any]
-FollowUser = Dict[str, Any]
-FollowDataset = Dict[str, Any]
-GroupOrOrgMemberCreate = Dict[str, Any]
-GroupMemberCreate = Dict[str, Any]
-OrganizationMemberCreate = Dict[str, Any]
-FollowGroup = Dict[str, Any]
-ApiTokenCreate = Dict[str, Any]
+PackageCreate = Union[AnyDict, str]
+ResourceCreate = AnyDict
+ResourceViewCreate = AnyDict
+ResourceCreateDefaultResourceViews = List[AnyDict]
+PackageCreateDefaultResourceViews = List[AnyDict]
+PackageRelationshipCreate = AnyDict
+MemberCreate = AnyDict
+PackageCollaboratorCreate = AnyDict
+GroupCreate = Union[str, AnyDict]
+OrganizationCreate = Union[str, AnyDict]
+UserCreate = AnyDict
+UserInvite = AnyDict
+VocabularyCreate = AnyDict
+ActivityCreate = Optional[AnyDict]
+TagCreate = AnyDict
+FollowUser = AnyDict
+FollowDataset = AnyDict
+GroupOrOrgMemberCreate = AnyDict
+GroupMemberCreate = AnyDict
+OrganizationMemberCreate = AnyDict
+FollowGroup = AnyDict
+ApiTokenCreate = AnyDict
 
 ###############################################################################
 #                                    delete                                   #
@@ -130,32 +132,32 @@ ApiTokenRevoke: TypeAlias = None
 ###############################################################################
 #                                    patch                                    #
 ###############################################################################
-PackagePatch = Union[str, Dict[str, Any]]
-ResourcePatch = Dict[str, Any]
-GroupPatch = Dict[str, Any]
-OrganizationPatch = Dict[str, Any]
-UserPatch = Dict[str, Any]
+PackagePatch = Union[str, AnyDict]
+ResourcePatch = AnyDict
+GroupPatch = AnyDict
+OrganizationPatch = AnyDict
+UserPatch = AnyDict
 
 ###############################################################################
 #                                    update                                   #
 ###############################################################################
-ResourceUpdate = Dict[str, Any]
-ResourceViewUpdate = Dict[str, Any]
-ResourceViewReorder = Dict[str, Any]
-PackageUpdate = Union[str, Dict[str, Any]]
-ConfigOptionUpdate = Dict[str, Any]
-PackageRevise = Dict[str, Any]
-PackageResourceReorder = Dict[str, Any]
-PackageRelationshipUpdate = Dict[str, Any]
-GroupUpdate = Dict[str, Any]
-OrganizationUpdate = Dict[str, Any]
-UserUpdate = Dict[str, Any]
-UserGenerateApikey = Dict[str, Any]
-TaskStatusUpdate = Dict[str, Any]
-TaskStatusUpdateMany = Dict[str, Any]
-TermTranslationUpdate = Dict[str, Any]
-TermTranslationUpdateMany = Dict[str, Any]
-VocabularyUpdate = Dict[str, Any]
+ResourceUpdate = AnyDict
+ResourceViewUpdate = AnyDict
+ResourceViewReorder = AnyDict
+PackageUpdate = Union[str, AnyDict]
+ConfigOptionUpdate = AnyDict
+PackageRevise = AnyDict
+PackageResourceReorder = AnyDict
+PackageRelationshipUpdate = AnyDict
+GroupUpdate = AnyDict
+OrganizationUpdate = AnyDict
+UserUpdate = AnyDict
+UserGenerateApikey = AnyDict
+TaskStatusUpdate = AnyDict
+TaskStatusUpdateMany = AnyDict
+TermTranslationUpdate = AnyDict
+TermTranslationUpdateMany = AnyDict
+VocabularyUpdate = AnyDict
 DashboardMarkActivitiesOld: TypeAlias = None
 SendEmailNotifications: TypeAlias = None
 PackageOwnerOrgUpdate: TypeAlias = None

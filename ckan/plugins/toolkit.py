@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import sys
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple, Union, cast
+from typing import Any, Optional, TYPE_CHECKING, Union, cast
 from types import ModuleType
 from ckan.common import CKANConfig
 
@@ -340,7 +341,7 @@ For example: ``bar = toolkit.aslist(config.get('ckan.foo.bar', []))``
     @classmethod
     def _render_snippet(cls,
                         template: str,
-                        data: Optional[Dict[str, Any]] = None
+                        data: Optional[dict[str, Any]] = None
                         ) -> '_helpers.Markup':
         '''Render a template snippet and return the output.
 
@@ -455,7 +456,7 @@ For example: ``bar = toolkit.aslist(config.get('ckan.foo.bar', []))``
         config.update({config_var: admin_tabs_dict})
 
     @classmethod
-    def _version_str_2_list(cls, v_str: str) -> List[int]:
+    def _version_str_2_list(cls, v_str: str) -> list[int]:
         ''' convert a version string into a list of ints
         eg 1.6.1b --> [1, 6, 1] '''
         import re
@@ -534,7 +535,7 @@ For example: ``bar = toolkit.aslist(config.get('ckan.foo.bar', []))``
             raise CkanVersionException(error)
 
     @classmethod
-    def _get_endpoint(cls) -> Union[Tuple[str, str], Tuple[None, None]]:
+    def _get_endpoint(cls) -> Union[tuple[str, str], tuple[None, None]]:
         """Returns tuple in format: (blueprint, view)."""
         from ckan.common import request
 
@@ -557,7 +558,7 @@ For example: ``bar = toolkit.aslist(config.get('ckan.foo.bar', []))``
                 return self.__class__.__bases__
             raise AttributeError('`%s` not found in plugins toolkit' % name)
 
-    def __dir__(self) -> List[str]:
+    def __dir__(self) -> list[str]:
         if not self._toolkit:
             self._initialize()
         return sorted(self._toolkit.keys())
@@ -584,7 +585,7 @@ if TYPE_CHECKING:
 
     import ckan.common as converters
 
-    docstring_overrides: Dict[str, str]
+    docstring_overrides: dict[str, str]
     config = common.config
     _ = common._
     ungettext = common.ungettext
@@ -633,7 +634,7 @@ if TYPE_CHECKING:
     blanket = _blanket
 
     def render_snippet(template: str,
-                       data: Optional[Dict[str, Any]] = ...
+                       data: Optional[dict[str, Any]] = ...
                        ) -> _helpers.Markup:
         ...
 
@@ -667,7 +668,7 @@ if TYPE_CHECKING:
     ) -> bool:
         ...
 
-    def get_endpoint() -> Union[Tuple[str, str], Tuple[None, None]]:
+    def get_endpoint() -> Union[tuple[str, str], tuple[None, None]]:
         ...
 
     CkanVersionException = CkanVersionException

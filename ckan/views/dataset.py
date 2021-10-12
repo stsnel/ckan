@@ -1,11 +1,14 @@
 # encoding: utf-8
+from __future__ import annotations
+
 import logging
 import inspect
 from collections import OrderedDict
 from functools import partial
+from typing_extensions import TypeAlias
 from urllib.parse import urlencode
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Iterable, Optional, Union, cast
 
 from flask import Blueprint
 from flask.views import MethodView
@@ -48,7 +51,7 @@ dataset = Blueprint(
 
 
 def _setup_template_variables(context: Context,
-                              data_dict: Dict[str, Any],
+                              data_dict: dict[str, Any],
                               package_type: Optional[str] = None) -> None:
     return lookup_package_plugin(package_type).setup_template_variables(
         context, data_dict
@@ -66,12 +69,12 @@ def _get_pkg_template(template_type: str,
         return method()
 
 
-def _encode_params(params: Iterable[Tuple[str, Any]]):
+def _encode_params(params: Iterable[tuple[str, Any]]):
     return [(k, v.encode(u'utf-8') if isinstance(v, str) else str(v))
             for k, v in params]
 
 
-Params = List[Tuple[str, Any]]
+Params: TypeAlias = "list[tuple[str, Any]]"
 
 
 def url_with_params(url: str, params: Params) -> str:
@@ -111,7 +114,7 @@ def remove_field(package_type: Optional[str],
 
 
 def _sort_by(params_nosort: Params, package_type: str,
-             fields: Iterable[Tuple[str, str]]) -> str:
+             fields: Iterable[tuple[str, str]]) -> str:
     """Sort by the given list of fields.
 
     Each entry in the list is a 2-tuple: (fieldname, sort_order)
@@ -135,7 +138,7 @@ def _pager_url(params_nopage: Params,
     return search_url(params, package_type)
 
 
-def _tag_string_to_list(tag_string: str) -> List[Dict[str, str]]:
+def _tag_string_to_list(tag_string: str) -> list[dict[str, str]]:
     """This is used to change tags from a sting to a list of dicts.
     """
     out = []
@@ -179,7 +182,7 @@ def _get_package_type(id: str) -> str:
     return u'dataset'
 
 
-def _get_search_details() -> Dict[str, Any]:
+def _get_search_details() -> dict[str, Any]:
     fq = u''
 
     # fields_grouped will contain a dict of params containing
@@ -215,7 +218,7 @@ def _get_search_details() -> Dict[str, Any]:
 
 
 def search(package_type: str) -> str:
-    extra_vars: Dict[str, Any] = {}
+    extra_vars: dict[str, Any] = {}
 
     try:
         context = cast(Context, {
@@ -655,9 +658,9 @@ class CreateView(MethodView):
 
     def get(self,
             package_type: str,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None) -> str:
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None) -> str:
         context = self._prepare()
         if data and u'type' in data:
             package_type = data[u'type']
@@ -783,9 +786,9 @@ class EditView(MethodView):
     def get(self,
             package_type: str,
             id: str,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None
             ) -> Union[Response, str]:
         context = self._prepare()
         package_type = _get_package_type(id) or package_type
@@ -835,7 +838,7 @@ class EditView(MethodView):
         form_snippet = _get_pkg_template(
             u'package_form', package_type=package_type
         )
-        form_vars: Dict[str, Any] = {
+        form_vars: dict[str, Any] = {
             u'data': data,
             u'errors': errors,
             u'error_summary': error_summary,
@@ -1026,7 +1029,7 @@ def followers(package_type: str,
 
 
 class GroupView(MethodView):
-    def _prepare(self, id: str) -> Tuple[Context, Dict[str, Any]]:
+    def _prepare(self, id: str) -> tuple[Context, dict[str, Any]]:
         context = cast(Context, {
             u'model': model,
             u'session': model.Session,

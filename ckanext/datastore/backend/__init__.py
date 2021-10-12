@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
 from ckan.types import Context
 import re
 import logging
-from typing import Any, Container, Dict, List
+from typing import Any, Container
 
 import ckan.plugins as plugins
 from ckan.common import CKANConfig, config
@@ -12,7 +13,7 @@ from ckanext.datastore.interfaces import IDatastoreBackend
 log = logging.getLogger(__name__)
 
 
-def get_all_resources_ids_in_datastore() -> List[str]:
+def get_all_resources_ids_in_datastore() -> list[str]:
     """
     Helper for getting id of all resources in datastore.
 
@@ -112,7 +113,7 @@ class DatastoreBackend:
 
         return config
 
-    def create(self, context: Context, data_dict: Dict[str, Any]) -> Any:
+    def create(self, context: Context, data_dict: dict[str, Any]) -> Any:
         """Create new resourct inside datastore.
 
         Called by `datastore_create`.
@@ -123,7 +124,7 @@ class DatastoreBackend:
         """
         raise NotImplementedError()
 
-    def upsert(self, context: Context, data_dict: Dict[str, Any]) -> Any:
+    def upsert(self, context: Context, data_dict: dict[str, Any]) -> Any:
         """Update or create resource depending on data_dict param.
 
         Called by `datastore_upsert`.
@@ -134,7 +135,7 @@ class DatastoreBackend:
         """
         raise NotImplementedError()
 
-    def delete(self, context: Context, data_dict: Dict[str, Any]) -> Any:
+    def delete(self, context: Context, data_dict: dict[str, Any]) -> Any:
         """Remove resource from datastore.
 
         Called by `datastore_delete`.
@@ -145,7 +146,7 @@ class DatastoreBackend:
         """
         raise NotImplementedError()
 
-    def search(self, context: Context, data_dict: Dict[str, Any]) -> Any:
+    def search(self, context: Context, data_dict: dict[str, Any]) -> Any:
         """Base search.
 
         Called by `datastore_search`.
@@ -169,7 +170,7 @@ class DatastoreBackend:
         """
         raise NotImplementedError()
 
-    def search_sql(self, context: Context, data_dict: Dict[str, Any]) -> Any:
+    def search_sql(self, context: Context, data_dict: dict[str, Any]) -> Any:
         """Advanced search.
 
         Called by `datastore_search_sql`.
@@ -213,7 +214,7 @@ class DatastoreBackend:
         """
         raise NotImplementedError()
 
-    def get_all_ids(self) -> List[str]:
+    def get_all_ids(self) -> list[str]:
         """Return id of all resource registered in datastore.
 
         :returns: all resources ids

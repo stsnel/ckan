@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from typing import Any, Dict
+from __future__ import annotations
+
+from typing import Any
 from ckan.types import Schema
 from ckan.common import CKANConfig
 from datetime import datetime, timedelta
@@ -44,8 +46,8 @@ class ExpireApiTokenPlugin(p.SingletonPlugin):
         ]
         return schema
 
-    def postprocess_api_token(self, data: Dict[str, Any],
-                              jti: str, data_dict: Dict[str, Any]):
+    def postprocess_api_token(self, data: dict[str, Any],
+                              jti: str, data_dict: dict[str, Any]):
         seconds = data_dict.get(u"expires_in", 0) * data_dict.get(u"unit", 0)
         if not seconds:
             seconds = default_token_lifetime()

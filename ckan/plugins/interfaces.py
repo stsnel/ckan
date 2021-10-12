@@ -4,10 +4,11 @@ u'''A collection of interfaces that CKAN plugins can implement to customize and
 extend CKAN.
 
 '''
+from __future__ import annotations
+
 from inspect import isclass
-from typing import (Any, Callable, Dict, Iterable, List, Mapping, Optional, Sequence,
-                    TYPE_CHECKING, Tuple, Type, Union)
-from typing_extensions import TypedDict, Literal
+from typing import (Any, Callable, Iterable, Mapping, Optional, Sequence,
+                    TYPE_CHECKING, Type, Union)
 
 from pyutilib.component.core import Interface as _pca_Interface
 
@@ -321,7 +322,7 @@ class IFeed(Interface):
         return CKANFeed
 
     def get_item_additional_fields(
-            self, dataset_dict: Dict[str, Any]) -> Dict[str, Any]:
+            self, dataset_dict: dict[str, Any]) -> dict[str, Any]:
         """
         Allows plugins to set additional fields on a feed item.
 
@@ -351,7 +352,7 @@ class IResourceView(Interface):
     u'''Add custom view renderings for different resource types.
 
     '''
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         u'''
         Returns a dictionary with configuration options for the view.
 
@@ -425,7 +426,7 @@ class IResourceView(Interface):
         '''
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: DataDict) -> Dict[str, Any]:
+                                 data_dict: DataDict) -> dict[str, Any]:
         u'''
         Adds variables to be passed to the template being rendered.
 
@@ -486,7 +487,7 @@ class ITagController(Interface):
     synchronization and authorization setup are complete.
 
     '''
-    def before_view(self, tag_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def before_view(self, tag_dict: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive this before the tag gets displayed. The
         dictionary passed will be the one that gets sent to the template.
@@ -522,7 +523,7 @@ class IGroupController(Interface):
         '''
         pass
 
-    def before_view(self, data_dict: DataDict) -> Dict[str, Any]:
+    def before_view(self, data_dict: DataDict) -> dict[str, Any]:
         u'''
         Extensions will receive this before the group gets
         displayed. The dictionary passed will be the one that gets
@@ -562,7 +563,7 @@ class IOrganizationController(Interface):
         '''
         pass
 
-    def before_view(self, data_dict: DataDict) -> Dict[str, Any]:
+    def before_view(self, data_dict: DataDict) -> dict[str, Any]:
         u'''
         Extensions will receive this before the organization gets
         displayed. The dictionary passed will be the one that gets
@@ -596,7 +597,7 @@ class IPackageController(Interface):
         '''
         pass
 
-    def after_create(self, context: Context, pkg_dict: Dict[str, Any]) -> None:
+    def after_create(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the validated data dict after the dataset
         has been created (Note that the create method will return a dataset
@@ -605,28 +606,28 @@ class IPackageController(Interface):
         '''
         pass
 
-    def after_update(self, context: Context, pkg_dict: Dict[str, Any]) -> None:
+    def after_update(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the validated data dict after the dataset
         has been updated.
         '''
         pass
 
-    def after_delete(self, context: Context, pkg_dict: Dict[str, Any]) -> None:
+    def after_delete(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the data dict (typically containing
         just the dataset id) after the dataset has been deleted.
         '''
         pass
 
-    def after_show(self, context: Context, pkg_dict: Dict[str, Any]) -> None:
+    def after_show(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the validated data dict after the dataset
         is ready for display.
         '''
         pass
 
-    def before_search(self, search_params: Dict[str, Any]) -> Dict[str, Any]:
+    def before_search(self, search_params: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive a dictionary with the query parameters,
         and should return a modified (or not) version of it.
@@ -638,8 +639,8 @@ class IPackageController(Interface):
         return search_params
 
     def after_search(self,
-                     search_results: Dict[str, Any],
-                     search_params: Dict[str, Any]) -> Dict[str, Any]:
+                     search_results: dict[str, Any],
+                     search_params: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive the search results, as well as the search
         parameters, and should return a modified (or not) object with the
@@ -658,7 +659,7 @@ class IPackageController(Interface):
 
         return search_results
 
-    def before_index(self, pkg_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def before_index(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive what will be given to Solr for
         indexing. This is essentially a flattened dict (except for
@@ -668,7 +669,7 @@ class IPackageController(Interface):
         '''
         return pkg_dict
 
-    def before_view(self, pkg_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def before_view(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive this before the dataset gets
         displayed. The dictionary passed will be the one that gets
@@ -683,7 +684,7 @@ class IResourceController(Interface):
     '''
 
     def before_create(
-            self, context: Context, resource: Dict[str, Any]) -> None:
+            self, context: Context, resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this before a resource is created.
 
@@ -696,7 +697,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def after_create(self, context: Context, resource: Dict[str, Any]) -> None:
+    def after_create(self, context: Context, resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this after a resource is created.
 
@@ -712,8 +713,8 @@ class IResourceController(Interface):
         '''
         pass
 
-    def before_update(self, context: Context, current: Dict[str, Any],
-                      resource: Dict[str, Any]) -> None:
+    def before_update(self, context: Context, current: dict[str, Any],
+                      resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this before a resource is updated.
 
@@ -728,7 +729,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def after_update(self, context: Context, resource: Dict[str, Any]) -> None:
+    def after_update(self, context: Context, resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this after a resource is updated.
 
@@ -744,8 +745,8 @@ class IResourceController(Interface):
         '''
         pass
 
-    def before_delete(self, context: Context, resource: Dict[str, Any],
-                      resources: List[Dict[str, Any]]) -> None:
+    def before_delete(self, context: Context, resource: dict[str, Any],
+                      resources: list[dict[str, Any]]) -> None:
         u'''
         Extensions will receive this before a resource is deleted.
 
@@ -765,7 +766,7 @@ class IResourceController(Interface):
 
     def after_delete(self,
                      context: Context,
-                     resources: List[Dict[str, Any]]) -> None:
+                     resources: list[dict[str, Any]]) -> None:
         u'''
         Extensions will receive this after a resource is deleted.
 
@@ -778,7 +779,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def before_show(self, resource_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def before_show(self, resource_dict: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive the validated data dict before the resource
         is ready for display.
@@ -891,7 +892,7 @@ class IActions(Interface):
     u'''
     Allow adding of actions to the logic layer.
     '''
-    def get_actions(self) -> Dict[str, Action]:
+    def get_actions(self) -> dict[str, Action]:
         u'''
         Should return a dict, the keys being the name of the logic
         function and the values being the functions themselves.
@@ -922,7 +923,7 @@ class IValidators(Interface):
     Add extra validators to be returned by
     :py:func:`ckan.plugins.toolkit.get_validator`.
     '''
-    def get_validators(self) -> Dict[str, Validator]:
+    def get_validators(self) -> dict[str, Validator]:
         u'''Return the validator functions provided by this plugin.
 
         Return a dictionary mapping validator names (strings) to
@@ -939,7 +940,7 @@ class IValidators(Interface):
 class IAuthFunctions(Interface):
     u'''Override CKAN's authorization functions, or add new auth functions.'''
 
-    def get_auth_functions(self) -> Dict[str, AuthFunction]:
+    def get_auth_functions(self) -> dict[str, AuthFunction]:
         u'''Return the authorization functions provided by this plugin.
 
         Return a dictionary mapping authorization function names (strings) to
@@ -1029,7 +1030,7 @@ class ITemplateHelpers(Interface):
     See ``ckanext/example_itemplatehelpers`` for an example plugin.
 
     '''
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         u'''Return a dict mapping names to helper functions.
 
         The keys of the dict should be the names with which the helper
@@ -1283,7 +1284,7 @@ class IDatasetForm(Interface):
         '''
 
     def validate(self, context: Context, data_dict: DataDict, schema: Schema,
-                 action: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+                 action: str) -> tuple[dict[str, Any], dict[str, Any]]:
         u'''Customize validation of datasets.
 
         When this method is implemented it is used to perform all validation
@@ -1487,7 +1488,7 @@ class IGroupForm(Interface):
         '''
 
     def validate(self, context: Context, data_dict: DataDict, schema: Schema,
-                 action: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+                 action: str) -> tuple[dict[str, Any], dict[str, Any]]:
         u'''Customize validation of groups.
 
         When this method is implemented it is used to perform all validation
@@ -1727,9 +1728,9 @@ class IAuthenticator(Interface):
         '''
 
     def abort(
-        self, status_code: int, detail: str, headers: Optional[Dict[str, Any]],
+        self, status_code: int, detail: str, headers: Optional[dict[str, Any]],
         comment: Optional[str]
-    ) -> Tuple[int, str, Optional[Dict[str, Any]], Optional[str]]:
+    ) -> tuple[int, str, Optional[dict[str, Any]], Optional[str]]:
         u'''Called on abort.  This allows aborts due to authorization issues
         to be overridden'''
         return (status_code, detail, headers, comment)
@@ -1742,7 +1743,7 @@ class ITranslation(Interface):
     def i18n_directory(self) -> str:
         u'''Change the directory of the .mo translation files'''
 
-    def i18n_locales(self) -> List[str]:
+    def i18n_locales(self) -> list[str]:
         u'''Change the list of locales that this plugin handles'''
 
     def i18n_domain(self) -> str:
@@ -1800,7 +1801,7 @@ class IUploader(Interface):
 
         '''
 
-    def get_resource_uploader(self, resource: Dict[str,
+    def get_resource_uploader(self, resource: dict[str,
                                                    Any]) -> PResourceUploader:
         u'''Return an uploader object used to upload resource files that must
         implement the following methods:
@@ -1843,7 +1844,7 @@ class IBlueprint(Interface):
 
     u'''Register an extension as a Flask Blueprint.'''
 
-    def get_blueprint(self) -> Union[List[Blueprint], Blueprint]:
+    def get_blueprint(self) -> Union[list[Blueprint], Blueprint]:
         u'''
         Return either a single Flask Blueprint object or a list of Flask
         Blueprint objects to be registered by the app.
@@ -1863,7 +1864,7 @@ class IPermissionLabels(Interface):
     See ``ckanext/example_ipermissionlabels`` for an example plugin.
     '''
 
-    def get_dataset_labels(self, dataset_obj: 'model.Package') -> List[str]:
+    def get_dataset_labels(self, dataset_obj: 'model.Package') -> list[str]:
         u'''
         Return a list of unicode strings to be stored in the search index
         as the permission lables for a dataset dict.
@@ -1876,7 +1877,7 @@ class IPermissionLabels(Interface):
         '''
 
     def get_user_dataset_labels(self,
-                                user_obj: Optional['model.User']) -> List[str]:
+                                user_obj: Optional['model.User']) -> list[str]:
         u'''
         Return the permission labels that give a user permission to view
         a dataset. If any of the labels returned from this method match
@@ -1932,7 +1933,7 @@ class IApiToken(Interface):
         return schema
 
     def decode_api_token(
-            self, encoded: str, **kwargs: Any) -> Optional[Dict[str, Any]]:
+            self, encoded: str, **kwargs: Any) -> Optional[dict[str, Any]]:
         """Make an attempt to decode API Token provided in request.
 
         Decode token if it possible and return dictionary with
@@ -1955,7 +1956,7 @@ class IApiToken(Interface):
         """
         return None
 
-    def encode_api_token(self, data: Dict[str, Any],
+    def encode_api_token(self, data: dict[str, Any],
                          **kwargs: Any) -> Optional[bytes]:
         """Make an attempt to encode API Token.
 
@@ -1996,8 +1997,8 @@ class IApiToken(Interface):
         """
         return data
 
-    def postprocess_api_token(self, data: Dict[str, Any], jti: str,
-                              data_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def postprocess_api_token(self, data: dict[str, Any], jti: str,
+                              data_dict: dict[str, Any]) -> dict[str, Any]:
         """Encode additional information into API Token.
 
         Allows passing any kind of additional information into API
@@ -2021,7 +2022,7 @@ class IApiToken(Interface):
         """
         return data
 
-    def add_extra_fields(self, data_dict: DataDict) -> Dict[str, Any]:
+    def add_extra_fields(self, data_dict: DataDict) -> dict[str, Any]:
         """Provide additional information alongside with API Token.
 
         Any extra information that is not itself a part of a token,
@@ -2043,7 +2044,7 @@ class IClick(Interface):
     u'''
     Allow extensions to define click commands.
     '''
-    def get_commands(self) -> List['click.Command']:
+    def get_commands(self) -> list['click.Command']:
         u'''
         Return a list of command functions objects
         to be registered by the click.add_command.

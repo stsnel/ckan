@@ -4,15 +4,16 @@
 Functions for generating a list of differences between two versions of a
 dataset
 '''
+from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Set
-from typing_extensions import TypedDict
+from typing import Any
+from typing_extensions import TypeAlias, TypedDict
 
 log = logging.getLogger(__name__)
 
-Data = Dict[str, Any]
-ChangeList = List[Dict[str, Any]]
+Data: TypeAlias = "dict[str, Any]"
+ChangeList: TypeAlias = "list[dict[str, Any]]"
 
 
 class Extra(TypedDict):
@@ -20,7 +21,7 @@ class Extra(TypedDict):
     value: Any
 
 
-def _extras_to_dict(extras_list: List[Extra]) -> Dict[str, Any]:
+def _extras_to_dict(extras_list: list[Extra]) -> dict[str, Any]:
     '''
     Takes a list of dictionaries with the following format:
     [
@@ -52,8 +53,8 @@ def _extras_to_dict(extras_list: List[Extra]) -> Dict[str, Any]:
 
 
 def check_resource_changes(
-        change_list: List[Dict[str, Any]],
-        old: Dict[str, Any], new: Dict[str, Any],
+        change_list: list[dict[str, Any]],
+        old: dict[str, Any], new: dict[str, Any],
         old_activity_id: str) -> None:
     '''
     Compares two versions of a dataset and records the changes between them
@@ -311,8 +312,8 @@ def check_resource_changes(
 
 
 def check_metadata_changes(
-        change_list: List[Dict[str, Any]],
-        old: Dict[str, Any], new: Dict[str, Any]) -> None:
+        change_list: list[dict[str, Any]],
+        old: dict[str, Any], new: dict[str, Any]) -> None:
     '''
     Compares two versions of a dataset and records the changes between them
     (excluding resources) in change_list.
@@ -576,7 +577,7 @@ def _notes_change(change_list: ChangeList, old: Data, new: Data):
 
 
 def _tag_change(change_list: ChangeList,
-                new_tags: Set[Any], old_tags: Set[Any], new: Data):
+                new_tags: set[Any], old_tags: set[Any], new: Data):
     '''
     Appends a summary of a change to a dataset's tag list between two
     versions (old and new) to change_list.

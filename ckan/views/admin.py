@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Union, cast
+from typing import Any, Union, cast
 
 from flask import Blueprint
 from flask.views import MethodView
@@ -33,7 +34,7 @@ def _get_sysadmins() -> "Query[model.User]":
     return q
 
 
-def _get_config_options() -> Dict[str, List[Dict[str, str]]]:
+def _get_config_options() -> dict[str, list[dict[str, str]]]:
     homepages = [{
         u'value': u'1',
         u'text': (u'Introductory area, search, featured'
@@ -50,7 +51,7 @@ def _get_config_options() -> Dict[str, List[Dict[str, str]]]:
     return dict(homepages=homepages)
 
 
-def _get_config_items() -> List[str]:
+def _get_config_items() -> list[str]:
     return [
         u'ckan.site_title', u'ckan.main_css', u'ckan.site_description',
         u'ckan.site_logo', u'ckan.site_about', u'ckan.site_intro_text',
@@ -104,7 +105,7 @@ class ConfigView(MethodView):
 
     def post(self) -> Union[str, Response]:
         try:
-            req: Dict[str, Any] = request.form.copy()
+            req: dict[str, Any] = request.form.copy()
             req.update(request.files.to_dict())
             data_dict = logic.clean_dict(
                 dict_fns.unflatten(

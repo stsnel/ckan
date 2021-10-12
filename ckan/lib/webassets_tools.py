@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
 import os
 import tempfile
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import yaml
 from markupsafe import Markup
@@ -77,7 +78,7 @@ def webassets_init() -> None:
     create_library(u'css', os.path.join(base_path, u'css'))
 
 
-def _make_asset_collection() -> Dict[str, Any]:
+def _make_asset_collection() -> dict[str, Any]:
     return {u'style': [], u'script': [], u'included': set()}
 
 

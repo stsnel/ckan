@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, List
+from typing import Any
 
 import click
 
@@ -46,7 +47,7 @@ def list_sysadmins():
 @click.argument(u"username")
 @click.argument(u"args", nargs=-1)
 @click.pass_context
-def add(ctx: Any, username: str, args: List[str]):
+def add(ctx: Any, username: str, args: list[str]):
     user = model.User.by_name(str(username))
     if not user:
         click.secho(u'User "%s" not found' % username, fg=u"red")

@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import os
 import sys
@@ -9,7 +10,7 @@ import pkgutil
 import logging
 
 from logging.handlers import SMTPHandler
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Iterable, Optional, Union, cast
 
 from flask import Blueprint, send_from_directory
 from flask.ctx import _AppCtxGlobals
@@ -243,7 +244,7 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
     _ckan_i18n_dir = i18n.get_ckan_i18n_dir()
 
     pairs = [
-        cast(Tuple[str, str], (_ckan_i18n_dir, u'ckan'))
+        cast("tuple[str, str]", (_ckan_i18n_dir, u'ckan'))
     ] + [
         (p.i18n_directory(), p.i18n_domain())
         for p in reversed(list(PluginImplementations(ITranslation)))
@@ -393,14 +394,14 @@ def ckan_after_request(response: Response) -> Response:
     return response
 
 
-def helper_functions() -> Dict[str, helpers.HelperAttributeDict]:
+def helper_functions() -> dict[str, helpers.HelperAttributeDict]:
     u'''Make helper functions (`h`) available to Flask templates'''
     if not helpers.helper_functions:
         helpers.load_plugin_helpers()
     return dict(h=helpers.helper_functions)
 
 
-def c_object() -> Dict[str, LocalProxy]:
+def c_object() -> dict[str, LocalProxy]:
     u'''
     Expose `c` as an alias of `g` in templates for backwards compatibility
     '''
@@ -439,11 +440,11 @@ class CKANFlask(MultiStaticFlask):
     '''
 
     app_name: str = 'flask_app'
-    static_folder: List[str]
+    static_folder: list[str]
 
     def can_handle_request(
             self,
-            environ: Any) -> Union[Tuple[bool, str], Tuple[bool, str, str]]:
+            environ: Any) -> Union[tuple[bool, str], tuple[bool, str, str]]:
         '''
         Decides whether it can handle a request with the Flask app by
         matching the request environ against the route mapper
@@ -473,7 +474,7 @@ class CKANFlask(MultiStaticFlask):
             return (False, self.app_name)
 
     def register_extension_blueprint(self, blueprint: Blueprint,
-                                     **kwargs: Dict[str, Any]):
+                                     **kwargs: dict[str, Any]):
         '''
         This method should be used to register blueprints that come from
         extensions, so there's an opportunity to add extension-specific
@@ -516,7 +517,7 @@ def _register_core_blueprints(app: CKANApp):
 def _register_error_handler(app: CKANApp):
     u'''Register error handler'''
 
-    def error_handler(e: Exception) -> Tuple[str, Optional[int]]:
+    def error_handler(e: Exception) -> tuple[str, Optional[int]]:
         debug = asbool(config.get('debug', config.get('DEBUG', False)))
         if isinstance(e, HTTPException):
             if debug:
@@ -555,7 +556,7 @@ def _setup_error_mail_handler(app: CKANApp):
             return True
 
     smtp_server = str(config.get('smtp.server', 'localhost'))
-    mailhost = cast(Tuple[str, int], tuple(smtp_server.split(':'))) \
+    mailhost = cast("tuple[str, int]", tuple(smtp_server.split(':'))) \
         if ':' in smtp_server else smtp_server
     credentials = None
     if config.get('smtp.user'):

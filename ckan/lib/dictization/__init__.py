@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
-from typing import Any, Callable, Dict, Iterable, List
+from typing import Any, Callable, Iterable
 
 import sqlalchemy
 from sqlalchemy import Table
@@ -20,14 +21,14 @@ except AttributeError:
 # objects and saving dictized objects. If a specialised use is needed please do
 # NOT extend these functions.  Copy code from here as needed.
 
-legacy_dict_sort: Callable[[Dict[str, Any]],
+legacy_dict_sort: Callable[[dict[str, Any]],
                            Any] = lambda x: (len(x), dict.items(x))
 
 
-def table_dictize(obj: Any, context: Context, **kw: Any) -> Dict[str, Any]:
+def table_dictize(obj: Any, context: Context, **kw: Any) -> dict[str, Any]:
     '''Get any model object and represent it as a dict'''
 
-    result_dict: Dict[str, Any] = {}
+    result_dict: dict[str, Any] = {}
 
     if isinstance(obj, RowProxy):
         fields = obj.keys()
@@ -68,10 +69,10 @@ def table_dictize(obj: Any, context: Context, **kw: Any) -> Dict[str, Any]:
 
 
 def obj_list_dictize(
-        obj_list: List[Any],
+        obj_list: list[Any],
         context: Context,
         sort_key: Callable[..., Any] = legacy_dict_sort
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     '''Get a list of model object and represent it as a list of dicts'''
 
     result_list = []
@@ -91,13 +92,13 @@ def obj_list_dictize(
 
 
 def obj_dict_dictize(
-        obj_dict: Dict[str, Any],
+        obj_dict: dict[str, Any],
         context: Context,
-        sort_key: Callable[..., Any] = lambda x: x) -> List[Dict[str, Any]]:
+        sort_key: Callable[..., Any] = lambda x: x) -> list[dict[str, Any]]:
     '''Get a dict whose values are model objects
     and represent it as a list of dicts'''
 
-    result_list: List[Dict[str, Any]] = []
+    result_list: list[dict[str, Any]] = []
 
     for obj in obj_dict.values():
         result_list.append(table_dictize(obj, context))
@@ -105,10 +106,10 @@ def obj_dict_dictize(
     return sorted(result_list, key=sort_key)
 
 
-def get_unique_constraints(table: Table, context: Context) -> List[List[str]]:
+def get_unique_constraints(table: Table, context: Context) -> list[list[str]]:
     '''Get a list of unique constraints for a sqlalchemy table'''
 
-    list_of_constraints: List[List[str]] = []
+    list_of_constraints: list[list[str]] = []
 
     for contraint in table.constraints:
         if isinstance(contraint, sqlalchemy.UniqueConstraint):
@@ -118,7 +119,7 @@ def get_unique_constraints(table: Table, context: Context) -> List[List[str]]:
     return list_of_constraints
 
 
-def table_dict_save(table_dict: Dict[str, Any],
+def table_dict_save(table_dict: dict[str, Any],
                     ModelClass: Any,
                     context: Context,
                     extra_attrs: Iterable[str] = ()) -> Any:

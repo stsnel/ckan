@@ -25,7 +25,9 @@
 ##############################################################################
 
 u'''Collection of :mod:`repoze.who` friendly forms'''
-from typing import Any, List, Optional, cast
+from __future__ import annotations
+
+from typing import Any, Optional, cast
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
 
 from webob import Request
@@ -308,7 +310,7 @@ class FriendlyFormPlugin(object):
                 failed_logins = 0
         return failed_logins
 
-    def _set_logins_in_url(self, url: str, logins: List[str]):
+    def _set_logins_in_url(self, url: str, logins: list[str]):
         u'''
         Insert the login counter variable with the ``logins`` value into
         ``url`` and return the new URL.
@@ -317,7 +319,7 @@ class FriendlyFormPlugin(object):
         return self._insert_qs_variable(url, self.login_counter_name, logins)
 
     def _insert_qs_variable(self, url: str, var_name: str,
-                            var_value: List[str]):
+                            var_value: list[str]):
         u'''
         Insert the variable ``var_name`` with value ``var_value`` in the query
         string of ``url`` and return the new URL.

@@ -1,12 +1,13 @@
 # encoding: utf-8
 
 ''' The application's Globals object '''
+from __future__ import annotations
 
 import logging
 import re
 import six
 from threading import Lock
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Union
 
 import ckan
 import ckan.model as model
@@ -21,14 +22,14 @@ DEFAULT_MAIN_CSS_FILE = '/base/css/main.css'
 
 # mappings translate between config settings and globals because our naming
 # conventions are not well defined and/or implemented
-mappings: Dict[str, str] = {
+mappings: dict[str, str] = {
 #   'config_key': 'globals_key',
 }
 
 
 # This mapping is only used to define the configuration options (from the
 # `config` object) that should be copied to the `app_globals` (`g`) object.
-app_globals_from_config_details: Dict[str, Dict[str, str]] = {
+app_globals_from_config_details: dict[str, dict[str, str]] = {
     'ckan.site_title': {},
     'ckan.site_logo': {},
     'ckan.site_url': {},
@@ -72,7 +73,7 @@ app_globals_from_config_details: Dict[str, Dict[str, str]] = {
 
 
 # A place to store the origional config options of we override them
-_CONFIG_CACHE: Dict[str, Any] = {}
+_CONFIG_CACHE: dict[str, Any] = {}
 
 def set_main_css(css_file: str) -> None:
     ''' Sets the main_css.  The css_file must be of the form file.css '''
@@ -94,7 +95,7 @@ def set_app_global(key: str, value: str) -> None:
 
 
 def process_app_global(
-        key: str, value: str) -> Tuple[str, Union[bool, int, str, List[str]]]:
+        key: str, value: str) -> tuple[str, Union[bool, int, str, list[str]]]:
     '''
     Tweak a key, value pair meant to be set on the app_globals (g) object
 

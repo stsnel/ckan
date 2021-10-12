@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
+
 from ckan.types import Action, AuthFunction, Context, DataDict
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 import ckan.plugins as p
 from ckan.plugins.toolkit import (auth_allow_anonymous_access,
                                   chained_auth_function,
@@ -25,7 +27,7 @@ class ChainedFunctionsPlugin(p.SingletonPlugin):
             "package_search": package_search
         }
 
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         return {
             "ckan_version": ckan_version
         }

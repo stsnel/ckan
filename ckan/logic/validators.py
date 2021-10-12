@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import collections
 import datetime
@@ -7,7 +8,7 @@ import re
 import mimetypes
 import string
 import json
-from typing import Any, Container, Dict, Optional, Union
+from typing import Any, Container, Optional, Union
 
 from urllib.parse import urlparse
 
@@ -987,7 +988,7 @@ def collect_prefix_validate(prefix: str, *validator_names: str) -> Validator:
     return prefix_validator
 
 
-def dict_only(value: Any) -> Dict[Any, Any]:
+def dict_only(value: Any) -> dict[Any, Any]:
     if not isinstance(value, dict):
         raise Invalid(_('Must be a dict'))
     return value

@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context
-from typing import Any, Dict, cast
+from typing import Any, cast
 import six
 
 
@@ -15,7 +16,7 @@ from ckan.common import request, config, c
 from ckan.logic import get_action
 
 
-def translate_data_dict(data_dict: Dict[str, Any]):
+def translate_data_dict(data_dict: dict[str, Any]):
     '''Return the given dict (e.g. a dataset dict) with as many of its fields
     as possible translated into the desired or the fallback language.
 
@@ -111,7 +112,7 @@ def translate_data_dict(data_dict: Dict[str, Any]):
             .unflatten(translated_flattened))
     return translated_data_dict
 
-def translate_resource_data_dict(data_dict: Dict[str, Any]):
+def translate_resource_data_dict(data_dict: dict[str, Any]):
     '''Return the given dict with as many of its fields
     as possible translated into the desired or the fallback language.
 
@@ -206,7 +207,7 @@ class MultilingualDataset(plugins.SingletonPlugin):
     plugins.implements(plugins.IPackageController, inherit=True)
     LANGS = config.get('ckan.locale_order', 'en').split(" ")
 
-    def before_index(self, search_data: Dict[str, Any]):
+    def before_index(self, search_data: dict[str, Any]):
 
         default_lang = search_data.get(
             'lang_code',
@@ -256,7 +257,7 @@ class MultilingualDataset(plugins.SingletonPlugin):
 
         return search_data
 
-    def before_search(self, search_params: Dict[str, Any]):
+    def before_search(self, search_params: dict[str, Any]):
         lang_set = set(self.LANGS)
 
         try:
@@ -291,8 +292,8 @@ class MultilingualDataset(plugins.SingletonPlugin):
 
         return search_params
 
-    def after_search(self, search_results: Dict[str, Any],
-                     search_params: Dict[str, Any]):
+    def after_search(self, search_results: dict[str, Any],
+                     search_params: dict[str, Any]):
 
         # Translate the unselected search facets.
         facets = search_results.get('search_facets')
@@ -331,7 +332,7 @@ class MultilingualDataset(plugins.SingletonPlugin):
 
         return search_results
 
-    def before_view(self, dataset_dict: Dict[str, Any]):
+    def before_view(self, dataset_dict: dict[str, Any]):
 
         # Translate any selected search facets (e.g. if we are rendering a
         # group read page or the dataset index page): lookup translations of
@@ -380,7 +381,7 @@ class MultilingualGroup(plugins.SingletonPlugin):
     plugins.implements(plugins.IGroupController, inherit=True)
     plugins.implements(plugins.IOrganizationController, inherit=True)
 
-    def before_view(self, data_dict: Dict[str, Any]):
+    def before_view(self, data_dict: dict[str, Any]):
         translated_data_dict = translate_data_dict(data_dict)
         return translated_data_dict
 
@@ -397,7 +398,7 @@ class MultilingualTag(plugins.SingletonPlugin):
     '''
     plugins.implements(plugins.ITagController, inherit=True)
 
-    def before_view(self, data_dict: Dict[str, Any]):
+    def before_view(self, data_dict: dict[str, Any]):
         translated_data_dict = translate_data_dict(data_dict)
         return translated_data_dict
 
@@ -408,6 +409,6 @@ class MultilingualResource(plugins.SingletonPlugin):
    '''
    plugins.implements(plugins.IResourceController, inherit=True)
 
-   def before_show(self, data_dict: Dict[str, Any]):
+   def before_show(self, data_dict: dict[str, Any]):
         translated_data_dict = translate_resource_data_dict(data_dict)
         return translated_data_dict

@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, Collection, Dict, List, Optional, Tuple
+from typing import Any, Collection, Optional
 
 import sqlalchemy as sa
 
@@ -32,7 +33,7 @@ class ResourceView(domain_object.DomainObject):
     description: Optional[str]
     view_type: str
     order: int
-    config: Dict[str, Any]
+    config: dict[str, Any]
 
     @classmethod
     def get(cls, reference: str) -> Optional["ResourceView"]:
@@ -45,15 +46,15 @@ class ResourceView(domain_object.DomainObject):
         return view
 
     @classmethod
-    def get_columns(cls) -> List[str]:
+    def get_columns(cls) -> list[str]:
         return resource_view_table.columns.keys()
 
     @classmethod
     def get_count_not_in_view_types(
-            cls, view_types: Collection[str]) -> List[Tuple[str, int]]:
+            cls, view_types: Collection[str]) -> list[tuple[str, int]]:
         '''Returns the count of ResourceView not in the view types list'''
         view_type = cls.view_type
-        query: 'Query[Tuple[str, int]]' = meta.Session.query(
+        query: 'Query[tuple[str, int]]' = meta.Session.query(
             view_type, sa.func.count(cls.id)).group_by(view_type).filter(
                 # type_ignore_reason: incomplete SQLAlchemy types
                 sa.not_(view_type.in_(view_types)))  # type: ignore

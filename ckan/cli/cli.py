@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from typing import Any, Callable, Generator, List, Optional, cast
+from typing import Any, Optional, cast
 from pkg_resources import iter_entry_points
 
 import six
@@ -101,7 +102,7 @@ class ExtendableGroup(click.Group):
                 for rows in group.values():
                     formatter.write_dl(rows)
 
-    def parse_args(self, ctx: click.Context, args: List[str]):
+    def parse_args(self, ctx: click.Context, args: list[str]):
         """Preprocess options and arguments.
 
         As long as at least one option is provided, click won't fallback to

@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
 import logging
-from typing import Any, ClassVar, Iterable, List, Optional, Tuple, Union
+from typing import Any, ClassVar, Iterable, Optional, Union
 from ckan.common import config
 
 from sqlalchemy import Table, select, join, func, and_
@@ -35,7 +36,7 @@ class Stats(object):
     _cumulative_num_pkgs: ClassVar[int]
 
     @classmethod
-    def largest_groups(cls, limit: int = 10) -> List[Tuple[Optional[model.Group], int]]:
+    def largest_groups(cls, limit: int = 10) -> list[tuple[Optional[model.Group], int]]:
         package = table("package")
         activity = table("activity")
 
@@ -57,7 +58,7 @@ class Stats(object):
             .limit(limit)
         )
 
-        res_ids: Iterable[Tuple[str, int]] = model.Session.execute(s).fetchall()
+        res_ids: Iterable[tuple[str, int]] = model.Session.execute(s).fetchall()
         res_groups = [
             (model.Session.query(model.Group).get(str(group_id)), val)
             for group_id, val in res_ids
@@ -67,7 +68,7 @@ class Stats(object):
     @classmethod
     def top_tags(cls, limit: int = 10,
                  returned_tag_info: str = 'object'
-                 ) -> Optional[List[Any]]:  # by package
+                 ) -> Optional[list[Any]]:  # by package
         assert returned_tag_info in ("name", "id", "object")
         tag = table("tag")
         package_tag = table("package_tag")
@@ -100,7 +101,7 @@ class Stats(object):
             .order_by(func.count(package_tag.c.package_id).desc())
             .limit(limit)
         )
-        res_col: List[Tuple[str, int]] = model.Session.execute(s).fetchall()
+        res_col: list[tuple[str, int]] = model.Session.execute(s).fetchall()
         if returned_tag_info in ("id", "name"):
             return res_col
         elif returned_tag_info == "object":
@@ -132,7 +133,7 @@ class Stats(object):
         return user_count
 
     @classmethod
-    def most_edited_packages(cls, limit: int = 10) -> List[Tuple[model.Package, int]]:
+    def most_edited_packages(cls, limit: int = 10) -> list[tuple[model.Package, int]]:
         package = table("package")
         activity = table("activity")
 
@@ -167,7 +168,7 @@ class Stats(object):
         return res_pkgs
 
     @classmethod
-    def get_package_revisions(cls) -> List[Tuple[str, datetime.datetime]]:
+    def get_package_revisions(cls) -> list[tuple[str, datetime.datetime]]:
         """
         @return: Returns list of revisions and date of them, in
                  format: [(id, date), ...]
@@ -184,10 +185,10 @@ class Stats(object):
         return res
 
     @classmethod
-    def get_by_week(cls, object_type: str) -> List[Tuple[str, List[str], int, int]]:
+    def get_by_week(cls, object_type: str) -> list[tuple[str, list[str], int, int]]:
         cls._object_type = object_type
 
-        def objects_by_week() -> List[Tuple[str, List[str], int, int]]:
+        def objects_by_week() -> list[tuple[str, list[str], int, int]]:
             if cls._object_type == "new_packages":
                 objects = cls.get_new_packages()
 
@@ -218,7 +219,7 @@ class Stats(object):
             pkg_id_stack = []
             cls._cumulative_num_pkgs = 0
 
-            def build_weekly_stats(week_commences: datetime.date, pkg_ids: List[str]) -> Tuple[str, List[str], int, int]:
+            def build_weekly_stats(week_commences: datetime.date, pkg_ids: list[str]) -> tuple[str, list[str], int, int]:
                 num_pkgs = len(pkg_ids)
                 cls._cumulative_num_pkgs += num_pkgs
                 return (
@@ -251,13 +252,13 @@ class Stats(object):
         return objects_by_week()
 
     @classmethod
-    def get_new_packages(cls) -> List[Tuple[str, int]]:
+    def get_new_packages(cls) -> list[tuple[str, int]]:
         """
         @return: Returns list of new pkgs and date when they were created, in
                  format: [(id, date_ordinal), ...]
         """
 
-        def new_packages() -> List[Tuple[str, int]]:
+        def new_packages() -> list[tuple[str, int]]:
             # Can't filter by time in select because 'min' function has to
             # be 'for all time' else you get first revision in the time period.
             package = table("package")
@@ -291,7 +292,7 @@ class Stats(object):
 
     @classmethod
     def get_num_packages_by_week(cls):
-        def num_packages() -> List[Tuple[str, int, int]]:
+        def num_packages() -> list[tuple[str, int, int]]:
             new_packages_by_week = cls.get_by_week("new_packages")
             deleted_packages_by_week = cls.get_by_week("deleted_packages")
             first_date = (
@@ -309,8 +310,8 @@ class Stats(object):
             deleted_pkgs = []
 
             def build_weekly_stats(
-                week_commences: datetime.date, new_pkg_ids: List[str], deleted_pkg_ids: List[str]
-            ) -> Tuple[str, int, int]:
+                week_commences: datetime.date, new_pkg_ids: list[str], deleted_pkg_ids: list[str]
+            ) -> tuple[str, int, int]:
                 num_pkgs = len(new_pkg_ids) - len(deleted_pkg_ids)
                 new_pkgs.extend(
                     pkg.name for pkg in
@@ -385,7 +386,7 @@ class Stats(object):
                  in format: [(id, date_ordinal), ...]
         """
 
-        def deleted_packages() -> List[Tuple[str, int]]:
+        def deleted_packages() -> list[tuple[str, int]]:
             # Can't filter by time in select because 'min' function has to
             # be 'for all time' else you get first revision in the time period.
             package = table("package")

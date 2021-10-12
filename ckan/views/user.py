@@ -1,6 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Optional, Union, cast
 
 from flask import Blueprint
 from flask.views import MethodView
@@ -55,7 +57,7 @@ def _new_form_to_db_schema() -> Schema:
 
 
 def _extra_template_variables(context: Context,
-                              data_dict: Dict[str, Any]) -> Dict[str, Any]:
+                              data_dict: dict[str, Any]) -> dict[str, Any]:
     is_sysadmin = authz.is_sysadmin(g.user)
     try:
         user_dict = logic.get_action(u'user_show')(context, data_dict)
@@ -161,9 +163,9 @@ def read(id: str) -> Union[Response, str]:
 class ApiTokenView(MethodView):
     def get(self,
             id: str,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None
             ) -> Union[Response, str]:
         context = cast(Context, {
             u'model': model,
@@ -248,7 +250,7 @@ def api_token_revoke(id: str, jti: str) -> Response:
 
 
 class EditView(MethodView):
-    def _prepare(self, id: Optional[str]) -> Tuple[Context, str]:
+    def _prepare(self, id: Optional[str]) -> tuple[Context, str]:
         context = cast(Context, {
             u'save': u'save' in request.form,
             u'schema': _edit_form_to_db_schema(),
@@ -358,9 +360,9 @@ class EditView(MethodView):
 
     def get(self,
             id: Optional[str] = None,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None) -> str:
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None) -> str:
         context, id = self._prepare(id)
         data_dict = {u'id': id}
         try:
@@ -466,9 +468,9 @@ class RegisterView(MethodView):
         return resp
 
     def get(self,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None) -> str:
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None) -> str:
         self._prepare()
 
         if g.user and not data and not authz.is_sysadmin(g.user):
@@ -495,7 +497,7 @@ def login() -> Union[Response, str]:
         if response:
             return response
 
-    extra_vars: Dict[str, Any] = {}
+    extra_vars: dict[str, Any] = {}
     if g.user:
         return base.render(u'user/logout_first.html', extra_vars)
 
@@ -628,7 +630,7 @@ class RequestResetView(MethodView):
 
         context = cast(
             Context, {u'model': model, u'user': g.user, u'ignore_auth': True})
-        user_objs: List[model.User] = []
+        user_objs: list[model.User] = []
 
         # Usernames cannot contain '@' symbols
         if u'@' in id:
@@ -699,7 +701,7 @@ class RequestResetView(MethodView):
 
 
 class PerformResetView(MethodView):
-    def _prepare(self, id: str) -> Tuple[Context, Dict[str, Any]]:
+    def _prepare(self, id: str) -> tuple[Context, dict[str, Any]]:
         # FIXME 403 error for invalid key is a non helpful page
         context = cast(Context, {
             u'model': model,

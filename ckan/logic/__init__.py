@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import functools
 import logging
@@ -6,8 +7,8 @@ import re
 import importlib
 
 from collections import defaultdict
-from typing import (Any, Callable, Container, Dict, Iterable, List, Optional,
-                    Tuple, TypeVar, Union, cast, overload)
+from typing import (Any, Callable, Container, Iterable, Optional,
+                    TypeVar, Union, cast, overload)
 from typing_extensions import Literal
 
 from werkzeug.datastructures import MultiDict
@@ -84,7 +85,7 @@ class ValidationError(ActionError):
 
     def __init__(self,
                  errors: Union[str, ErrorDict],
-                 error_summary: Optional[Dict[str, str]] = None,
+                 error_summary: Optional[dict[str, str]] = None,
                  extra_msg: Optional[str] = None) -> None:
         if not isinstance(errors, dict):
             error_dict: ErrorDict = {'message': errors}
@@ -92,8 +93,8 @@ class ValidationError(ActionError):
             error_dict = errors
         # tags errors are a mess so let's clean them up
         if 'tags' in error_dict:
-            tag_errors: List[Union[str, Dict[str, Any]]] = []
-            for error in cast(List[Dict[str, Any]], error_dict['tags']):
+            tag_errors: list[Union[str, dict[str, Any]]] = []
+            for error in cast("list[dict[str, Any]]", error_dict['tags']):
                 try:
                     tag_errors.append(', '.join(error['name']))
                 except KeyError:
@@ -106,9 +107,9 @@ class ValidationError(ActionError):
         super(ValidationError, self).__init__(extra_msg)
 
     @property
-    def error_summary(self) -> Dict[str, str]:
+    def error_summary(self) -> dict[str, str]:
         ''' autogenerate the summary if not supplied '''
-        def summarise(error_dict: ErrorDict) -> Dict[str, str]:
+        def summarise(error_dict: ErrorDict) -> dict[str, str]:
             ''' Do some i18n stuff on the error_dict keys '''
 
             def prettify(field_name: str):
@@ -123,7 +124,7 @@ class ValidationError(ActionError):
                     summary[_('Resources')] = _('Package resource(s) invalid')
                 elif key == 'extras':
                     errors_extras = []
-                    for item in cast(List[Dict[str, Any]], error):
+                    for item in cast("list[dict[str, Any]]", error):
                         if (item.get('key') and
                                 item['key'][0] not in errors_extras):
                             errors_extras.append(item['key'][0])
@@ -152,7 +153,7 @@ class ValidationError(ActionError):
 def parse_params(
     params: 'MultiDict[str, Any]',
     ignore_keys: Optional['Container[str]'] = None
-) -> Dict[str, Union[str, List[str]]]:
+) -> dict[str, Union[str, list[str]]]:
     '''Takes a dict and returns it with some values standardised.
     This is done on a dict before calling tuplize_dict on it.
     '''
@@ -178,7 +179,7 @@ def parse_params(
     return parsed
 
 
-def clean_dict(data_dict: Dict[str, Any]) -> Dict[str, Any]:
+def clean_dict(data_dict: dict[str, Any]) -> dict[str, Any]:
     '''Takes a dict and if any of the values are lists of dicts,
     the empty dicts are stripped from the lists (recursive).
 
@@ -213,7 +214,7 @@ def clean_dict(data_dict: Dict[str, Any]) -> Dict[str, Any]:
     return data_dict
 
 
-def tuplize_dict(data_dict: Dict[str, Any]) -> FlattenDataDict:
+def tuplize_dict(data_dict: dict[str, Any]) -> FlattenDataDict:
     '''Takes a dict with keys of the form 'table__0__key' and converts them
     to a tuple like ('table', 0, 'key').
 
@@ -224,7 +225,7 @@ def tuplize_dict(data_dict: Dict[str, Any]) -> FlattenDataDict:
     '''
     tuplized_dict: FlattenDataDict = {}
     for k, value in data_dict.items():
-        key_list = cast(List[Union[str, int]], k.split('__'))
+        key_list = cast("list[Union[str, int]]", k.split('__'))
         for num, key in enumerate(key_list):
             if num % 2 == 1:
                 try:
@@ -235,7 +236,7 @@ def tuplize_dict(data_dict: Dict[str, Any]) -> FlattenDataDict:
     return tuplized_dict
 
 
-def untuplize_dict(tuplized_dict: FlattenDataDict) -> Dict[str, Any]:
+def untuplize_dict(tuplized_dict: FlattenDataDict) -> dict[str, Any]:
 
     data_dict = {}
     for key, value in tuplized_dict.items():
@@ -244,7 +245,7 @@ def untuplize_dict(tuplized_dict: FlattenDataDict) -> Dict[str, Any]:
     return data_dict
 
 
-def flatten_to_string_key(dict: Dict[str, Any]) -> Dict[str, Any]:
+def flatten_to_string_key(dict: dict[str, Any]) -> dict[str, Any]:
 
     flattented = df.flatten_dict(dict)
     return untuplize_dict(flattented)
@@ -274,7 +275,7 @@ def _prepopulate_context(context: Optional[Context]) -> Context:
 
 def check_access(action: str,
                  context: Context,
-                 data_dict: Optional[Dict[str, Any]] = None) -> Literal[True]:
+                 data_dict: Optional[dict[str, Any]] = None) -> Literal[True]:
     '''Calls the authorization function for the provided action
 
     This is the only function that should be called to determine whether a
@@ -314,7 +315,7 @@ def check_access(action: str,
     # Auth Auditing.  We remove this call from the __auth_audit stack to show
     # we have called the auth function
     try:
-        audit: Optional[Tuple[str, int]] = context.get('__auth_audit', [])[-1]
+        audit: Optional[tuple[str, int]] = context.get('__auth_audit', [])[-1]
     except IndexError:
         audit = None
     if audit and audit[0] == action:
@@ -343,7 +344,7 @@ def check_access(action: str,
     return True
 
 
-_actions: Dict[str, Action] = {}
+_actions: dict[str, Action] = {}
 
 
 def clear_actions_cache() -> None:
@@ -459,7 +460,7 @@ def get_action(action: str) -> Action:
                 v.side_effect_free = True
 
     # Then overwrite them with any specific ones in the plugins:
-    resolved_action_plugins: Dict[str, str] = {}
+    resolved_action_plugins: dict[str, str] = {}
     fetched_actions = {}
     chained_actions = defaultdict(list)
     for plugin in p.PluginImplementations(p.IActions):
@@ -551,19 +552,19 @@ def get_action(action: str) -> Action:
 
 
 @overload
-def get_or_bust(data_dict: Dict[str, Any], keys: str) -> Any:
+def get_or_bust(data_dict: dict[str, Any], keys: str) -> Any:
     ...
 
 
 @overload
 def get_or_bust(
-        data_dict: Dict[str, Any], keys: Iterable[str]) -> Tuple[Any, ...]:
+        data_dict: dict[str, Any], keys: Iterable[str]) -> tuple[Any, ...]:
     ...
 
 
 def get_or_bust(
-        data_dict: Dict[str, Any],
-        keys: Union[str, Iterable[str]]) -> Union[Any, Tuple[Any, ...]]:
+        data_dict: dict[str, Any],
+        keys: Union[str, Iterable[str]]) -> Union[Any, tuple[Any, ...]]:
     '''Return the value(s) from the given data_dict for the given key(s).
 
     Usage::
@@ -745,7 +746,7 @@ class UnknownValidator(Exception):
     pass
 
 
-_validators_cache: Dict[str, Union[Validator, ValidatorFactory]] = {}
+_validators_cache: dict[str, Union[Validator, ValidatorFactory]] = {}
 
 
 def clear_validators_cache() -> None:
@@ -804,7 +805,7 @@ def model_name_to_class(model_module: Any, model_name: str) -> Any:
 
 
 def _import_module_functions(
-        module_path: str) -> Dict[str, Callable[..., Any]]:
+        module_path: str) -> dict[str, Callable[..., Any]]:
     '''Import a module and get the functions and return them in a dict'''
     module = importlib.import_module(module_path)
     return {

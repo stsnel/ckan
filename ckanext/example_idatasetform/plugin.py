@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.common import CKANConfig
-from typing import Any, Dict, List, cast
+from typing import Any, cast
 from ckan.types import Context, Schema, Validator, ValidatorFactory
 import logging
 
@@ -30,7 +31,7 @@ def create_country_codes():
         for tag in (u'uk', u'ie', u'de', u'fr', u'es'):
             logging.info(
                     "Adding tag {0} to vocab 'country_codes'".format(tag))
-            data: Dict[str, str] = {'name': tag, 'vocabulary_id': vocab['id']}
+            data: dict[str, str] = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
 
 
@@ -80,7 +81,7 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
         # package types not handled by any other IDatasetForm plugin.
         return True
 
-    def package_types(self) -> List[str]:
+    def package_types(self) -> list[str]:
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         return []
@@ -125,7 +126,7 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
 
         # Don't show vocab tags mixed in with normal 'free' tags
         # (e.g. on dataset pages, or on the search page)
-        _extras = cast(List[Validator],
+        _extras = cast("list[Validator]",
                        cast(Schema, schema['tags'])['__extras'])
         _extras.append(tk.get_converter('free_tags_only'))
 
@@ -156,7 +157,7 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
     # called.
 
     def setup_template_variables(
-            self, context: Context, data_dict: Dict[str, Any]) -> Any:
+            self, context: Context, data_dict: dict[str, Any]) -> Any:
         ExampleIDatasetFormPlugin.num_times_setup_template_variables_called += 1
         return super(ExampleIDatasetFormPlugin, self).setup_template_variables(
                 context, data_dict)
@@ -187,5 +188,5 @@ class ExampleIDatasetFormPlugin(plugins.SingletonPlugin,
 
     # check_data_dict() is deprecated, this method is only here to test that
     # legacy support for the deprecated method works.
-    def check_data_dict(self, data_dict: Dict[str, Any], schema: Any = None):
+    def check_data_dict(self, data_dict: dict[str, Any], schema: Any = None):
         ExampleIDatasetFormPlugin.num_times_check_data_dict_called += 1

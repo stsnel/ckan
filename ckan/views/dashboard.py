@@ -1,6 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict, Optional, cast
+from typing import Any, Optional, cast
 
 from flask import Blueprint
 
@@ -39,10 +41,10 @@ def before_request() -> None:
 def _get_dashboard_context(
         filter_type: Optional[str] = None,
         filter_id: Optional[str] = None,
-        q: Optional[str] = None) -> Dict[str, Any]:
+        q: Optional[str] = None) -> dict[str, Any]:
     u'''Return a dict needed by the dashboard view to determine context.'''
 
-    def display_name(followee: Dict[str, Any]) -> Optional[str]:
+    def display_name(followee: dict[str, Any]) -> Optional[str]:
         u'''Return a display name for a user, group or dataset dict.'''
         display_name = followee.get(u'display_name')
         fullname = followee.get(u'fullname')

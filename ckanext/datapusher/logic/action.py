@@ -1,11 +1,12 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context
 import logging
 import json
 import datetime
 import time
-from typing import Any, Dict, cast
+from typing import Any, cast
 
 from urllib.parse import urljoin
 from dateutil.parser import parse as parse_date
@@ -25,7 +26,7 @@ _get_or_bust = logic.get_or_bust
 _validate = ckan.lib.navl.dictization_functions.validate
 
 
-def datapusher_submit(context: Context, data_dict: Dict[str, Any]):
+def datapusher_submit(context: Context, data_dict: dict[str, Any]):
     ''' Submit a job to the datapusher. The datapusher is a service that
     imports tabular data into the datastore.
 
@@ -148,7 +149,7 @@ def datapusher_submit(context: Context, data_dict: Dict[str, Any]):
                 }
             }))
     except requests.exceptions.ConnectionError as e:
-        error: Dict[str, Any] = {'message': 'Could not connect to DataPusher.',
+        error: dict[str, Any] = {'message': 'Could not connect to DataPusher.',
                                  'details': str(e)}
         task['error'] = json.dumps(error)
         task['state'] = 'error'
@@ -185,7 +186,7 @@ def datapusher_submit(context: Context, data_dict: Dict[str, Any]):
     return True
 
 
-def datapusher_hook(context: Context, data_dict: Dict[str, Any]):
+def datapusher_hook(context: Context, data_dict: dict[str, Any]):
     ''' Update datapusher task. This action is typically called by the
     datapusher whenever the status of a job changes.
 
@@ -225,7 +226,7 @@ def datapusher_hook(context: Context, data_dict: Dict[str, Any]):
             context, {'id': resource_dict['package_id']})
 
         for plugin in p.PluginImplementations(interfaces.IDataPusher):
-            plugin.after_upload(cast(Dict[str, Any], context),
+            plugin.after_upload(cast("dict[str, Any]", context),
                                 resource_dict, dataset_dict)
 
         logic.get_action('resource_create_default_resource_views')(
@@ -268,7 +269,7 @@ def datapusher_hook(context: Context, data_dict: Dict[str, Any]):
 
 
 def datapusher_status(
-        context: Context, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+        context: Context, data_dict: dict[str, Any]) -> dict[str, Any]:
     ''' Get the status of a datapusher job for a certain resource.
 
     :param resource_id: The resource id of the resource that you want the

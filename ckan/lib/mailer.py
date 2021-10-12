@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import codecs
 import os
@@ -6,7 +7,7 @@ import smtplib
 import socket
 import logging
 from time import time
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.header import Header
@@ -34,7 +35,7 @@ def _mail_recipient(
         recipient_name: str, recipient_email: str, sender_name: str,
         sender_url: str, subject: Any, body: Any,
         body_html: Optional[Any] = None,
-        headers: Optional[Dict[str, Any]] = None) -> None:
+        headers: Optional[dict[str, Any]] = None) -> None:
 
     if not headers:
         headers = {}
@@ -123,7 +124,7 @@ def mail_recipient(recipient_name: str,
                    subject: str,
                    body: str,
                    body_html: Optional[str] = None,
-                   headers: Optional[Dict[str, Any]] = None) -> None:
+                   headers: Optional[dict[str, Any]] = None) -> None:
     '''Sends an email'''
     site_title = config.get('ckan.site_title', '')
     site_url = config.get('ckan.site_url', '')
@@ -136,7 +137,7 @@ def mail_user(recipient: model.User,
               subject: str,
               body: str,
               body_html: Optional[str] = None,
-              headers: Optional[Dict[str, Any]] = None) -> None:
+              headers: Optional[dict[str, Any]] = None) -> None:
     '''Sends an email to a CKAN user'''
     if (recipient.email is None) or not len(recipient.email):
         raise MailerException(_("No recipient email address available!"))
@@ -156,7 +157,7 @@ def get_reset_link_body(user: model.User) -> str:
 
 
 def get_invite_body(user: model.User,
-                    group_dict: Optional[Dict[str, Any]] = None,
+                    group_dict: Optional[dict[str, Any]] = None,
                     role: Optional[str] = None) -> str:
     extra_vars = {
         'reset_link': get_reset_link(user),
@@ -200,7 +201,7 @@ def send_reset_link(user: model.User) -> None:
 
 def send_invite(
         user: model.User,
-        group_dict: Optional[Dict[str, Any]] = None,
+        group_dict: Optional[dict[str, Any]] = None,
         role: Optional[str] = None) -> None:
     create_reset_key(user)
     body = get_invite_body(user, group_dict, role)

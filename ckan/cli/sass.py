@@ -1,9 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import subprocess
 import os
-
-from typing import Tuple
 
 import click
 import six
@@ -24,7 +23,7 @@ def sass():
     _compile_sass(root, command, u'main')
 
 
-def _compile_sass(root: str, command: Tuple[str, ...], color: str):
+def _compile_sass(root: str, command: tuple[str, ...], color: str):
     click.echo(u'compile {}.css'.format(color))
     command = command + (u'--', u'--' + color)
 

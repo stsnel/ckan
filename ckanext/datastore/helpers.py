@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import json
 import logging
 from typing import (
-    Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union, cast, overload
+    Any, Iterable, Optional, Sequence, Union, cast, overload
 )
 from typing_extensions import Literal
 
@@ -49,11 +50,11 @@ def get_list(input: Literal[None], strip_values: bool = ...) -> Literal[None]:
 
 @overload
 def get_list(input: Union[str, "Sequence[Any]"],
-             strip_values: bool = ...) -> List[str]:
+             strip_values: bool = ...) -> list[str]:
     ...
 
 
-def get_list(input: Any, strip_values: bool = True) -> Optional[List[str]]:
+def get_list(input: Any, strip_values: bool = True) -> Optional[list[str]]:
     '''Transforms a string or list to a list'''
     if input is None:
         return
@@ -105,8 +106,8 @@ def get_table_and_function_names_from_sql(context: Context, sql: str):
     '''
 
     queries = [sql]
-    table_names: List[str] = []
-    function_names: List[str] = []
+    table_names: list[str] = []
+    function_names: list[str] = []
 
     while queries:
         sql = queries.pop()
@@ -135,7 +136,7 @@ def get_table_and_function_names_from_sql(context: Context, sql: str):
 
 
 def _parse_query_plan(
-        plan: Dict[str, Any]) -> Tuple[List[str], List[str], List[str]]:
+        plan: dict[str, Any]) -> tuple[list[str], list[str], list[str]]:
     '''
     Given a Postgres Query Plan object (parsed from the output of an EXPLAIN
     query), returns a tuple with three items:
@@ -145,9 +146,9 @@ def _parse_query_plan(
     * A list of function names involved
     '''
 
-    table_names: List[str] = []
-    queries: List[str] = []
-    functions: List[str] = []
+    table_names: list[str] = []
+    queries: list[str] = []
+    functions: list[str] = []
 
     if plan.get('Relation Name'):
         table_names.append(plan['Relation Name'])
@@ -173,7 +174,7 @@ def _parse_query_plan(
 
 
 def _get_function_names_from_sql(sql: str):
-    function_names: List[str] = []
+    function_names: list[str] = []
 
     def _get_function_names(tokens: Iterable[Any]):
         for token in tokens:

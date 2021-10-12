@@ -1,13 +1,14 @@
 # encoding: utf-8
 
 ''' This module contains code that helps in maintaining the Ckan codebase. '''
+from __future__ import annotations
 
 import inspect
 import time
 import logging
 import re
 import warnings
-from typing import Any, Callable, List, Optional, TypeVar, Union, cast
+from typing import Any, Callable, Optional, TypeVar, Union, cast
 
 from ckan.exceptions import CkanDeprecationWarning
 
@@ -55,7 +56,7 @@ def deprecated(
     return decorator
 
 
-def timer(params: Union[Callable[..., Any], List[str]]) -> Callable[..., Any]:
+def timer(params: Union[Callable[..., Any], list[str]]) -> Callable[..., Any]:
     ''' Decorator function for basic performance testing. It logs the time
     taken to call a function.  It can either be used as a basic decorator or an
     array of parameter names can be passed. If parameter names are passed then

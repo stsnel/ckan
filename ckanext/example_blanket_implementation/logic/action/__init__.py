@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
-from typing import Dict
 from ckan.types import Action, Context, DataDict
 
 __all__ = [u"sleep", u"wake_up"]
 
 
-def get_actions() -> Dict[str, Action]:
+def get_actions() -> dict[str, Action]:
     return {u"sleep": sleep, u"wake_up": wake_up}
 
 

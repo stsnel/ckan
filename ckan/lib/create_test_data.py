@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
 import datetime
-from typing import Any, Dict, List, Optional, Set, Union, cast
+from typing import Any, Optional, Union, cast
 
 
 
@@ -16,14 +17,14 @@ log = logging.getLogger(__name__)
 class CreateTestData(object):
     # keep track of the objects created by this class so that
     # tests can easy call delete() method to delete them all again.
-    pkg_names: List[str] = []
-    tag_names: List[str] = []
-    group_names: Set[str] = set()
-    user_refs: List[str] = []
+    pkg_names: list[str] = []
+    tag_names: list[str] = []
+    group_names: set[str] = set()
+    user_refs: list[str] = []
 
     author: str = u'tester'
 
-    pkg_core_fields: List[str] = ['name', 'title', 'version', 'url', 'notes',
+    pkg_core_fields: list[str] = ['name', 'title', 'version', 'url', 'notes',
                        'author', 'author_email',
                        'maintainer', 'maintainer_email',
                        'private',
@@ -37,18 +38,18 @@ class CreateTestData(object):
         cls.create_arbitrary(search_items)
 
     @classmethod
-    def create_gov_test_data(cls, extra_users: List[str] = []):
+    def create_gov_test_data(cls, extra_users: list[str] = []):
         cls.create_arbitrary(gov_items, extra_user_names=extra_users)
 
     @classmethod
-    def create_family_test_data(cls, extra_users: List[str] = []):
+    def create_family_test_data(cls, extra_users: list[str] = []):
         cls.create_arbitrary(family_items,
                               relationships=family_relationships,
                               extra_user_names=extra_users)
 
     @classmethod
     def create_group_hierarchy_test_data(
-            cls, extra_users: List[Dict[str, Any]] = []):
+            cls, extra_users: list[dict[str, Any]] = []):
         cls.create_users(group_hierarchy_users)
         cls.create_groups(group_hierarchy_groups)
         cls.create_arbitrary(group_hierarchy_datasets)
@@ -138,10 +139,10 @@ class CreateTestData(object):
 
     @classmethod
     def create_arbitrary(
-            cls, package_dicts: Union[Dict[str, Any], List[Dict[str, Any]]],
-            relationships: List[Dict[str, Any]] = [],
-            extra_user_names: List[str] = [],
-            extra_group_names: List[str] = []):
+            cls, package_dicts: Union[dict[str, Any], list[dict[str, Any]]],
+            relationships: list[dict[str, Any]] = [],
+            extra_user_names: list[str] = [],
+            extra_group_names: list[str] = []):
         '''Creates packages and a few extra objects as well at the
         same time if required.
         @param package_dicts - a list of dictionaries with the package
@@ -302,7 +303,7 @@ class CreateTestData(object):
 
     @classmethod
     def create_groups(
-            cls, group_dicts: List[Dict[str, Any]],
+            cls, group_dicts: list[dict[str, Any]],
             admin_user_name: Optional[str] = None,
             auth_profile: str = ""):
         '''A more featured interface for creating groups.
@@ -482,7 +483,7 @@ left arrow <
 
     # method used in DGU and all good tests elsewhere
     @classmethod
-    def create_users(cls, user_dicts: List[Dict[str, Any]]):
+    def create_users(cls, user_dicts: list[dict[str, Any]]):
         needs_commit = False
         for user_dict in user_dicts:
             user = cls._create_user_without_commit(**user_dict)
@@ -521,9 +522,9 @@ left arrow <
 
     @classmethod
     def flag_for_deletion(
-            cls, pkg_names: Union[str, List[str]] = [],
-            tag_names: List[str] = [], group_names: List[str] = [],
-            user_names: List[str] = []):
+            cls, pkg_names: Union[str, list[str]] = [],
+            tag_names: list[str] = [], group_names: list[str] = [],
+            user_names: list[str] = []):
         '''If you create a domain object manually in your test then you
         can name it here (flag it up) and it will be deleted when you next
         call CreateTestData.delete().'''

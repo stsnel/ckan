@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Callable, Container, Dict, List
+from typing import Any, Callable, Container
 
 from urllib.parse import urlparse
 
@@ -16,7 +17,7 @@ log = getLogger(__name__)
 
 
 def get_proxified_resource_url(
-    data_dict: Dict[str, Any],
+    data_dict: dict[str, Any],
     proxy_schemes: Container[str] = ("http", "https"),
 ):
     """
@@ -66,7 +67,7 @@ class ResourceProxy(p.SingletonPlugin):
     def get_blueprint(self):
         return blueprint.resource_proxy
 
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         return {u'view_resource_url': self.view_resource_url}
 
     def view_resource_url(

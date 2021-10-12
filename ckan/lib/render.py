@@ -1,15 +1,16 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import os
 import logging
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
 from ckan.common import config
 from jinja2.exceptions import TemplateNotFound
 
 log = logging.getLogger(__name__)
 
-_template_info_cache: Dict[str, Any] = {}
+_template_info_cache: dict[str, Any] = {}
 
 
 def reset_template_info_cache() -> None:
@@ -31,7 +32,7 @@ def template_type(template_path: str) -> str:
     return 'jinja2'
 
 
-def template_info(template_name: str) -> Tuple[str, str]:
+def template_info(template_name: str) -> tuple[str, str]:
     ''' Returns the path and type for a template '''
 
     if template_name in _template_info_cache:

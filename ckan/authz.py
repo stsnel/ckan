@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import functools
 import inspect
@@ -6,7 +7,7 @@ import importlib
 
 from collections import defaultdict, OrderedDict
 from logging import getLogger
-from typing import Any, Callable, Collection, Dict, KeysView, List, Optional, Union
+from typing import Any, Callable, Collection, KeysView, Optional, Union
 from types import ModuleType
 
 import six
@@ -41,7 +42,7 @@ def get_local_functions(module: ModuleType, include_private: bool = False):
 class AuthFunctions:
     ''' This is a private cache used by get_auth_function() and should never be
     accessed directly we will create an instance of it and then remove it.'''
-    _functions: Dict[str, AuthFunction] = {}
+    _functions: dict[str, AuthFunction] = {}
 
     def clear(self) -> None:
         ''' clear any stored auth functions. '''
@@ -97,7 +98,7 @@ class AuthFunctions:
                 self._functions[key] = v
 
         # Then overwrite them with any specific ones in the plugins:
-        resolved_auth_function_plugins: Dict[str, str] = {}
+        resolved_auth_function_plugins: dict[str, str] = {}
         fetched_auth_functions = {}
         chained_auth_functions = defaultdict(list)
         for plugin in p.PluginImplementations(p.IAuthFunctions):
@@ -185,7 +186,7 @@ def _get_user(username: Optional[str]) -> Optional['model.User']:
     return model.User.get(username)
 
 
-def get_group_or_org_admin_ids(group_id: Optional[str]) -> List[str]:
+def get_group_or_org_admin_ids(group_id: Optional[str]) -> list[str]:
     if not group_id:
         return []
     group = model.Group.get(group_id)
@@ -249,7 +250,7 @@ def is_authorized(action: str, context: Context,
 
 
 # these are the permissions that roles have
-ROLE_PERMISSIONS: Dict[str, List[str]] = OrderedDict([
+ROLE_PERMISSIONS: dict[str, list[str]] = OrderedDict([
     ('admin', ['admin', 'membership']),
     ('editor', ['read', 'delete_dataset', 'create_dataset',
                 'update_dataset', 'manage_group']),
@@ -263,7 +264,7 @@ def get_collaborator_capacities() -> Collection[str]:
     else:
         return ('editor', 'member')
 
-_trans_functions: Dict[str, Callable[[], str]] = {
+_trans_functions: dict[str, Callable[[], str]] = {
     'admin': lambda: _('Admin'),
     'editor': lambda: _('Editor'),
     'member': lambda: _('Member'),
@@ -274,7 +275,7 @@ def trans_role(role: str) -> str:
     return _trans_functions[role]()
 
 
-def roles_list() -> List[Dict[str, str]]:
+def roles_list() -> list[dict[str, str]]:
     ''' returns list of roles for forms '''
     roles = []
     for role in ROLE_PERMISSIONS:
@@ -282,7 +283,7 @@ def roles_list() -> List[Dict[str, str]]:
     return roles
 
 
-def roles_trans() -> Dict[str, str]:
+def roles_trans() -> dict[str, str]:
     ''' return dict of roles with translation '''
     roles = {}
     for role in ROLE_PERMISSIONS:
@@ -290,7 +291,7 @@ def roles_trans() -> Dict[str, str]:
     return roles
 
 
-def get_roles_with_permission(permission: str) -> List[str]:
+def get_roles_with_permission(permission: str) -> list[str]:
     ''' returns the roles with the permission requested '''
     roles = []
     for role in ROLE_PERMISSIONS:
@@ -337,7 +338,7 @@ def has_user_permission_for_group_or_org(group_id: Optional[str],
 
 
 def _has_user_permission_for_groups(
-        user_id: str, permission: str, group_ids: List[str],
+        user_id: str, permission: str, group_ids: list[str],
         capacity: Optional[str]=None) -> bool:
     ''' Check if the user has the given permissions for the particular
     group (ignoring permissions cascading in a group hierarchy).
@@ -477,7 +478,7 @@ def can_manage_collaborators(package_id: str, user_id: str) -> bool:
 
 def user_is_collaborator_on_dataset(
         user_id: str, dataset_id: str,
-        capacity: Optional[Union[str, List[str]]] = None) -> bool:
+        capacity: Optional[Union[str, list[str]]] = None) -> bool:
     '''
     Returns True if the provided user is a collaborator on the provided
     dataset.
@@ -501,7 +502,7 @@ def user_is_collaborator_on_dataset(
     return model.Session.query(q.exists()).scalar()
 
 
-CONFIG_PERMISSIONS_DEFAULTS: Dict[str, Union[bool, str]] = {
+CONFIG_PERMISSIONS_DEFAULTS: dict[str, Union[bool, str]] = {
     # permission and default
     # these are prefixed with ckan.auth. in config to override
     'anon_create_dataset': False,
@@ -522,7 +523,7 @@ CONFIG_PERMISSIONS_DEFAULTS: Dict[str, Union[bool, str]] = {
 }
 
 
-def check_config_permission(permission: str) -> Union[List[str], bool]:
+def check_config_permission(permission: str) -> Union[list[str], bool]:
     '''Returns the configuration value for the provided permission
 
     Permission is a string indentifying the auth permission (eg

@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context, Validator
 from logging import getLogger
-from typing import Any, Callable, Container, Dict
+from typing import Any, Callable, Container
 
 
 from ckan.common import CKANConfig, json, config
@@ -16,7 +17,7 @@ natural_number_validator = p.toolkit.get_validator('natural_number_validator')
 Invalid = p.toolkit.Invalid
 
 
-def get_mapview_config() -> Dict[str, Any]:
+def get_mapview_config() -> dict[str, Any]:
     '''
     Extracts and returns map view configuration of the reclineview extension.
     '''
@@ -49,7 +50,7 @@ def in_list(list_possible_values: Callable[[], Container[Any]]) -> Validator:
     return validate
 
 
-def datastore_fields(resource: Dict[str, Any],
+def datastore_fields(resource: dict[str, Any],
                      valid_field_types: Container[str]):
     '''
     Return a list of all datastore fields for a given resource, as long as
@@ -83,20 +84,20 @@ class ReclineViewBase(p.SingletonPlugin):
         toolkit.add_template_directory(config, 'theme/templates')
         toolkit.add_resource('theme/public', 'ckanext-reclineview')
 
-    def can_view(self, data_dict: Dict[str, Any]):
+    def can_view(self, data_dict: dict[str, Any]):
         resource = data_dict['resource']
         return (resource.get('datastore_active') or
                 '_datastore_only_resource' in resource.get('url', ''))
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: Dict[str, Any]):
+                                 data_dict: dict[str, Any]):
         return {'resource_json': json.dumps(data_dict['resource']),
                 'resource_view_json': json.dumps(data_dict['resource_view'])}
 
-    def view_template(self, context: Context, data_dict: Dict[str, Any]):
+    def view_template(self, context: Context, data_dict: dict[str, Any]):
         return 'recline_view.html'
 
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         return {
             'get_map_config': get_mapview_config,
             'get_dataproxy_url': get_dataproxy_url,
@@ -108,7 +109,7 @@ class ReclineView(ReclineViewBase):
     This extension views resources using a Recline MultiView.
     '''
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         return {'name': 'recline_view',
                 'title': _('Data Explorer'),
                 'filterable': True,
@@ -117,7 +118,7 @@ class ReclineView(ReclineViewBase):
                 'default_title': p.toolkit._('Data Explorer'),
                 }
 
-    def can_view(self, data_dict: Dict[str, Any]):
+    def can_view(self, data_dict: dict[str, Any]):
         resource = data_dict['resource']
 
         if (resource.get('datastore_active') or
@@ -137,7 +138,7 @@ class ReclineGridView(ReclineViewBase):
     This extension views resources using a Recline grid.
     '''
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         return {'name': 'recline_grid_view',
                 'title': _('Grid'),
                 'filterable': True,
@@ -169,7 +170,7 @@ class ReclineGraphView(ReclineViewBase):
     def list_datastore_fields(self):
         return [t['value'] for t in self.datastore_fields]
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         # in_list validator here is passed functions because this
         # method does not know what the possible values of the
         # datastore fields are (requires a datastore search)
@@ -190,16 +191,16 @@ class ReclineGraphView(ReclineViewBase):
                 }
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: Dict[str, Any]):
+                                 data_dict: dict[str, Any]):
         self.datastore_fields = datastore_fields(data_dict['resource'],
                                                  self.datastore_field_types)
-        vars: Dict[str, Any] = ReclineViewBase.setup_template_variables(
+        vars: dict[str, Any] = ReclineViewBase.setup_template_variables(
             self, context, data_dict)
         vars.update({'graph_types': self.graph_types,
                      'graph_fields': self.datastore_fields})
         return vars
 
-    def form_template(self, context: Context, data_dict: Dict[str, Any]):
+    def form_template(self, context: Context, data_dict: dict[str, Any]):
         return 'recline_graph_form.html'
 
 
@@ -224,7 +225,7 @@ class ReclineMapView(ReclineViewBase):
     def list_datastore_fields(self):
         return [t['value'] for t in self.datastore_fields]
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         # in_list validator here is passed functions because this
         # method does not know what the possible values of the
         # datastore fields are (requires a datastore search)
@@ -251,7 +252,7 @@ class ReclineMapView(ReclineViewBase):
                 }
 
     def setup_template_variables(self, context: Context,
-                                 data_dict: Dict[str, Any]):
+                                 data_dict: dict[str, Any]):
         map_latlon_fields = datastore_fields(
             data_dict['resource'], self.datastore_field_latlon_types)
         map_geojson_fields = datastore_fields(
@@ -259,7 +260,7 @@ class ReclineMapView(ReclineViewBase):
 
         self.datastore_fields = map_latlon_fields + map_geojson_fields
 
-        vars: Dict[str, Any] = ReclineViewBase.setup_template_variables(
+        vars: dict[str, Any] = ReclineViewBase.setup_template_variables(
             self, context, data_dict)
         vars.update({'map_field_types': self.map_field_types,
                      'map_latlon_fields': map_latlon_fields,
@@ -267,5 +268,5 @@ class ReclineMapView(ReclineViewBase):
                      })
         return vars
 
-    def form_template(self, context: Context, data_dict: Dict[str, Any]):
+    def form_template(self, context: Context, data_dict: dict[str, Any]):
         return 'recline_map_form.html'

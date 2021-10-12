@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.common import CKANConfig
-from typing import Callable, List, cast
+from typing import cast
 from ckan.types import Context, Schema, Validator, ValidatorFactory
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
@@ -84,7 +85,7 @@ class ExampleIDatasetFormPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         # package types not handled by any other IDatasetForm plugin.
         return True
 
-    def package_types(self) -> List[str]:
+    def package_types(self) -> list[str]:
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         return []

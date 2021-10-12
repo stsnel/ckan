@@ -1,15 +1,16 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context
-from typing import Any, Dict
+from typing import Any
 import ckan.plugins.interfaces as interfaces
 
 
 class IDatastore(interfaces.Interface):
     '''Allow modifying Datastore queries'''
 
-    def datastore_validate(self, context: Context, data_dict: Dict[str, Any],
-                           fields_types: Dict[str, str]):
+    def datastore_validate(self, context: Context, data_dict: dict[str, Any],
+                           fields_types: dict[str, str]):
         '''Validates the ``data_dict`` sent by the user
 
         This is the first method that's called. It's used to guarantee that
@@ -40,9 +41,9 @@ class IDatastore(interfaces.Interface):
         '''
         return data_dict
 
-    def datastore_search(self, context: Context, data_dict: Dict[str, Any],
-                         fields_types: Dict[str, str],
-                         query_dict: Dict[str, Any]):
+    def datastore_search(self, context: Context, data_dict: dict[str, Any],
+                         fields_types: dict[str, str],
+                         query_dict: dict[str, Any]):
         '''Modify queries made on datastore_search
 
         The overall design is that every IDatastore extension will receive the
@@ -99,9 +100,9 @@ class IDatastore(interfaces.Interface):
         '''
         return query_dict
 
-    def datastore_delete(self, context: Context, data_dict: Dict[str, Any],
-                         fields_types: Dict[str, str],
-                         query_dict: Dict[str, Any]):
+    def datastore_delete(self, context: Context, data_dict: dict[str, Any],
+                         fields_types: dict[str, str],
+                         query_dict: dict[str, Any]):
         '''Modify queries made on datastore_delete
 
         The overall design is that every IDatastore extension will receive the
@@ -156,7 +157,7 @@ class IDatastore(interfaces.Interface):
 
 class IDatastoreBackend(interfaces.Interface):
     """Allow custom implementations of datastore backend"""
-    def register_backends(self) -> Dict[str, Any]:
+    def register_backends(self) -> dict[str, Any]:
         """
         Register classes that inherits from DatastoreBackend.
 

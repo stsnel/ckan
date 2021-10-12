@@ -1,13 +1,14 @@
 # encoding: utf-8
 
 '''API functions for updating existing data in CKAN.'''
+from __future__ import annotations
 
 from ckan.types.logic import ActionResult
 import logging
 import datetime
 import time
 import json
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union, cast
+from typing import Any, Optional, TYPE_CHECKING, cast
 
 import six
 
@@ -89,7 +90,7 @@ def resource_update(context: Context, data_dict: DataDict) -> ActionResult.Resou
     package_id = resource.package.id
     pkg_dict = _get_action('package_show')(context, {'id': package_id})
 
-    resources = cast(List[Dict[str, Any]], pkg_dict['resources'])
+    resources = cast("list[dict[str, Any]]", pkg_dict['resources'])
     for n, p in enumerate(resources):
         if p['id'] == id:
             break
@@ -112,7 +113,7 @@ def resource_update(context: Context, data_dict: DataDict) -> ActionResult.Resou
         updated_pkg_dict = _get_action('package_update')(context, pkg_dict)
     except ValidationError as e:
         try:
-            error_dict = cast(List[ErrorDict], e.error_dict['resources'])[n]
+            error_dict = cast("list[ErrorDict]", e.error_dict['resources'])[n]
         except (KeyError, IndexError):
             error_dict = e.error_dict
         raise ValidationError(error_dict)
@@ -583,7 +584,7 @@ def package_resource_reorder(
 
 def _update_package_relationship(
         relationship: 'model_.PackageRelationship', comment: str,
-        context: Context) -> Dict[str, Any]:
+        context: Context) -> dict[str, Any]:
     model = context['model']
     api = context.get('api_version')
     ref_package_by = 'id' if api == 2 else 'name'
@@ -727,7 +728,7 @@ def _group_or_org_update(
 
     user_obj = model.User.by_name(six.ensure_text(user))
     assert user_obj
-    activity_dict: Optional[Dict[str, Any]] = {
+    activity_dict: Optional[dict[str, Any]] = {
             'user_id': user_obj.id,
             'object_id': group.id,
             'activity_type': activity_type,
@@ -1214,7 +1215,7 @@ def package_owner_org_update(context: Context, data_dict: DataDict) -> ActionRes
 
 
 def _bulk_update_dataset(
-        context: Context, data_dict: DataDict, update_dict: Dict[str, Any]):
+        context: Context, data_dict: DataDict, update_dict: dict[str, Any]):
     ''' Bulk update shared code for organizations'''
 
     datasets = data_dict.get('datasets', [])

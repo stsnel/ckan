@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context
 import logging
 import json
-from typing import Any, Dict, List, cast
+from typing import Any, cast
 
 import sqlalchemy
 import six
@@ -28,7 +29,7 @@ _validate = ckan.lib.navl.dictization_functions.validate
 WHITELISTED_RESOURCES = ['_table_metadata']
 
 
-def datastore_create(context: Context, data_dict: Dict[str, Any]):
+def datastore_create(context: Context, data_dict: dict[str, Any]):
     '''Adds a new table to the DataStore.
 
     The datastore_create action allows you to post JSON data to be
@@ -165,7 +166,7 @@ def datastore_create(context: Context, data_dict: Dict[str, Any]):
         backend.calculate_record_count(data_dict['resource_id'])  # type: ignore
 
     # Set the datastore_active flag on the resource if necessary
-    model = _get_or_bust(cast(Dict[str, Any], context), 'model')
+    model = _get_or_bust(cast("dict[str, Any]", context), 'model')
     resobj = model.Resource.get(data_dict['resource_id'])
     if resobj.extras.get('datastore_active') is not True:
         log.debug(
@@ -179,7 +180,7 @@ def datastore_create(context: Context, data_dict: Dict[str, Any]):
     return result
 
 
-def datastore_run_triggers(context: Context, data_dict: Dict[str, Any]) -> int:
+def datastore_run_triggers(context: Context, data_dict: dict[str, Any]) -> int:
     ''' update each record with trigger
 
     The datastore_run_triggers API action allows you to re-apply existing
@@ -210,7 +211,7 @@ def datastore_run_triggers(context: Context, data_dict: Dict[str, Any]) -> int:
     return results.rowcount
 
 
-def datastore_upsert(context: Context, data_dict: Dict[str, Any]):
+def datastore_upsert(context: Context, data_dict: dict[str, Any]):
     '''Updates or inserts into a table in the DataStore
 
     The datastore_upsert API action allows you to add or edit records to
@@ -291,7 +292,7 @@ def datastore_upsert(context: Context, data_dict: Dict[str, Any]):
     return result
 
 
-def datastore_info(context: Context, data_dict: Dict[str, Any]):
+def datastore_info(context: Context, data_dict: dict[str, Any]):
     '''
     Returns detailed metadata about a resource.
 
@@ -348,7 +349,7 @@ def datastore_info(context: Context, data_dict: Dict[str, Any]):
     return info
 
 
-def datastore_delete(context: Context, data_dict: Dict[str, Any]):
+def datastore_delete(context: Context, data_dict: dict[str, Any]):
     '''Deletes a table or a set of records from the DataStore.
 
     :param resource_id: resource id that the data will be deleted from.
@@ -414,7 +415,7 @@ def datastore_delete(context: Context, data_dict: Dict[str, Any]):
         backend.calculate_record_count(data_dict['resource_id'])  # type: ignore
 
     # Set the datastore_active flag on the resource if necessary
-    model = _get_or_bust(cast(Dict[str, Any], context), 'model')
+    model = _get_or_bust(cast("dict[str, Any]", context), 'model')
     resource = model.Resource.get(data_dict['resource_id'])
 
     if (not data_dict.get('filters') and
@@ -432,7 +433,7 @@ def datastore_delete(context: Context, data_dict: Dict[str, Any]):
 
 
 @logic.side_effect_free
-def datastore_search(context: Context, data_dict: Dict[str, Any]):
+def datastore_search(context: Context, data_dict: dict[str, Any]):
     '''Search a DataStore resource.
 
     The datastore_search action allows you to search data in a resource. By
@@ -561,7 +562,7 @@ def datastore_search(context: Context, data_dict: Dict[str, Any]):
 
 
 @logic.side_effect_free
-def datastore_search_sql(context: Context, data_dict: Dict[str, Any]):
+def datastore_search_sql(context: Context, data_dict: dict[str, Any]):
     '''Execute SQL queries on the DataStore.
 
     The datastore_search_sql action allows a user to search data in a resource
@@ -603,7 +604,7 @@ def datastore_search_sql(context: Context, data_dict: Dict[str, Any]):
     '''
     backend = DatastoreBackend.get_active_backend()
 
-    def check_access(table_names: List[str]):
+    def check_access(table_names: list[str]):
         '''
         Raise NotAuthorized if current user is not allowed to access
         any of the tables passed
@@ -623,7 +624,7 @@ def datastore_search_sql(context: Context, data_dict: Dict[str, Any]):
     return result
 
 
-def set_datastore_active_flag(model: Any, data_dict: Dict[str, Any],
+def set_datastore_active_flag(model: Any, data_dict: dict[str, Any],
                               flag: bool):
     '''
     Set appropriate datastore_active flag on CKAN resource.
@@ -684,7 +685,7 @@ def _check_read_only(context: Context, resource_id: str):
 
 
 @logic.validate(dsschema.datastore_function_create_schema)
-def datastore_function_create(context: Context, data_dict: Dict[str, Any]):
+def datastore_function_create(context: Context, data_dict: dict[str, Any]):
     u'''
     Create a trigger function for use with datastore_create
 
@@ -710,7 +711,7 @@ def datastore_function_create(context: Context, data_dict: Dict[str, Any]):
 
 
 @logic.validate(dsschema.datastore_function_delete_schema)
-def datastore_function_delete(context: Context, data_dict: Dict[str, Any]):
+def datastore_function_delete(context: Context, data_dict: dict[str, Any]):
     u'''
     Delete a trigger function
 

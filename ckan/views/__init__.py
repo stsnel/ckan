@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from sqlalchemy import inspect
 from ckan.common import asbool
@@ -222,7 +223,7 @@ def set_controller_and_action() -> None:
     g.controller, g.action = p.toolkit.get_endpoint()
 
 
-def handle_i18n(environ: Optional[Dict[str, Any]] = None) -> None:
+def handle_i18n(environ: Optional[dict[str, Any]] = None) -> None:
     u'''
     Strips the locale code from the requested url
     (eg '/sk/about' -> '/about') and sets environ variables for the

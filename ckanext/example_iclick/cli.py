@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
-from typing import List
 import click
 
 import ckan.plugins.toolkit as tk
@@ -31,5 +31,5 @@ def bye(name: str):
         click.secho(u"Bye, {}".format(name))
 
 
-def get_commands() -> List[click.Command]:
+def get_commands() -> list[click.Command]:
     return [hello_cmd, bye_cmd]

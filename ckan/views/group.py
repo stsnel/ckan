@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
 import re
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, cast
+from typing import Any, Optional, Union, cast
 from typing_extensions import Literal
 
 from urllib.parse import urlencode
@@ -89,7 +90,7 @@ def _check_access(action_name: str, *args: Any, **kw: Any) -> Literal[True]:
     return check_access(_replace_group_org(action_name), *args, **kw)
 
 
-def _force_reindex(grp: Dict[str, Any]) -> None:
+def _force_reindex(grp: dict[str, Any]) -> None:
     u''' When the group name has changed, we need to force a reindex
     of the datasets within the group, otherwise they will stop
     appearing on the read page for the group (as they're connected via
@@ -125,7 +126,7 @@ def set_org(is_organization: bool) -> None:
 
 
 def index(group_type: str, is_organization: bool) -> str:
-    extra_vars: Dict[str, Any] = {}
+    extra_vars: dict[str, Any] = {}
     set_org(is_organization)
     page = h.get_page_number(request.args) or 1
     items_per_page = int(config.get(u'ckan.datasets_per_page', 20))
@@ -163,7 +164,7 @@ def index(group_type: str, is_organization: bool) -> str:
         context['user_is_admin'] = g.userobj.sysadmin
 
     try:
-        data_dict_global_results: Dict[str, Any] = {
+        data_dict_global_results: dict[str, Any] = {
             u'all_fields': False,
             u'q': q,
             u'sort': sort_by,
@@ -182,7 +183,7 @@ def index(group_type: str, is_organization: bool) -> str:
         return base.render(
             _get_group_template(u'index_template', group_type), extra_vars)
 
-    data_dict_page_results: Dict[str, Any] = {
+    data_dict_page_results: dict[str, Any] = {
         u'all_fields': True,
         u'q': q,
         u'sort': sort_by,
@@ -210,9 +211,9 @@ def index(group_type: str, is_organization: bool) -> str:
         _get_group_template(u'index_template', group_type), extra_vars)
 
 
-def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
+def _read(id: Optional[str], limit: int, group_type: str) -> dict[str, Any]:
     u''' This is common code used by both read and bulk_process'''
-    extra_vars: Dict[str, Any] = {}
+    extra_vars: dict[str, Any] = {}
     context = cast(Context, {
         u'model': model,
         u'session': model.Session,
@@ -245,7 +246,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
     page = h.get_page_number(request.args)
 
     # most search operations should reset the page counter:
-    params_nopage: List[Tuple[str, Any]] = [
+    params_nopage: list[tuple[str, Any]] = [
         (k, v) for k, v in request.args.items(multi=True) if k != u'page']
     sort_by = request.args.get(u'sort', None)
 
@@ -283,7 +284,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
     extra_vars["remove_field"] = remove_field
 
     def pager_url(q: Any = None, page: Optional[int] = None):
-        params: List[Tuple[str, Any]] = list(params_nopage)
+        params: list[tuple[str, Any]] = list(params_nopage)
         params.append((u'page', page))
         return search_url(params)
 
@@ -330,7 +331,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> Dict[str, Any]:
 
     extra_vars["facet_titles"] = facets
 
-    data_dict: Dict[str, Any] = {
+    data_dict: dict[str, Any] = {
         u'q': q,
         u'fq': fq,
         u'include_private': True,
@@ -393,7 +394,7 @@ def _update_facet_titles(
     return facets
 
 
-def _get_group_dict(id: str, group_type: str) -> Dict[str, Any]:
+def _get_group_dict(id: str, group_type: str) -> dict[str, Any]:
     u''' returns the result of group_show action or aborts if there is a
     problem '''
     context = cast(Context, {
@@ -424,7 +425,7 @@ def read(group_type: str,
         u'schema': _db_to_form_schema(group_type=group_type),
         u'for_view': True
     })
-    data_dict: Dict[str, Any] = {u'id': id, u'type': group_type}
+    data_dict: dict[str, Any] = {u'id': id, u'type': group_type}
 
     # unicode format (decoded from utf8)
     q = request.args.get(u'q', u'')
@@ -553,7 +554,7 @@ def changes(id: str, group_type: str, is_organization: bool) -> str:
         }
     )
 
-    extra_vars: Dict[str, Any] = {
+    extra_vars: dict[str, Any] = {
         u'activity_diffs': [activity_diff],
         u'group_dict': current_group_dict,
         u'group_activity_list': group_activity_list,
@@ -639,7 +640,7 @@ def changes_multiple(is_organization: bool, group_type: str) -> str:
         u'id': group_id,
         u'limit': 100})
 
-    extra_vars: Dict[str, Any] = {
+    extra_vars: dict[str, Any] = {
         u'activity_diffs': diff_list,
         u'group_dict': current_group_dict,
         u'group_activity_list': group_activity_list,
@@ -664,7 +665,7 @@ def about(id: str, group_type: str, is_organization: bool) -> str:
     g.group_dict = group_dict
     g.group_type = group_type
 
-    extra_vars: Dict[str, Any] = {u"group_dict": group_dict,
+    extra_vars: dict[str, Any] = {u"group_dict": group_dict,
                                   u"group_type": group_type}
 
     return base.render(
@@ -678,7 +679,7 @@ def members(id: str, group_type: str, is_organization: bool) -> str:
         Context, {u'model': model, u'session': model.Session, u'user': g.user})
 
     try:
-        data_dict: Dict[str, Any] = {u'id': id}
+        data_dict: dict[str, Any] = {u'id': id}
         assert check_access(u'group_edit_permissions', context, data_dict)
         members = get_action(u'member_list')(context, {
             u'id': id,
@@ -699,7 +700,7 @@ def members(id: str, group_type: str, is_organization: bool) -> str:
     g.members = members
     g.group_dict = group_dict
 
-    extra_vars: Dict[str, Any] = {
+    extra_vars: dict[str, Any] = {
         u"members": members,
         u"group_dict": group_dict,
         u"group_type": group_type
@@ -744,7 +745,7 @@ def member_delete(id: str, group_type: str,
         base.abort(403, _(u'Unauthorized to delete group %s members') % u'')
     except NotFound:
         base.abort(404, _(u'Group not found'))
-    extra_vars: Dict[str, Any] = {
+    extra_vars: dict[str, Any] = {
         u"user_id": user_id,
         u"user_dict": user_dict,
         u"group_id": id
@@ -818,7 +819,7 @@ def followers(id: str, group_type: str, is_organization: bool) -> str:
     g.group_dict = group_dict
     g.followers = followers
 
-    extra_vars: Dict[str, Any] = {
+    extra_vars: dict[str, Any] = {
         u"group_dict": group_dict,
         u"group_type": group_type,
         u"followers": followers
@@ -838,7 +839,7 @@ def admins(id: str, group_type: str, is_organization: bool) -> str:
     g.group_dict = group_dict
     g.admins = admins
 
-    extra_vars: Dict[str, Any] = {
+    extra_vars: dict[str, Any] = {
         u"group_dict": group_dict,
         u'group_type': group_type,
         u"admins": admins
@@ -876,7 +877,7 @@ class BulkProcessView(MethodView):
         extra_vars = {}
         set_org(is_organization)
         context = self._prepare(group_type, id)
-        data_dict: Dict[str, Any] = {u'id': id, u'type': group_type}
+        data_dict: dict[str, Any] = {u'id': id, u'type': group_type}
         data_dict['include_datasets'] = False
         try:
             group_dict = _action(u'group_show')(context, data_dict)
@@ -898,7 +899,7 @@ class BulkProcessView(MethodView):
         extra_vars = _read(id, limit, group_type)
         g.packages = g.page.items
 
-        extra_vars: Dict[str, Any] = {
+        extra_vars: dict[str, Any] = {
             u"group_dict": group_dict,
             u"group": group,
             u"page": g.page,
@@ -915,7 +916,7 @@ class BulkProcessView(MethodView):
             is_organization: bool) -> Response:
         set_org(is_organization)
         context = self._prepare(group_type, id)
-        data_dict: Dict[str, Any] = {u'id': id, u'type': group_type}
+        data_dict: dict[str, Any] = {u'id': id, u'type': group_type}
         try:
             # Do not query for the group datasets when dictizing, as they will
             # be ignored and get requested on the controller anyway
@@ -949,11 +950,11 @@ class BulkProcessView(MethodView):
             u"bulk_action.delete",
             u"bulk_action.private"
         ])
-        actions_in_form: Set[str] = set(request.form.keys())
+        actions_in_form: set[str] = set(request.form.keys())
         actions = form_names.intersection(actions_in_form)
         # ie7 puts all buttons in form params but puts submitted one twice
 
-        form_dict: Dict[str, str] = request.form.to_dict()
+        form_dict: dict[str, str] = request.form.to_dict()
         for key, value in form_dict.items():
             if value in [u'private', u'public']:
                 action = key.split(u'.')[-1]
@@ -987,7 +988,7 @@ class BulkProcessView(MethodView):
 class CreateGroupView(MethodView):
     u'''Create group view '''
 
-    def _prepare(self, data: Optional[Dict[str, Any]] = None) -> Context:
+    def _prepare(self, data: Optional[dict[str, Any]] = None) -> Context:
         if data and u'type' in data:
             group_type = data['type']
         else:
@@ -1043,9 +1044,9 @@ class CreateGroupView(MethodView):
     def get(self,
             group_type: str,
             is_organization: bool,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None) -> str:
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None) -> str:
         extra_vars = {}
         set_org(is_organization)
         context = self._prepare()
@@ -1061,7 +1062,7 @@ class CreateGroupView(MethodView):
             data.pop(u'image_url', None)
         errors = errors or {}
         error_summary = error_summary or {}
-        extra_vars: Dict[str, Any] = {
+        extra_vars: dict[str, Any] = {
             u'data': data,
             u'errors': errors,
             u'error_summary': error_summary,
@@ -1087,7 +1088,7 @@ class EditGroupView(MethodView):
     u''' Edit group view'''
 
     def _prepare(self, id: Optional[str]) -> Context:
-        data_dict: Dict[str, Any] = {u'id': id, u'include_datasets': False}
+        data_dict: dict[str, Any] = {u'id': id, u'include_datasets': False}
 
         context = cast(Context, {
             u'model': model,
@@ -1145,13 +1146,13 @@ class EditGroupView(MethodView):
             id: str,
             group_type: str,
             is_organization: bool,
-            data: Optional[Dict[str, Any]] = None,
-            errors: Optional[Dict[str, Any]] = None,
-            error_summary: Optional[Dict[str, Any]] = None) -> str:
+            data: Optional[dict[str, Any]] = None,
+            errors: Optional[dict[str, Any]] = None,
+            error_summary: Optional[dict[str, Any]] = None) -> str:
         extra_vars = {}
         set_org(is_organization)
         context = self._prepare(id)
-        data_dict: Dict[str, Any] = {u'id': id, u'include_datasets': False}
+        data_dict: dict[str, Any] = {u'id': id, u'include_datasets': False}
         try:
             group_dict = _action(u'group_show')(context, data_dict)
         except (NotFound, NotAuthorized):
@@ -1159,7 +1160,7 @@ class EditGroupView(MethodView):
         data = data or group_dict
         assert data is not None
         errors = errors or {}
-        extra_vars: Dict[str, Any] = {
+        extra_vars: dict[str, Any] = {
             u'data': data,
             u"group_dict": group_dict,
             u'errors': errors,
@@ -1236,7 +1237,7 @@ class DeleteGroupView(MethodView):
 
         # TODO: Remove
         g.group_dict = group_dict
-        extra_vars: Dict[str, Any] = {
+        extra_vars: dict[str, Any] = {
             u"group_dict": group_dict,
             u"group_type": group_type
         }
@@ -1274,7 +1275,7 @@ class MembersGroupView(MethodView):
         email = data_dict.get(u'email')
 
         if email:
-            user_data_dict: Dict[str, Any] = {
+            user_data_dict: dict[str, Any] = {
                 u'email': email,
                 u'group_id': data_dict['id'],
                 u'role': data_dict['role']
@@ -1302,11 +1303,11 @@ class MembersGroupView(MethodView):
             group_type: str,
             is_organization: bool,
             id: Optional[str] = None) -> str:
-        extra_vars: Dict[str, Any] = {}
+        extra_vars: dict[str, Any] = {}
         set_org(is_organization)
         context = self._prepare(id)
         user = request.args.get(u'user')
-        data_dict: Dict[str, Any] = {u'id': id}
+        data_dict: dict[str, Any] = {u'id': id}
         data_dict['include_datasets'] = False
         group_dict = _action(u'group_show')(context, data_dict)
         roles = _action(u'member_roles_list')(context, {

@@ -1,6 +1,5 @@
 # encoding: utf-8
-
-from typing import List
+from __future__ import annotations
 
 import click
 
@@ -18,7 +17,7 @@ def jobs():
 @jobs.command(short_help=u"Start a worker.",)
 @click.option(u"--burst", is_flag=True, help=u"Start worker in burst mode.")
 @click.argument(u"queues", nargs=-1)
-def worker(burst: bool, queues: List[str]):
+def worker(burst: bool, queues: list[str]):
     """Start a worker that fetches jobs from queues and executes them. If
     no queue names are given then the worker listens to the default
     queue, this is equivalent to
@@ -43,7 +42,7 @@ def worker(burst: bool, queues: List[str]):
 
 @jobs.command(name=u"list", short_help=u"List jobs.")
 @click.argument(u"queues", nargs=-1)
-def list_jobs(queues: List[str]):
+def list_jobs(queues: list[str]):
     """List currently enqueued jobs from the given queues. If no queue
     names are given then the jobs from all queues are listed.
     """
@@ -103,7 +102,7 @@ def cancel(id: str):
 
 @jobs.command(short_help=u"Cancel all jobs.")
 @click.argument(u"queues", nargs=-1)
-def clear(queues: List[str]):
+def clear(queues: list[str]):
     """Cancel all jobs on the given queues. If no queue names are given
     then ALL queues are cleared.
 
@@ -120,7 +119,7 @@ def clear(queues: List[str]):
 
 @jobs.command(short_help=u"Enqueue a test job.")
 @click.argument(u"queues", nargs=-1)
-def test(queues: List[str]):
+def test(queues: list[str]):
     """Enqueue a test job. If no queue names are given then the job is
     added to the default queue. If queue names are given then a
     separate test job is added to each of the queues.

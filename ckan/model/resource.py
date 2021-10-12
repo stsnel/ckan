@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
-from typing import Any, Callable, ClassVar, Dict, List, Optional
+from typing import Any, Callable, ClassVar, Optional
 
 
 from collections import OrderedDict
@@ -76,17 +77,17 @@ class Resource(core.StatefulObjectMixin,
     cache_url: str
     cache_last_update: datetime.datetime
     url_type: str
-    extras: Dict[str, Any]
+    extras: dict[str, Any]
     state: str
 
-    extra_columns: ClassVar[Optional[List[str]]] = None
+    extra_columns: ClassVar[Optional[list[str]]] = None
 
     package: Package
 
     url_changed: Optional[bool]
 
     def __init__(self, url: str=u'', format: str=u'', description: str=u'',
-                 hash: str=u'', extras: Optional[Dict[str, Any]]=None,
+                 hash: str=u'', extras: Optional[dict[str, Any]]=None,
                  package_id: Optional[str]=None, **kwargs: Any) -> None:
         self.id = _types.make_uuid()
         self.url = url
@@ -108,7 +109,7 @@ class Resource(core.StatefulObjectMixin,
         if kwargs:
             raise TypeError('unexpected keywords %s' % kwargs)
 
-    def as_dict(self, core_columns_only: bool=False) -> Dict[str, Any]:
+    def as_dict(self, core_columns_only: bool=False) -> dict[str, Any]:
         _dict = OrderedDict()
         cols = self.get_columns()
         if not core_columns_only:
@@ -140,7 +141,7 @@ class Resource(core.StatefulObjectMixin,
         return resource
 
     @classmethod
-    def get_columns(cls, extra_columns: bool=True) -> List[str]:
+    def get_columns(cls, extra_columns: bool=True) -> list[str]:
         '''Returns the core editable columns of the resource.'''
         if extra_columns:
             return CORE_RESOURCE_COLUMNS + cls.get_extra_columns()
@@ -148,7 +149,7 @@ class Resource(core.StatefulObjectMixin,
             return CORE_RESOURCE_COLUMNS
 
     @classmethod
-    def get_extra_columns(cls) -> List[str]:
+    def get_extra_columns(cls) -> list[str]:
         if cls.extra_columns is None:
             cls.extra_columns = config.get(
                 'ckan.extra_resource_fields', '').split()
@@ -158,7 +159,7 @@ class Resource(core.StatefulObjectMixin,
         assert cls.extra_columns is not None
         return cls.extra_columns
 
-    def related_packages(self) -> List[Package]:
+    def related_packages(self) -> list[Package]:
         return [self.package]
 
 

@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import re
 import logging
 from os import path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Union
+from typing import Any, Iterable, Optional, Sequence, Union
 
 from jinja2 import nodes
 from jinja2 import loaders
@@ -21,7 +22,7 @@ from markupsafe import Markup
 log = logging.getLogger(__name__)
 
 
-def _get_extensions() -> List[Any]:
+def _get_extensions() -> list[Any]:
     return ['jinja2.ext.do', 'jinja2.ext.loopcontrols',
             SnippetExtension,
             CkanExtend,
@@ -32,7 +33,7 @@ def _get_extensions() -> List[Any]:
             AssetExtension]
 
 
-def get_jinja_env_options() -> Dict[str, Any]:
+def get_jinja_env_options() -> dict[str, Any]:
     return dict(
         loader=CkanFileSystemLoader(config['computed_template_paths']),
         autoescape=True,
@@ -238,8 +239,8 @@ class BaseExtension(ext.Extension):
         stream = parser.stream
         tag = next(stream)
         # get arguments
-        args: List[Any] = []
-        kwargs: List[Any] = []
+        args: list[Any] = []
+        kwargs: list[Any] = []
         while not stream.current.test_any('block_end'):
             if args or kwargs:
                 stream.expect('comma')
@@ -276,7 +277,7 @@ class SnippetExtension(BaseExtension):
     tags = set(['snippet'])
 
     @classmethod
-    def _call(cls, args: Iterable[Any], kwargs: Dict[str, Any]):
+    def _call(cls, args: Iterable[Any], kwargs: dict[str, Any]):
         return base.render_snippet(*args, **kwargs)
 
 class UrlForStaticExtension(BaseExtension):
@@ -290,7 +291,7 @@ class UrlForStaticExtension(BaseExtension):
     tags = set(['url_for_static'])
 
     @classmethod
-    def _call(cls, args: Sequence[Any], kwargs: Dict[str, Any]):
+    def _call(cls, args: Sequence[Any], kwargs: dict[str, Any]):
         assert len(args) == 1
         return h.url_for_static(args[0], **kwargs)
 
@@ -305,7 +306,7 @@ class UrlForExtension(BaseExtension):
     tags = set(['url_for'])
 
     @classmethod
-    def _call(cls, args: Iterable[Any], kwargs: Dict[str, Any]):
+    def _call(cls, args: Iterable[Any], kwargs: dict[str, Any]):
         return h.url_for(*args, **kwargs)
 
 
@@ -320,7 +321,7 @@ class LinkForExtension(BaseExtension):
     tags = set(['link_for'])
 
     @classmethod
-    def _call(cls, args: Iterable[Any], kwargs: Dict[str, Any]):
+    def _call(cls, args: Iterable[Any], kwargs: dict[str, Any]):
         return h.nav_link(*args, **kwargs)
 
 
@@ -335,7 +336,7 @@ class AssetExtension(BaseExtension):
     tags = set(['asset'])
 
     @classmethod
-    def _call(cls, args: Sequence[Any], kwargs: Dict[str, Any]):
+    def _call(cls, args: Sequence[Any], kwargs: dict[str, Any]):
         assert len(args) == 1
         assert len(kwargs) == 0
         h.include_asset(args[0])

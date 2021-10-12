@@ -7,11 +7,12 @@
 #
 # NOTE:  This file is specificaly created for
 # from ckan.common import x, y, z to be allowed
+from __future__ import annotations
 
 from collections import MutableMapping
 from typing import (
-    Any, Dict, Iterable, List, Optional, Iterator, TYPE_CHECKING,
-    Tuple, TypeVar, cast, overload)
+    Any, Iterable, Optional, Iterator, TYPE_CHECKING,
+    TypeVar, cast, overload)
 from typing_extensions import Literal
 
 import flask
@@ -72,7 +73,7 @@ class CKANConfig(MutableMapping):
     `load_environment` method with the values of the ini file or env vars.
 
     '''
-    store: Dict[str, Any]
+    store: dict[str, Any]
 
     def __init__(self, *args: Any, **kwargs: Any):
         self.store = dict()
@@ -90,7 +91,7 @@ class CKANConfig(MutableMapping):
     def __repr__(self):
         return self.store.__repr__()
 
-    def copy(self) -> Dict[str, Any]:
+    def copy(self) -> dict[str, Any]:
         return self.store.copy()
 
     def clear(self) -> None:
@@ -190,27 +191,27 @@ def asint(obj: Any) -> int:
 
 
 T = TypeVar('T')
-SequenceT = TypeVar('SequenceT', List[Any], Tuple[Any])
+SequenceT = TypeVar('SequenceT', "list[Any]", "tuple[Any]")
 
 
 @overload
 def aslist(obj: str,
            sep: Optional[str] = None,
-           strip: bool = True) -> List[str]:
+           strip: bool = True) -> list[str]:
     ...
 
 
 @overload
-def aslist(obj: List[T],
+def aslist(obj: list[T],
            sep: Optional[str] = None,
-           strip: bool = True) -> List[T]:
+           strip: bool = True) -> list[T]:
     ...
 
 
 @overload
-def aslist(obj: Tuple[T],
+def aslist(obj: tuple[T],
            sep: Optional[str] = None,
-           strip: bool = True) -> Tuple[T]:
+           strip: bool = True) -> tuple[T]:
     ...
 
 
@@ -224,7 +225,7 @@ def aslist(obj: SequenceT,
 @overload
 def aslist(obj: Literal[None],
            sep: Optional[str] = None,
-           strip: bool = True) -> List[str]:
+           strip: bool = True) -> list[str]:
     ...
 
 

@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import re
 from copy import deepcopy
-from typing import Any, Dict, List, Mapping, cast
+from typing import Any, Mapping, cast
 
 
 from ckan.logic import NotFound
@@ -11,10 +12,10 @@ from ckan.model.domain_object import DomainObject
 from ckan.types import ErrorDict, Model
 
 
-def rename_keys(dict_: Dict[str, Any],
+def rename_keys(dict_: dict[str, Any],
                 key_map: Mapping[str, Any],
                 reverse: bool = False,
-                destructive: bool = False) -> Dict[str, Any]:
+                destructive: bool = False) -> dict[str, Any]:
     '''Returns a dict that has particular keys renamed,
     according to the key_map.
 
@@ -53,7 +54,7 @@ def get_domain_object(model: Model, domain_object_ref: str) -> DomainObject:
     raise NotFound('Domain object %r not found' % domain_object_ref)
 
 
-def error_summary(error_dict: ErrorDict) -> Dict[str, str]:
+def error_summary(error_dict: ErrorDict) -> dict[str, str]:
     ''' Do some i18n stuff on the error_dict keys '''
 
     def prettify(field_name: str):
@@ -61,8 +62,8 @@ def error_summary(error_dict: ErrorDict) -> Dict[str, str]:
                             field_name.replace('_', ' ').capitalize())
         return _(field_name.replace('_', ' '))
 
-    summary: Dict[str, str] = {}
-    for key, error in cast(Dict[str, List[str]], error_dict).items():
+    summary: dict[str, str] = {}
+    for key, error in cast("dict[str, list[str]]", error_dict).items():
         if key == 'resources':
             summary[_('Resources')] = _('Package resource(s) invalid')
         elif key == 'extras':

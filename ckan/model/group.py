@@ -1,8 +1,9 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import datetime
 from typing import (
-    Any, Dict, List,  Optional, Tuple, Type, TypeVar, Union, overload
+    Any, Optional, Type, TypeVar, Union, overload
 )
 from typing_extensions import Literal
 
@@ -111,7 +112,7 @@ class Member(core.StatefulObjectMixin,
             member = cls.by_name(reference)
         return member
 
-    def related_packages(self) -> List[_package.Package]:
+    def related_packages(self) -> list[_package.Package]:
         # TODO do we want to return all related packages or certain ones?
         return meta.Session.query(_package.Package).filter_by(
             id=self.table_id).all()
@@ -146,9 +147,9 @@ class Group(core.StatefulObjectMixin,
     approval_status: str
     state: str
 
-    _extras: Dict[str, Any]  # List['GroupExtra']
+    _extras: dict[str, Any]  # list['GroupExtra']
     extras: AssociationProxy
-    member_all: List[Member]
+    member_all: list[Member]
 
     def __init__(self, name: str = u'', title: str = u'',
                  description: str = u'', image_url: str = u'',
@@ -181,7 +182,7 @@ class Group(core.StatefulObjectMixin,
 
     @classmethod
     def all(cls: Type[TGroup], group_type: Optional[str] = None,
-            state: Tuple[str]=('active',)) -> 'Query[TGroup]':
+            state: tuple[str]=('active',)) -> 'Query[TGroup]':
         """
         Returns all groups.
         """
@@ -205,7 +206,7 @@ class Group(core.StatefulObjectMixin,
         assert status in ["approved", "denied"]
         self.approval_status = status
 
-    def get_children_groups(self, type: str='group') -> List["Group"]:
+    def get_children_groups(self, type: str='group') -> list["Group"]:
         '''Returns the groups one level underneath this group in the hierarchy.
         '''
         # The original intention of this method was to provide the full depth
@@ -222,7 +223,7 @@ class Group(core.StatefulObjectMixin,
                      all()
 
     def get_children_group_hierarchy(
-            self, type: str='group') -> List[Tuple[str, str, str, str]]:
+            self, type: str='group') -> list[tuple[str, str, str, str]]:
         '''Returns the groups in all levels underneath this group in the
         hierarchy. The ordering is such that children always come after their
         parent.
@@ -241,7 +242,7 @@ class Group(core.StatefulObjectMixin,
             params(id=self.id, type=type).all()
         return results
 
-    def get_parent_groups(self, type: str='group') -> List["Group"]:
+    def get_parent_groups(self, type: str='group') -> list["Group"]:
         '''Returns this group's parent groups.
         Returns a list. Will have max 1 value for organizations.
 
@@ -256,7 +257,7 @@ class Group(core.StatefulObjectMixin,
             filter(Group.state == 'active').\
             all()
 
-    def get_parent_group_hierarchy(self, type: str='group') -> List["Group"]:
+    def get_parent_group_hierarchy(self, type: str='group') -> list["Group"]:
         '''Returns this group's parent, parent's parent, parent's parent's
         parent etc.. Sorted with the top level parent first.'''
         return meta.Session.query(Group).\
@@ -264,7 +265,7 @@ class Group(core.StatefulObjectMixin,
             params(id=self.id, type=type).all()
 
     @classmethod
-    def get_top_level_groups(cls, type: str='group') -> List["Group"]:
+    def get_top_level_groups(cls, type: str='group') -> list["Group"]:
         '''Returns a list of the groups (of the specified type) which have
         no parent groups. Groups are sorted by title.
         '''
@@ -279,7 +280,7 @@ class Group(core.StatefulObjectMixin,
             order_by(Group.title).all()
 
     def groups_allowed_to_be_its_parent(
-            self, type: str='group') -> List["Group"]:
+            self, type: str='group') -> list["Group"]:
         '''Returns a list of the groups (of the specified type) which are
         allowed to be this group's parent. It excludes ones which would
         create a loop in the hierarchy, causing the recursive CTE to
@@ -310,14 +311,14 @@ class Group(core.StatefulObjectMixin,
     def packages(self, with_private: bool=..., limit: Optional[int]=...,
                  return_query: Literal[False]=...,
                  context: Optional[Context]=...
-                 ) -> List[_package.Package]: ...
+                 ) -> list[_package.Package]: ...
 
     def packages(
             self, with_private: bool = False,
             limit: Optional[int] = None,
             return_query: bool = False,
             context: Optional[Context] = None
-    ) -> Union["Query[_package.Package]", List[_package.Package]]:
+    ) -> Union["Query[_package.Package]", list[_package.Package]]:
         '''Return this group's active packages.
 
         Returns all packages in this group with VDM state ACTIVE

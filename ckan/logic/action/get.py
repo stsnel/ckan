@@ -1,14 +1,15 @@
 # encoding: utf-8
 
 '''API functions for searching for and getting data from CKAN.'''
+from __future__ import annotations
 
 import uuid
 import logging
 import json
 import datetime
 import socket
-from typing import (Container, Dict, List, Optional,
-                    Tuple, Union, Any, cast, Type)
+from typing import (Container, Optional,
+                    Union, Any, cast, Type)
 
 from ckan.common import config, asbool
 import sqlalchemy
@@ -35,7 +36,7 @@ import ckan.lib.datapreview as datapreview
 import ckan.authz as authz
 
 from ckan.common import _
-from ckan.types import ActionResult, Context, DataDict, Model, Query, Schema
+from ckan.types import ActionResult, Context, DataDict, Query, Schema
 
 log = logging.getLogger('ckan.logic')
 
@@ -595,7 +596,7 @@ def group_list_authz(context: Context,
     if not user_id:
         return []
 
-    group_ids: List[str] = []
+    group_ids: list[str] = []
     if not sysadmin or am_member:
         q: Any = model.Session.query(model.Member.group_id) \
             .filter(model.Member.table_name == 'user') \
@@ -717,10 +718,10 @@ def organization_list_for_user(context: Context,
 
         group_ids = set()
         roles_that_cascade = cast(
-            List[str],
+            "list[str]",
             authz.check_config_permission('roles_that_cascade_to_sub_groups')
         )
-        group_ids_to_capacities: Dict[str, str] = {}
+        group_ids_to_capacities: dict[str, str] = {}
         for member, group in q.all():
             if member.capacity in roles_that_cascade:
                 children_group_ids = [
@@ -803,7 +804,7 @@ def tag_list(context: Context,
     if tags:
         if all_fields:
             tag_list: Union[
-                List[Dict[str, Any]], List[str]
+                list[dict[str, Any]], list[str]
             ] = model_dictize.tag_list_dictize(tags, context)
         else:
             tag_list = [tag.name for tag in tags]
@@ -1480,7 +1481,7 @@ def user_show(context: Context, data_dict: DataDict) -> ActionResult.UserShow:
 
         fq = "+creator_user_id:{0}".format(user_dict['id'])
 
-        search_dict: Dict[str, Any] = {'rows': 50}
+        search_dict: dict[str, Any] = {'rows': 50}
 
         if include_private_and_draft_datasets:
             search_dict.update({
@@ -1647,7 +1648,7 @@ def user_autocomplete(context: Context, data_dict: DataDict) -> ActionResult.Use
 
 def _group_or_org_autocomplete(
         context: Context, data_dict: DataDict,
-        is_org: bool) -> List[Dict[str, str]]:
+        is_org: bool) -> list[dict[str, str]]:
 
     q = data_dict['q']
     limit = data_dict.get('limit', 20)
@@ -1872,8 +1873,8 @@ def package_search(context: Context, data_dict: DataDict) -> ActionResult.Packag
         data_dict['sort'] = config.get('ckan.search.default_package_sort') \
             or 'score desc, metadata_modified desc'
 
-    results: List[Dict[str, Any]] = []
-    facets: Dict[str, Any] = {}
+    results: list[dict[str, Any]] = []
+    facets: dict[str, Any] = {}
     count = 0
 
     if not abort:
@@ -1918,7 +1919,7 @@ def package_search(context: Context, data_dict: DataDict) -> ActionResult.Packag
             for package in query.results:
                 if isinstance(package, str):
                     package = {result_fl[0]: package}
-                extras = cast(Dict[str, Any], package.pop('extras', {}))
+                extras = cast("dict[str, Any]", package.pop('extras', {}))
                 package.update(extras)
                 results.append(package)
         else:
@@ -1962,7 +1963,7 @@ def package_search(context: Context, data_dict: DataDict) -> ActionResult.Packag
     group_titles_by_name = dict(groups)
 
     # Transform facets into a more useful data structure.
-    restructured_facets: Dict[str, Any] = {}
+    restructured_facets: dict[str, Any] = {}
     for key, value in facets.items():
         restructured_facets[key] = {
             'title': key,
@@ -2081,8 +2082,8 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
     # The result of all this gumpf is to populate the local `fields` variable
     # with mappings from field names to list of search terms, or a single
     # search-term string.
-    query: Optional[Union[str, List[str]]] = data_dict.get('query')
-    fields: Optional[Dict[str, Any]] = data_dict.get('fields')
+    query: Optional[Union[str, list[str]]] = data_dict.get('query')
+    fields: Optional[dict[str, Any]] = data_dict.get('fields')
 
     if query is None and fields is None:
         raise ValidationError({'query': _('Missing value')})
@@ -2107,7 +2108,7 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
         assert fields is not None
         # The legacy fields paramter splits string terms.
         # So maintain that behaviour
-        split_terms: Dict[str, List[str]] = {}
+        split_terms: dict[str, list[str]] = {}
         for field, terms in fields.items():
             if isinstance(terms, str):
                 terms = terms.split()
@@ -2200,7 +2201,7 @@ def resource_search(context: Context, data_dict: DataDict) -> ActionResult.Resou
 
 
 def _tag_search(
-        context: Context, data_dict: DataDict) -> Tuple[List[model.Tag], int]:
+        context: Context, data_dict: DataDict) -> tuple[list[model.Tag], int]:
     model = context['model']
 
     terms = data_dict.get('query') or data_dict.get('q') or []
@@ -3110,7 +3111,7 @@ def followee_list(
     '''
     _check_access('followee_list', context, data_dict)
 
-    def display_name(followee: Dict[str, Any]) -> Optional[str]:
+    def display_name(followee: dict[str, Any]) -> Optional[str]:
         '''Return a display name for the given user, group or dataset dict.'''
         display_name = followee.get('display_name')
         fullname = followee.get('fullname')
@@ -3502,7 +3503,7 @@ def activity_diff(context: Context,
 def _unpick_search(
         sort: str,
         allowed_fields: Optional['Container[str]'] = None,
-        total: Optional[int] = None) -> List[Tuple[str, str]]:
+        total: Optional[int] = None) -> list[tuple[str, str]]:
     ''' This is a helper function that takes a sort string
     eg 'name asc, last_modified desc' and returns a list of
     split field order eg [('name', 'asc'), ('last_modified', 'desc')]

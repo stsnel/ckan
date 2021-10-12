@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import logging
 import json
 import unicodedata
-from typing import Dict, Optional, Tuple, Type, cast, Any, List
+from typing import Optional, Type, cast, Any
 
 
 from urllib.parse import urlparse
@@ -28,7 +29,7 @@ BASE_URL = config.get(u'ckan.site_url')
 SITE_TITLE = config.get(u'ckan.site_title', u'CKAN')
 
 
-def _package_search(data_dict: DataDict) -> Tuple[int, List[Dict[str, Any]]]:
+def _package_search(data_dict: DataDict) -> tuple[int, list[dict[str, Any]]]:
     """
     Helper method that wraps the package_search action.
 
@@ -53,7 +54,7 @@ def _package_search(data_dict: DataDict) -> Tuple[int, List[Dict[str, Any]]]:
     return query['count'], query['results']
 
 
-def _enclosure(pkg: Dict[str, Any]) -> 'Enclosure':
+def _enclosure(pkg: dict[str, Any]) -> 'Enclosure':
     url = h.url_for(
         u'api.action',
         logic_function=u'package_show',
@@ -136,8 +137,8 @@ class CKANFeed(FeedGenerator):
 
 
 def output_feed(
-        results: List[Dict[str, Any]], feed_title: str, feed_description: str,
-        feed_link: str, feed_url: str, navigation_urls: Dict[str, str],
+        results: list[dict[str, Any]], feed_title: str, feed_description: str,
+        feed_link: str, feed_url: str, navigation_urls: dict[str, str],
         feed_guid: str) -> Response:
     author_name = config.get(u'ckan.feeds.author_name', u'').strip() or \
         config.get(u'ckan.site_id', u'').strip()
@@ -168,7 +169,7 @@ def output_feed(
         last_page=navigation_urls[u'last'], )
 
     for pkg in results:
-        additional_fields: Dict[str, Any] = {}
+        additional_fields: dict[str, Any] = {}
 
         for plugin in plugins.PluginImplementations(plugins.IFeed):
             if hasattr(plugin, u'get_item_additional_fields'):
@@ -266,7 +267,7 @@ def tag(id: str) -> Response:
         navigation_urls=navigation_urls)
 
 
-def group_or_organization(obj_dict: Dict[str, Any], is_org: bool) -> Response:
+def group_or_organization(obj_dict: dict[str, Any], is_org: bool) -> Response:
     data_dict, params = _parse_url_params()
     if is_org:
         key = u'owner_org'
@@ -315,7 +316,7 @@ def group_or_organization(obj_dict: Dict[str, Any], is_org: bool) -> Response:
         navigation_urls=navigation_urls)
 
 
-def _parse_url_params() -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def _parse_url_params() -> tuple[dict[str, Any], dict[str, Any]]:
     """
     Constructs a search-query dict from the URL query parameters.
 
@@ -382,7 +383,7 @@ def custom() -> Response:
     page = h.get_page_number(request.args)
 
     limit = ITEMS_LIMIT
-    data_dict: Dict[str, Any] = {
+    data_dict: dict[str, Any] = {
         u'q': q,
         u'fq': fq,
         u'start': (page - 1) * limit,
@@ -416,7 +417,7 @@ def custom() -> Response:
         navigation_urls=navigation_urls)
 
 
-def _alternate_url(params: Dict[str, Any], **kwargs: Any) -> str:
+def _alternate_url(params: dict[str, Any], **kwargs: Any) -> str:
     search_params = params.copy()
     search_params.update(kwargs)
 
@@ -427,7 +428,7 @@ def _alternate_url(params: Dict[str, Any], **kwargs: Any) -> str:
     return _feed_url(search_params, controller=u'dataset', action=u'search')
 
 
-def _feed_url(query: Dict[str, Any], controller: str, action: str,
+def _feed_url(query: dict[str, Any], controller: str, action: str,
               **kwargs: Any) -> str:
     """
     Constructs the url for the given action.  Encoding the query
@@ -440,13 +441,13 @@ def _feed_url(query: Dict[str, Any], controller: str, action: str,
 
 
 def _navigation_urls(
-        query: Dict[str, Any], controller: str, action: str,
-        item_count: int, limit: int, **kwargs: Any) -> Dict[str, Any]:
+        query: dict[str, Any], controller: str, action: str,
+        item_count: int, limit: int, **kwargs: Any) -> dict[str, Any]:
     """
     Constructs and returns first, last, prev and next links for paging
     """
 
-    urls: Dict[str, Optional[str]] = dict(
+    urls: dict[str, Optional[str]] = dict(
         (rel, None) for rel in u'previous next first last'.split()
     )
 

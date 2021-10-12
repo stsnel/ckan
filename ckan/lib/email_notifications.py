@@ -6,9 +6,11 @@ new activities in your dashboard activity stream) and emailing them to the
 users.
 
 '''
+from __future__ import annotations
+
 import datetime
 import re
-from typing import Any, Dict, List, cast
+from typing import Any, cast
 
 import ckan.model as model
 import ckan.logic as logic
@@ -76,8 +78,8 @@ def string_to_timedelta(s: str) -> datetime.timedelta:
 
 
 def _notifications_for_activities(
-        activities: List[Dict[str, Any]],
-        user_dict: Dict[str, Any]) -> List[Dict[str, str]]:
+        activities: list[dict[str, Any]],
+        user_dict: dict[str, Any]) -> list[dict[str, str]]:
     '''Return one or more email notifications covering the given activities.
 
     This function handles grouping multiple activities into a single digest
@@ -121,8 +123,8 @@ def _notifications_for_activities(
 
 
 def _notifications_from_dashboard_activity_list(
-        user_dict: Dict[str, Any],
-        since: datetime.datetime) -> List[Dict[str, str]]:
+        user_dict: dict[str, Any],
+        since: datetime.datetime) -> list[dict[str, str]]:
     '''Return any email notifications from the given user's dashboard activity
     list since `since`.
 
@@ -155,8 +157,8 @@ _notifications_functions = [
 
 
 def get_notifications(
-        user_dict: Dict[str, Any],
-        since: datetime.datetime) -> List[Dict[str, Any]]:
+        user_dict: dict[str, Any],
+        since: datetime.datetime) -> list[dict[str, Any]]:
     '''Return any email notifications for the given user since `since`.
 
     For example email notifications about activity streams will be returned for
@@ -179,8 +181,8 @@ def get_notifications(
     return notifications
 
 
-def send_notification(user: Dict[str, Any],
-                      email_dict: Dict[str, Any]) -> None:
+def send_notification(user: dict[str, Any],
+                      email_dict: dict[str, Any]) -> None:
     '''Email `email_dict` to `user`.'''
     import ckan.lib.mailer
 
@@ -195,7 +197,7 @@ def send_notification(user: Dict[str, Any],
         raise
 
 
-def get_and_send_notifications_for_user(user: Dict[str, Any]) -> None:
+def get_and_send_notifications_for_user(user: dict[str, Any]) -> None:
 
     # Parse the email_notifications_since config setting, email notifications
     # from longer ago than this time will not be sent.

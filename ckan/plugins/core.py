@@ -3,10 +3,11 @@
 '''
 Provides plugin services to the CKAN
 '''
+from __future__ import annotations
 
 import logging
 from contextlib import contextmanager
-from typing import (Any, Dict, Generator, Generic, Iterator, List, Optional,
+from typing import (Any, Generic, Iterator, Optional,
                     Type, TypeVar, Union)
 from pkg_resources import iter_entry_points
 
@@ -51,17 +52,17 @@ GROUPS = [
     TEST_PLUGINS_ENTRY_POINT_GROUP,
 ]
 # These lists are used to ensure that the correct extensions are enabled.
-_PLUGINS: List[str] = []
-_PLUGINS_CLASS: List[Type["SingletonPlugin"]] = []
+_PLUGINS: list[str] = []
+_PLUGINS_CLASS: list[Type["SingletonPlugin"]] = []
 
 # To aid retrieving extensions by name
-_PLUGINS_SERVICE: Dict[str, "SingletonPlugin"] = {}
+_PLUGINS_SERVICE: dict[str, "SingletonPlugin"] = {}
 
 
 @contextmanager
 def use_plugin(
     *plugins: str
-) -> Iterator[Union['SingletonPlugin', List['SingletonPlugin']]]:
+) -> Iterator[Union['SingletonPlugin', list['SingletonPlugin']]]:
     '''Load plugin(s) for testing purposes
 
     e.g.
@@ -178,7 +179,7 @@ def load_all() -> None:
 
 def load(
         *plugins: str
-) -> Union[SingletonPlugin, List[SingletonPlugin]]:
+) -> Union[SingletonPlugin, list[SingletonPlugin]]:
     '''
     Load named plugin(s).
     '''
@@ -263,7 +264,7 @@ def plugin_loaded(name: str) -> bool:
     return False
 
 
-def find_system_plugins() -> List[str]:
+def find_system_plugins() -> list[str]:
     '''
     Return all plugins in the ckan.system_plugins entry point group.
 

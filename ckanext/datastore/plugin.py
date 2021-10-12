@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Action, AuthFunction, Context
 from ckan.common import CKANConfig
 import logging
-from typing import Any, Dict
+from typing import Any
 
 import ckan.plugins as p
 import ckan.logic as logic
@@ -82,7 +83,7 @@ class DatastorePlugin(p.SingletonPlugin):
 
     # IActions
 
-    def get_actions(self) -> Dict[str, Action]:
+    def get_actions(self) -> dict[str, Action]:
         actions = {
             'datastore_create': action.datastore_create,
             'datastore_upsert': action.datastore_upsert,
@@ -102,7 +103,7 @@ class DatastorePlugin(p.SingletonPlugin):
 
     # IAuthFunctions
 
-    def get_auth_functions(self) -> Dict[str, AuthFunction]:
+    def get_auth_functions(self) -> dict[str, AuthFunction]:
         return {
             'datastore_create': auth.datastore_create,
             'datastore_upsert': auth.datastore_upsert,
@@ -118,7 +119,7 @@ class DatastorePlugin(p.SingletonPlugin):
 
     # IResourceController
 
-    def before_show(self, resource_dict: Dict[str, Any]):
+    def before_show(self, resource_dict: dict[str, Any]):
         # Modify the resource url of datastore resources so that
         # they link to the datastore dumps.
         if resource_dict.get('url_type') == 'datastore':
@@ -154,8 +155,8 @@ class DatastorePlugin(p.SingletonPlugin):
 
     # IDatastore
 
-    def datastore_validate(self, context: Context, data_dict: Dict[str, Any],
-                           fields_types: Dict[str, str]):
+    def datastore_validate(self, context: Context, data_dict: dict[str, Any],
+                           fields_types: dict[str, str]):
         column_names = list(fields_types.keys())
 
         filters = data_dict.get('filters', {})
@@ -226,17 +227,17 @@ class DatastorePlugin(p.SingletonPlugin):
 
         return data_dict
 
-    def datastore_delete(self, context: Context, data_dict: Dict[str, Any],
-                         fields_types: Dict[str, str],
-                         query_dict: Dict[str, Any]):
+    def datastore_delete(self, context: Context, data_dict: dict[str, Any],
+                         fields_types: dict[str, str],
+                         query_dict: dict[str, Any]):
         hook = getattr(self.backend, 'datastore_delete', None)
         if hook:
             query_dict = hook(context, data_dict, fields_types, query_dict)
         return query_dict
 
-    def datastore_search(self, context: Context, data_dict: Dict[str, Any],
-                         fields_types: Dict[str, str],
-                         query_dict: Dict[str, Any]):
+    def datastore_search(self, context: Context, data_dict: dict[str, Any],
+                         fields_types: dict[str, str],
+                         query_dict: dict[str, Any]):
         hook = getattr(self.backend, 'datastore_search', None)
         if hook:
             query_dict = hook(context, data_dict, fields_types, query_dict)

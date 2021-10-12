@@ -3,7 +3,6 @@
 '''API functions for partial updates of existing data in CKAN'''
 
 from ckan.types.logic import ActionResult
-from typing import Dict, Union, Any
 
 import ckan.logic.action.update as _update
 from ckan.logic import (

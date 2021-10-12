@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import List, Optional, Any
+from typing import Optional, Any
 
 from sqlalchemy.orm import relation
 from sqlalchemy import types, Column, Table, ForeignKey, UniqueConstraint
@@ -48,7 +49,7 @@ class Tag(domain_object.DomainObject):
     name: str
     vocabulary_id: Optional[str]
 
-    package_tags: 'List[PackageTag]'
+    package_tags: 'list[PackageTag]'
     vocabulary: Optional['ckan.model.Vocabulary']
 
     def __init__(self, name: str='', vocabulary_id: Optional[str]=None) -> None:
@@ -217,7 +218,7 @@ class Tag(domain_object.DomainObject):
         return query
 
     @property
-    def packages(self) -> List['ckan.model.Package']:
+    def packages(self) -> list['ckan.model.Package']:
         '''Return a list of all packages that have this tag, sorted by name.
 
         :rtype: list of ckan.model.package.Package objects
@@ -307,7 +308,7 @@ class PackageTag(core.StatefulObjectMixin,
             query = query.autoflush(autoflush)
             return query.one()
 
-    def related_packages(self) -> List['ckan.model.Package']:
+    def related_packages(self) -> list['ckan.model.Package']:
         if self.package:
             return [self.package]
         return []

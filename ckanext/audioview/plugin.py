@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 import ckan.plugins as p
 from ckan.types import Context, DataDict
@@ -25,7 +26,7 @@ class AudioView(p.SingletonPlugin):
             'ckan.preview.audio_formats',
             DEFAULT_AUDIO_FORMATS).split()
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         return {'name': 'audio_view',
                 'title': p.toolkit._('Audio'),
                 'icon': 'file-audio-o',

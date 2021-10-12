@@ -1,6 +1,7 @@
 # encoding: utf-8
+from __future__ import annotations
 
-from typing import Any, Dict, Optional, cast
+from typing import Any, Optional, cast
 from itertools import zip_longest
 
 from flask import Blueprint, make_response
@@ -94,7 +95,7 @@ def dump(resource_id: str):
 
 class DictionaryView(MethodView):
 
-    def _prepare(self, id: str, resource_id: str) -> Dict[str, Any]:
+    def _prepare(self, id: str, resource_id: str) -> dict[str, Any]:
         try:
             # resource_edit_base template uses these
             pkg_dict = get_action(u'package_show')({}, {u'id': id})
@@ -163,7 +164,7 @@ class DictionaryView(MethodView):
 
 def dump_to(
     resource_id: str, output: Any, fmt: str, offset: int, limit: Optional[int],
-        options: Dict[str, Any], sort: str, search_params: Dict[str, Any]
+        options: dict[str, Any], sort: str, search_params: dict[str, Any]
 ):
     if fmt == u'csv':
         writer_factory = csv_writer

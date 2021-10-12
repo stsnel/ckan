@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.types import Context
-from typing import Any, Dict
+from typing import Any
 from ckan.common import CKANConfig
 import logging
 
@@ -21,7 +22,7 @@ class WebPageView(p.SingletonPlugin):
     def update_config(self, config: CKANConfig):
         p.toolkit.add_template_directory(config, 'theme/templates')
 
-    def info(self) -> Dict[str, Any]:
+    def info(self) -> dict[str, Any]:
         return {'name': 'webpage_view',
                 'title': p.toolkit._('Website'),
                 'schema': {'page_url': [ignore_empty, unicode_safe]},
@@ -31,14 +32,14 @@ class WebPageView(p.SingletonPlugin):
                 'default_title': p.toolkit._('Website'),
                 }
 
-    def can_view(self, data_dict: Dict[str, Any]):
+    def can_view(self, data_dict: dict[str, Any]):
 
         resource = data_dict['resource']
         return (resource.get('format', '').lower() in ['html', 'htm'] or
                 resource['url'].split('.')[-1] in ['html', 'htm'])
 
-    def view_template(self, context: Context, data_dict: Dict[str, Any]):
+    def view_template(self, context: Context, data_dict: dict[str, Any]):
         return 'webpage_view.html'
 
-    def form_template(self, context: Context, data_dict: Dict[str, Any]):
+    def form_template(self, context: Context, data_dict: dict[str, Any]):
         return 'webpage_form.html'

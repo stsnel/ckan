@@ -1,10 +1,11 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import six
 import re
 import logging
 
-from typing import Any, Dict, Iterable, List, Optional, Set
+from typing import Any, Iterable, Optional, Dict
 from typing_extensions import Literal
 
 
@@ -13,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 def config_edit_using_option_strings(config_filepath: str,
-                                     desired_option_strings: List[str],
+                                     desired_option_strings: list[str],
                                      section: str,
                                      edit: bool = False) -> None:
     '''Writes the desired_option_strings to the config file.'''
@@ -110,7 +111,7 @@ class Option(object):
 
 
 def calculate_new_sections(existing_options: Iterable[Option],
-                           desired_options: Iterable[Option]) -> Set[str]:
+                           desired_options: Iterable[Option]) -> set[str]:
     existing_sections = {option.section for option in existing_options}
     desired_sections = {option.section for option in desired_options}
     new_sections = desired_sections - existing_sections
@@ -129,14 +130,14 @@ class Changes(Dict[str, Any]):
             self[option.section][action] = []
         self[option.section][action].append(option)
 
-    def get(self, section: str, action: Optional[str] = None) -> List[Option]:
+    def get(self, section: str, action: Optional[str] = None) -> list[Option]:
         try:
             return self[section][action]
         except KeyError:
             return []
 
 
-def calculate_changes(existing_options_dict: Dict[str, Any],
+def calculate_changes(existing_options_dict: dict[str, Any],
                       desired_options: Iterable[Option],
                       edit: bool) -> Changes:
     changes = Changes()
@@ -152,7 +153,7 @@ def calculate_changes(existing_options_dict: Dict[str, Any],
     return changes
 
 
-def parse_config(input_lines: List[str]) -> Dict[str, Option]:
+def parse_config(input_lines: list[str]) -> dict[str, Option]:
     '''
     Returns a dict of Option objects, keyed by Option.id, given the lines in a
     config file.
@@ -178,9 +179,9 @@ def parse_config(input_lines: List[str]) -> Dict[str, Option]:
 
 
 def make_changes(input_lines: Iterable[str], new_sections: Iterable[str],
-                 changes: Changes) -> List[str]:
+                 changes: Changes) -> list[str]:
     '''Makes changes to the config file (returned as lines).'''
-    output: List[str] = []
+    output: list[str] = []
     section = None
     options_to_edit_in_this_section = {}  # key: option
     options_already_edited = set()

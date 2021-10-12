@@ -1,6 +1,7 @@
 # encoding: utf-8
-from typing import Any, List
+from __future__ import annotations
 
+from typing import Any
 
 from sqlalchemy import orm, types, Column, Table, ForeignKey
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -34,7 +35,7 @@ class PackageExtra(core.StatefulObjectMixin, domain_object.DomainObject):
 
     package: _package.Package
 
-    def related_packages(self) -> List[_package.Package]:
+    def related_packages(self) -> list[_package.Package]:
         return [self.package]
 
 

@@ -33,9 +33,11 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 '''
+from __future__ import annotations
+
 import re
 from string import Template
-from typing import Any, Callable, Dict, List, Match, Optional, Sequence
+from typing import Any, Callable, Match, Optional, Sequence, List
 
 import dominate.tags as tags
 from markupsafe import Markup
@@ -272,9 +274,9 @@ class BasePage(List[Any]):
               symbol_last: str = u">>",
               symbol_previous: str = u"<",
               symbol_next: str = u">",
-              link_attr: Optional[Dict[str, str]] = None,
-              curpage_attr: Optional[Dict[str, str]] = None,
-              dotdot_attr: Optional[Dict[str, str]] = None,
+              link_attr: Optional[dict[str, str]] = None,
+              curpage_attr: Optional[dict[str, str]] = None,
+              dotdot_attr: Optional[dict[str, str]] = None,
               **kwargs: Any) -> Markup:
         """Return string with links to other pages (e.g. "1 2 [3] 4 5 6 7").
 
@@ -647,7 +649,7 @@ class Page(BasePage):
 
     def _pagerlink(
             self, page: int, text: str,
-            extra_attributes: Optional[Dict[str, Any]] = None):
+            extra_attributes: Optional[dict[str, Any]] = None):
         anchor = super(Page, self)._pagerlink(page, text)
         extra_attributes = extra_attributes or {}
         return str(tags.li(anchor, **extra_attributes))

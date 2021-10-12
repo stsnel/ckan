@@ -5,6 +5,8 @@
 Consists of functions to typically be used within templates, but also
 available to Controllers. This module is available to templates as 'h'.
 '''
+from __future__ import annotations
+
 import email.utils
 import datetime
 import logging
@@ -19,8 +21,8 @@ import functools
 
 from collections import defaultdict
 from typing import (
-    Any, Callable, List, Match, NoReturn, cast,
-    Dict, Iterable, Optional, Tuple, TypeVar, Union)
+    Any, Callable, Match, NoReturn, cast, Dict,
+    Iterable, Optional, TypeVar, Union)
 
 import dominate.tags as dom_tags
 from markdown import markdown
@@ -107,7 +109,7 @@ class HelperAttributeDict(Dict[str, Callable[..., Any]]):
 
 
 # Builtin helper functions.
-_builtin_functions: Dict[str, Callable[..., Any]] = {}
+_builtin_functions: dict[str, Callable[..., Any]] = {}
 helper_functions = HelperAttributeDict()
 
 
@@ -272,7 +274,7 @@ def url(*args: Any, **kw: Any) -> str:
 
 
 @core_helper
-def get_site_protocol_and_host() -> Union[Tuple[str, str], Tuple[None, None]]:
+def get_site_protocol_and_host() -> Union[tuple[str, str], tuple[None, None]]:
     '''Return the protocol and host of the configured `ckan.site_url`.
     This is needed to generate valid, full-qualified URLs.
 
@@ -729,7 +731,7 @@ class _Flash(object):
 
     def __init__(self,
                  session_key: str = "flash",
-                 categories: Optional[List[str]] = None,
+                 categories: Optional[list[str]] = None,
                  default_category: Optional[str] = None) -> None:
         self.session_key = session_key
         if categories is not None:
@@ -765,7 +767,7 @@ class _Flash(object):
         messages.append(new_message_tuple)
         session.save()
 
-    def pop_messages(self) -> List[Message]:
+    def pop_messages(self) -> list[Message]:
         messages = session.pop(self.session_key, [])
         # only save session if it has changed
         if messages:
@@ -821,7 +823,7 @@ def _link_to(text: str, *args: Any, **kwargs: Any) -> Markup:
     '''Common link making code for several helper functions'''
     assert len(args) < 2, 'Too many unnamed arguments'
 
-    def _link_class(kwargs: Dict[str, Any]):
+    def _link_class(kwargs: dict[str, Any]):
         ''' creates classes for the link_to calls '''
         suppress_active_class = kwargs.pop('suppress_active_class', False)
         if not suppress_active_class and _link_active(kwargs):
@@ -848,7 +850,7 @@ def _link_to(text: str, *args: Any, **kwargs: Any) -> Markup:
     )
 
 
-def _preprocess_dom_attrs(attrs: Dict[str, Any]) -> Dict[str, Any]:
+def _preprocess_dom_attrs(attrs: dict[str, Any]) -> dict[str, Any]:
     """Strip leading underscore from keys of dict.
 
     This hack was used in `webhelpers` library for some attributes,
@@ -944,8 +946,8 @@ def nav_link(text: str, *args: Any, **kwargs: Any) -> Union[Markup, str]:
 
 @core_helper
 def build_nav_main(
-    *args: Union[Tuple[str, str], Tuple[str, str, List[str]],
-                 Tuple[str, str, List[str], str], ]
+    *args: Union[tuple[str, str], tuple[str, str, list[str]],
+                 tuple[str, str, list[str], str], ]
 ) -> Markup:
 
     """Build a set of menu items.
@@ -1150,9 +1152,9 @@ def humanize_entity_type(entity_type: str, object_type: str,
 @core_helper
 def get_facet_items_dict(
         facet: str,
-        search_facets: Union[Dict[str, Dict[str, Any]], Any] = None,
+        search_facets: Union[dict[str, dict[str, Any]], Any] = None,
         limit: Optional[int] = None,
-        exclude_active: bool = False) -> List[Dict[str, Any]]:
+        exclude_active: bool = False) -> list[dict[str, Any]]:
     '''Return the list of unselected facet items for the given facet, sorted
     by count.
 
@@ -1190,7 +1192,7 @@ def get_facet_items_dict(
         elif not exclude_active:
             facets.append(dict(active=True, **facet_item))
     # Sort descendingly by count and ascendingly by case-sensitive display name
-    sort_facets: Callable[[Any], Tuple[int, str]] = lambda it: (
+    sort_facets: Callable[[Any], tuple[int, str]] = lambda it: (
         -it['count'], it['display_name'].lower())
     facets.sort(key=sort_facets)
     if hasattr(c, 'search_facets_limits'):
@@ -1204,7 +1206,7 @@ def get_facet_items_dict(
 
 @core_helper
 def has_more_facets(facet: str,
-                    search_facets: Dict[str, Dict[str, Any]],
+                    search_facets: dict[str, dict[str, Any]],
                     limit: Optional[int] = None,
                     exclude_active: bool = False) -> bool:
     '''
@@ -1240,7 +1242,7 @@ def has_more_facets(facet: str,
 
 @core_helper
 def unselected_facet_items(
-        facet: str, limit: int = 10) -> List[Dict[str, Any]]:
+        facet: str, limit: int = 10) -> list[dict[str, Any]]:
     '''Return the list of unselected facet items for the given facet, sorted
     by count.
 
@@ -1270,7 +1272,7 @@ def get_param_int(name: str, default: int = 10) -> int:
         return default
 
 
-def _url_with_params(url: str, params: Optional[Iterable[Tuple[str,
+def _url_with_params(url: str, params: Optional[Iterable[tuple[str,
                                                                Any]]]) -> str:
     if not params:
         return url
@@ -1280,11 +1282,11 @@ def _url_with_params(url: str, params: Optional[Iterable[Tuple[str,
 
 
 @core_helper
-def sorted_extras(package_extras: List[Dict[str, Any]],
+def sorted_extras(package_extras: list[dict[str, Any]],
                   auto_clean: bool = False,
-                  subs: Optional[Dict[str, str]] = None,
-                  exclude: Optional[List[str]] = None
-                  ) -> List[Tuple[str, Any]]:
+                  subs: Optional[dict[str, str]] = None,
+                  exclude: Optional[list[str]] = None
+                  ) -> list[tuple[str, Any]]:
     ''' Used for outputting package extras
 
     :param package_extras: the package extras
@@ -1320,7 +1322,7 @@ def sorted_extras(package_extras: List[Dict[str, Any]],
 
 @core_helper
 def check_access(
-        action: str, data_dict: Optional[Dict[str, Any]] = None) -> bool:
+        action: str, data_dict: Optional[dict[str, Any]] = None) -> bool:
     if not getattr(g, u'user', None):
         g.user = ''
     context = cast(Context, {'model': model, 'user': g.user})
@@ -1341,7 +1343,7 @@ def check_access(
                      "extra_vars param to render() in your controller to pass "
                      "results from action functions to your templates.",
                      since="2.3.0")
-def get_action(action_name: str, data_dict: Optional[Dict[str, Any]] = None):
+def get_action(action_name: str, data_dict: Optional[dict[str, Any]] = None):
     '''Calls an action function from a template. Deprecated in CKAN 2.3.'''
     if data_dict is None:
         data_dict = {}
@@ -1477,7 +1479,7 @@ def icon(name: str, alt: Optional[str] = None, inline: bool = True) -> Markup:
     return icon_html(icon_url(name), alt, inline)
 
 
-def resource_icon(res: Dict[str, Any]) -> Markup:
+def resource_icon(res: dict[str, Any]) -> Markup:
     return icon(format_icon(res.get('format', '')))
 
 
@@ -1502,9 +1504,9 @@ def format_icon(_format: str) -> str:
 
 
 @core_helper
-def dict_list_reduce(list_: List[Dict[str, T]],
+def dict_list_reduce(list_: list[dict[str, T]],
                      key: str,
-                     unique: bool = True) -> List[T]:
+                     unique: bool = True) -> list[T]:
     ''' Take a list of dicts and create a new one containing just the
     values for the key with unique values if requested. '''
     new_list = []
@@ -1611,7 +1613,7 @@ def pager_url(page: int, partial: Optional[str] = None, **kwargs: Any) -> str:
 
 @core_helper
 def get_page_number(
-        params: Dict[str, Any], key: str = 'page', default: int = 1) -> int:
+        params: dict[str, Any], key: str = 'page', default: int = 1) -> int:
     '''
     Return the page number from the provided params after verifying that it is
     an positive integer.
@@ -1714,7 +1716,7 @@ def date_str_to_datetime(date_str: str) -> datetime.datetime:
            despite that not being part of the ISO format.
     '''
 
-    time_tuple: List[Any] = re.split(r'[^\d]+', date_str, maxsplit=5)
+    time_tuple: list[Any] = re.split(r'[^\d]+', date_str, maxsplit=5)
 
     # Extract seconds and microseconds
     if len(time_tuple) >= 6:
@@ -1837,7 +1839,7 @@ def button_attr(enable: bool, type: str = 'primary') -> str:
 
 @core_helper
 def dataset_display_name(
-        package_or_package_dict: Union[Dict[str, Any], model.Package]) -> str:
+        package_or_package_dict: Union[dict[str, Any], model.Package]) -> str:
     if isinstance(package_or_package_dict, dict):
         return get_translated(package_or_package_dict, 'title') or \
             package_or_package_dict['name']
@@ -1849,7 +1851,7 @@ def dataset_display_name(
 
 @core_helper
 def dataset_link(
-        package_or_package_dict: Union[Dict[str, Any], model.Package]
+        package_or_package_dict: Union[dict[str, Any], model.Package]
 ) -> Markup:
     if isinstance(package_or_package_dict, dict):
         name = package_or_package_dict['name']
@@ -1865,7 +1867,7 @@ def dataset_link(
 
 
 @core_helper
-def resource_display_name(resource_dict: Dict[str, Any]) -> str:
+def resource_display_name(resource_dict: dict[str, Any]) -> str:
     # TODO: (?) support resource objects as well
     name = get_translated(resource_dict, 'name')
     description = get_translated(resource_dict, 'description')
@@ -1882,7 +1884,7 @@ def resource_display_name(resource_dict: Dict[str, Any]) -> str:
 
 
 @core_helper
-def resource_link(resource_dict: Dict[str, Any],
+def resource_link(resource_dict: dict[str, Any],
                   package_id: str,
                   package_type: str = 'dataset') -> Markup:
     text = resource_display_name(resource_dict)
@@ -1893,19 +1895,19 @@ def resource_link(resource_dict: Dict[str, Any],
 
 
 @core_helper
-def tag_link(tag: Dict[str, Any], package_type: str = 'dataset') -> Markup:
+def tag_link(tag: dict[str, Any], package_type: str = 'dataset') -> Markup:
     url = url_for('{}.search'.format(package_type), tags=tag['name'])
     return link_to(tag.get('title', tag['name']), url)
 
 
 @core_helper
-def group_link(group: Dict[str, Any]) -> Markup:
+def group_link(group: dict[str, Any]) -> Markup:
     url = url_for('group.read', id=group['name'])
     return link_to(group['title'], url)
 
 
 @core_helper
-def organization_link(organization: Dict[str, Any]) -> Markup:
+def organization_link(organization: dict[str, Any]) -> Markup:
     url = url_for('organization.read', id=organization['name'])
     return link_to(organization['title'], url)
 
@@ -1928,7 +1930,7 @@ def auto_log_message() -> str:
 
 @core_helper
 def activity_div(template: str,
-                 activity: Dict[str, Any],
+                 activity: dict[str, Any],
                  actor: str,
                  object: Optional[str] = None,
                  target: Optional[str] = None) -> Markup:
@@ -1954,7 +1956,7 @@ def snippet(template_name: str, **kw: Any) -> str:
 
 
 @core_helper
-def convert_to_dict(object_type: str, objs: List[Any]) -> List[Dict[str, Any]]:
+def convert_to_dict(object_type: str, objs: list[Any]) -> list[dict[str, Any]]:
     ''' This is a helper function for converting lists of objects into
     lists of dicts. It is for backwards compatability only. '''
 
@@ -2028,10 +2030,10 @@ def follow_count(obj_type: str, obj_id: str) -> int:
     return logic.get_action(action)(context, {'id': obj_id})
 
 
-def _create_url_with_params(params: Optional[Iterable[Tuple[str, Any]]] = None,
+def _create_url_with_params(params: Optional[Iterable[tuple[str, Any]]] = None,
                             controller: Optional[str] = None,
                             action: Optional[str] = None,
-                            extras: Optional[Dict[str, Any]] = None):
+                            extras: Optional[dict[str, Any]] = None):
     """internal function for building urls with parameters."""
     if not extras:
         if not controller and not action:
@@ -2057,8 +2059,8 @@ def _create_url_with_params(params: Optional[Iterable[Tuple[str, Any]]] = None,
 def add_url_param(alternative_url: Optional[str] = None,
                   controller: Optional[str] = None,
                   action: Optional[str] = None,
-                  extras: Optional[Dict[str, Any]] = None,
-                  new_params: Optional[Dict[str, Any]] = None) -> str:
+                  extras: Optional[dict[str, Any]] = None,
+                  new_params: Optional[dict[str, Any]] = None) -> str:
     '''
     Adds extra parameters to existing ones
 
@@ -2084,12 +2086,12 @@ def add_url_param(alternative_url: Optional[str] = None,
 
 
 @core_helper
-def remove_url_param(key: Union[List[str], str],
+def remove_url_param(key: Union[list[str], str],
                      value: Optional[str] = None,
                      replace: Optional[str] = None,
                      controller: Optional[str] = None,
                      action: Optional[str] = None,
-                     extras: Optional[Dict[str, Any]] = None,
+                     extras: Optional[dict[str, Any]] = None,
                      alternative_url: Optional[str] = None) -> str:
     ''' Remove one or multiple keys from the current parameters.
     The first parameter can be either a string with the name of the key to
@@ -2160,7 +2162,7 @@ def popular(type_: str,
 
 
 @core_helper
-def groups_available(am_member: bool = False) -> List[Dict[str, Any]]:
+def groups_available(am_member: bool = False) -> list[dict[str, Any]]:
     '''Return a list of the groups that the user is authorized to edit.
 
     :param am_member: if True return only the groups the logged-in user is a
@@ -2178,7 +2180,7 @@ def groups_available(am_member: bool = False) -> List[Dict[str, Any]]:
 @core_helper
 def organizations_available(permission: str = 'manage_group',
                             include_dataset_count: bool = False
-                            ) -> List[Dict[str, Any]]:
+                            ) -> list[dict[str, Any]]:
     '''Return a list of organizations that the current user has the specified
     permission for.
     '''
@@ -2190,7 +2192,7 @@ def organizations_available(permission: str = 'manage_group',
 
 
 @core_helper
-def roles_translated() -> Dict[str, str]:
+def roles_translated() -> dict[str, str]:
     '''Return a dict of available roles with their translations'''
     return authz.roles_trans()
 
@@ -2216,7 +2218,7 @@ def user_in_org_or_group(group_id: str) -> bool:
 def dashboard_activity_stream(user_id: str,
                               filter_type: Optional[str] = None,
                               filter_id: Optional[str] = None,
-                              offset: int = 0) -> List[Dict[str, Any]]:
+                              offset: int = 0) -> list[dict[str, Any]]:
     '''Return the dashboard activity stream of the current user.
 
     :param user_id: the id of the user
@@ -2251,7 +2253,7 @@ def dashboard_activity_stream(user_id: str,
 
 @core_helper
 def recently_changed_packages_activity_stream(
-        limit: Optional[int] = None) -> List[Dict[str, Any]]:
+        limit: Optional[int] = None) -> list[dict[str, Any]]:
     if limit:
         data_dict = {'limit': limit}
     else:
@@ -2278,7 +2280,7 @@ def escape_js(str_to_escape: str) -> str:
 
 
 @core_helper
-def get_pkg_dict_extra(pkg_dict: Dict[str, Any],
+def get_pkg_dict_extra(pkg_dict: dict[str, Any],
                        key: str,
                        default: Optional[Any] = None) -> Any:
     '''Returns the value for the dataset extra with the provided key.
@@ -2349,7 +2351,7 @@ def html_auto_link(data: str) -> str:
     `http://` converted to a link
     '''
 
-    LINK_FNS: Dict[str, Callable[[Dict[str, str]], Markup]] = {
+    LINK_FNS: dict[str, Callable[[dict[str, str]], Markup]] = {
         'tag': tag_link,
         'group': group_link,
         'dataset': dataset_link,
@@ -2409,7 +2411,7 @@ def render_markdown(data: str,
 
 @core_helper
 def format_resource_items(
-        items: List[Tuple[str, Any]]) -> List[Tuple[str, Any]]:
+        items: list[tuple[str, Any]]) -> list[tuple[str, Any]]:
     ''' Take a resource item list and format nicely with blacklisting etc. '''
     blacklist = ['name', 'description', 'url', 'tracking_summary']
     output = []
@@ -2447,12 +2449,12 @@ def format_resource_items(
 
 @core_helper
 def get_allowed_view_types(
-        resource: Dict[str, Any],
-        package: Dict[str, Any]) -> List[Tuple[str, str, str]]:
+        resource: dict[str, Any],
+        package: dict[str, Any]) -> list[tuple[str, str, str]]:
     data_dict = {'resource': resource, 'package': package}
     plugins = datapreview.get_allowed_view_plugins(data_dict)
 
-    allowed_view_types: List[Tuple[str, str, str]] = []
+    allowed_view_types: list[tuple[str, str, str]] = []
     for plugin in plugins:
         info = plugin.info()
         allowed_view_types.append((info['name'],
@@ -2463,9 +2465,9 @@ def get_allowed_view_types(
 
 
 @core_helper
-def rendered_resource_view(resource_view: Dict[str, Any],
-                           resource: Dict[str, Any],
-                           package: Dict[str, Any],
+def rendered_resource_view(resource_view: dict[str, Any],
+                           resource: dict[str, Any],
+                           package: dict[str, Any],
                            embed: bool = False) -> Markup:
     '''
     Returns a rendered resource view snippet.
@@ -2489,9 +2491,9 @@ def rendered_resource_view(resource_view: Dict[str, Any],
 
 @core_helper
 def view_resource_url(
-        resource_view: Dict[str, Any],
-        resource: Dict[str, Any],
-        package: Dict[str, Any],
+        resource_view: dict[str, Any],
+        resource: dict[str, Any],
+        package: dict[str, Any],
         **kw: Any) -> str:
     '''
     Returns url for resource. made to be overridden by extensions. i.e
@@ -2501,7 +2503,7 @@ def view_resource_url(
 
 
 @core_helper
-def resource_view_is_filterable(resource_view: Dict[str, Any]) -> bool:
+def resource_view_is_filterable(resource_view: dict[str, Any]) -> bool:
     '''
     Returns True if the given resource view support filters.
     '''
@@ -2511,7 +2513,7 @@ def resource_view_is_filterable(resource_view: Dict[str, Any]) -> bool:
 
 
 @core_helper
-def resource_view_get_fields(resource: Dict[str, Any]) -> List["str"]:
+def resource_view_get_fields(resource: dict[str, Any]) -> list["str"]:
     '''Returns sorted list of text and time fields of a datastore resource.'''
 
     if not resource.get('datastore_active'):
@@ -2533,7 +2535,7 @@ def resource_view_get_fields(resource: Dict[str, Any]) -> List["str"]:
 
 
 @core_helper
-def resource_view_is_iframed(resource_view: Dict[str, Any]) -> bool:
+def resource_view_is_iframed(resource_view: dict[str, Any]) -> bool:
     '''
     Returns true if the given resource view should be displayed in an iframe.
     '''
@@ -2543,7 +2545,7 @@ def resource_view_is_iframed(resource_view: Dict[str, Any]) -> bool:
 
 
 @core_helper
-def resource_view_icon(resource_view: Dict[str, Any]) -> str:
+def resource_view_icon(resource_view: dict[str, Any]) -> str:
     '''
     Returns the icon for a particular view type.
     '''
@@ -2553,7 +2555,7 @@ def resource_view_icon(resource_view: Dict[str, Any]) -> str:
 
 
 @core_helper
-def resource_view_display_preview(resource_view: Dict[str, Any]) -> bool:
+def resource_view_display_preview(resource_view: dict[str, Any]) -> bool:
     '''
     Returns if the view should display a preview.
     '''
@@ -2563,7 +2565,7 @@ def resource_view_display_preview(resource_view: Dict[str, Any]) -> bool:
 
 
 @core_helper
-def resource_view_full_page(resource_view: Dict[str, Any]) -> bool:
+def resource_view_full_page(resource_view: dict[str, Any]) -> bool:
     '''
     Returns if the edit view page should be full page.
     '''
@@ -2579,7 +2581,7 @@ def remove_linebreaks(string: str) -> str:
 
 
 @core_helper
-def list_dict_filter(list_: List[Dict[str, Any]],
+def list_dict_filter(list_: list[dict[str, Any]],
                      search_field: str, output_field: str,
                      value: Any) -> Any:
     ''' Takes a list of dicts and returns the value of a given key if the
@@ -2644,7 +2646,7 @@ def uploads_enabled() -> bool:
 
 
 @core_helper
-def get_featured_organizations(count: int = 1) -> List[Dict[str, Any]]:
+def get_featured_organizations(count: int = 1) -> list[dict[str, Any]]:
     '''Returns a list of favourite organization in the form
     of organization_list action function
     '''
@@ -2657,7 +2659,7 @@ def get_featured_organizations(count: int = 1) -> List[Dict[str, Any]]:
 
 
 @core_helper
-def get_featured_groups(count: int = 1) -> List[Dict[str, Any]]:
+def get_featured_groups(count: int = 1) -> list[dict[str, Any]]:
     '''Returns a list of favourite group the form
     of organization_list action function
     '''
@@ -2670,8 +2672,8 @@ def get_featured_groups(count: int = 1) -> List[Dict[str, Any]]:
 
 
 @core_helper
-def featured_group_org(items: List[str], get_action: str, list_action: str,
-                       count: int) -> List[Dict[str, Any]]:
+def featured_group_org(items: list[str], get_action: str, list_action: str,
+                       count: int) -> list[dict[str, Any]]:
     def get_group(id: str):
         context: Context = {'ignore_auth': True,
                             'limits': {'packages': 2},
@@ -2707,7 +2709,7 @@ def featured_group_org(items: List[str], get_action: str, list_action: str,
 
 
 @core_helper
-def get_site_statistics() -> Dict[str, int]:
+def get_site_statistics() -> dict[str, int]:
     stats = {}
     stats['dataset_count'] = logic.get_action('package_search')(
         {}, {"rows": 1})['count']
@@ -2717,11 +2719,11 @@ def get_site_statistics() -> Dict[str, int]:
     return stats
 
 
-_RESOURCE_FORMATS: Optional[Dict[str, Any]] = None
+_RESOURCE_FORMATS: Optional[dict[str, Any]] = None
 
 
 @core_helper
-def resource_formats() -> Dict[str, List[str]]:
+def resource_formats() -> dict[str, list[str]]:
     ''' Returns the resource formats as a dict, sourced from the resource
     format JSON file.
 
@@ -2779,13 +2781,13 @@ def unified_resource_format(format: str) -> str:
 
 
 @core_helper
-def check_config_permission(permission: str) -> Union[List[str], bool]:
+def check_config_permission(permission: str) -> Union[list[str], bool]:
     return authz.check_config_permission(permission)
 
 
 @core_helper
 def get_organization(org: Optional[str] = None,
-                     include_datasets: bool = False) -> Dict[str, Any]:
+                     include_datasets: bool = False) -> dict[str, Any]:
     if org is None:
         return {}
     try:
@@ -2797,8 +2799,8 @@ def get_organization(org: Optional[str] = None,
 
 @core_helper
 def license_options(
-    existing_license_id: Optional[Tuple[str, str]] = None
-) -> List[Tuple[str, str]]:
+    existing_license_id: Optional[tuple[str, str]] = None
+) -> list[tuple[str, str]]:
     '''Returns [(l.title, l.id), ...] for the licenses configured to be
     offered. Always includes the existing_license_id, if supplied.
     '''
@@ -2815,7 +2817,7 @@ def license_options(
 
 
 @core_helper
-def get_translated(data_dict: Dict[str, Any], field: str) -> Union[str, Any]:
+def get_translated(data_dict: dict[str, Any], field: str) -> Union[str, Any]:
     language = i18n.get_lang()
     try:
         return data_dict[field + u'_translated'][language]
@@ -2825,7 +2827,7 @@ def get_translated(data_dict: Dict[str, Any], field: str) -> Union[str, Any]:
 
 
 @core_helper
-def facets() -> List[str]:
+def facets() -> list[str]:
     u'''Returns a list of the current facet names'''
     return config.get(u'search.facets', DEFAULT_FACET_NAMES).split()
 
@@ -2907,8 +2909,8 @@ def sanitize_id(id_: str) -> str:
 
 
 @core_helper
-def compare_pkg_dicts(old: Dict[str, Any], new: Dict[str, Any],
-                      old_activity_id: str) -> List[Dict[str, Any]]:
+def compare_pkg_dicts(old: dict[str, Any], new: dict[str, Any],
+                      old_activity_id: str) -> list[dict[str, Any]]:
     '''
     Takes two package dictionaries that represent consecutive versions of
     the same dataset and returns a list of detailed & formatted summaries of
@@ -2924,7 +2926,7 @@ def compare_pkg_dicts(old: Dict[str, Any], new: Dict[str, Any],
     to form a detailed summary of the change.
     '''
     from ckan.lib.changes import check_metadata_changes, check_resource_changes
-    change_list: List[Dict[str, Any]] = []
+    change_list: list[dict[str, Any]] = []
 
     check_metadata_changes(change_list, old, new)
 
@@ -2940,7 +2942,7 @@ def compare_pkg_dicts(old: Dict[str, Any], new: Dict[str, Any],
 
 @core_helper
 def compare_group_dicts(
-        old: Dict[str, Any], new: Dict[str, Any], old_activity_id: str):
+        old: dict[str, Any], new: dict[str, Any], old_activity_id: str):
     '''
     Takes two package dictionaries that represent consecutive versions of
     the same organization and returns a list of detailed & formatted summaries
@@ -2956,7 +2958,7 @@ def compare_group_dicts(
     to form a detailed summary of the change.
     '''
     from ckan.lib.changes import check_metadata_org_changes
-    change_list: List[Dict[str, Any]] = []
+    change_list: list[dict[str, Any]] = []
 
     check_metadata_org_changes(change_list, old, new)
 
@@ -2969,8 +2971,8 @@ def compare_group_dicts(
 
 
 @core_helper
-def activity_list_select(pkg_activity_list: List[Dict[str, Any]],
-                         current_activity_id: str) -> List[Markup]:
+def activity_list_select(pkg_activity_list: list[dict[str, Any]],
+                         current_activity_id: str) -> list[Markup]:
     '''
     Builds an HTML formatted list of options for the select lists
     on the "Changes" summary page.
@@ -2996,7 +2998,7 @@ def activity_list_select(pkg_activity_list: List[Dict[str, Any]],
 
 
 @core_helper
-def get_collaborators(package_id: str) -> List[Tuple[str, str]]:
+def get_collaborators(package_id: str) -> list[tuple[str, str]]:
     '''Return the collaborators list for a dataset
 
     Returns a list of tuples with the user id and the capacity
@@ -3019,8 +3021,8 @@ def get_collaborators(package_id: str) -> List[Tuple[str, str]]:
 
 @core_helper
 def can_update_owner_org(
-        package_dict: Dict[str, Any],
-        user_orgs: Optional[List[Dict[str, Any]]] = None) -> bool:
+        package_dict: dict[str, Any],
+        user_orgs: Optional[list[dict[str, Any]]] = None) -> bool:
 
     if not package_dict.get('id') or not package_dict.get('owner_org'):
         # We are either creating a dataset or it is an unowned dataset.

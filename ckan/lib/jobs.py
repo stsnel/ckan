@@ -17,10 +17,10 @@ prefixed names. Use the functions ``add_queue_name_prefix`` and
 
 .. versionadded:: 2.7
 '''
-from __future__ import print_function
+from __future__ import annotations
 
 import logging
-from typing import Any, Callable, Dict, Iterable, List, Optional, cast
+from typing import Any, Callable, Iterable, Optional, cast
 from redis import Redis
 
 import rq
@@ -41,7 +41,7 @@ DEFAULT_QUEUE_NAME = u'default'
 DEFAULT_JOB_TIMEOUT = 180
 
 # RQ job queues. Do not use this directly, use ``get_queue`` instead.
-_queues: Dict[str, rq.Queue] = {}
+_queues: dict[str, rq.Queue] = {}
 
 
 def _connect() -> Redis:  # type: ignore
@@ -86,7 +86,7 @@ def remove_queue_name_prefix(name: str) -> str:
     return name[len(prefix):]
 
 
-def get_all_queues() -> List[rq.Queue]:
+def get_all_queues() -> list[rq.Queue]:
     u'''
     Return all job queues currently in use.
 
@@ -128,10 +128,10 @@ def get_queue(name: str = DEFAULT_QUEUE_NAME) -> rq.Queue:
 
 def enqueue(fn: Callable[..., Any],
             args: Optional[Iterable[Any]] = None,
-            kwargs: Optional[Dict[str, Any]] = None,
+            kwargs: Optional[dict[str, Any]] = None,
             title: Optional[str] = None,
             queue: str = DEFAULT_QUEUE_NAME,
-            rq_kwargs: Optional[Dict[str, Any]] = None) -> Job:
+            rq_kwargs: Optional[dict[str, Any]] = None) -> Job:
     u'''
     Enqueue a job to be run in the background.
 
@@ -194,7 +194,7 @@ def job_from_id(id: str) -> Job:
         raise KeyError(u'There is no job with ID "{}".'.format(id))
 
 
-def dictize_job(job: Job) -> Dict[str, Any]:
+def dictize_job(job: Job) -> dict[str, Any]:
     u'''Convert a job to a dict.
 
     In contrast to ``rq.job.Job.to_dict`` this function includes only

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 '''API functions for adding data to CKAN.'''
+from __future__ import annotations
 
 from ckan.types.logic import ActionResult
 import logging
@@ -8,7 +9,7 @@ import random
 import re
 import datetime
 from socket import error as socket_error
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import six
 
@@ -322,7 +323,7 @@ def resource_create(context: Context,
         context.pop('defer_commit')
     except ValidationError as e:
         try:
-            error_dict = cast(List[ErrorDict], e.error_dict['resources'])[-1]
+            error_dict = cast("list[ErrorDict]", e.error_dict['resources'])[-1]
         except (KeyError, IndexError):
             error_dict = e.error_dict
         raise ValidationError(error_dict)
@@ -713,7 +714,7 @@ def package_collaborator_create(
 
 def _group_or_org_create(context: Context,
                          data_dict: DataDict,
-                         is_org: bool = False) -> Union[str, Dict[str, Any]]:
+                         is_org: bool = False) -> Union[str, dict[str, Any]]:
     model = context['model']
     user = context['user']
     session = context['session']
@@ -771,7 +772,7 @@ def _group_or_org_create(context: Context,
     user_obj = model.User.by_name(six.ensure_text(user))
     assert user_obj
 
-    activity_dict: Dict[str, Any] = {
+    activity_dict: dict[str, Any] = {
         'user_id': user_obj.id,
         'object_id': group.id,
         'activity_type': activity_type,
@@ -1422,7 +1423,7 @@ def follow_dataset(context: Context,
 
 
 def _group_or_org_member_create(
-        context: Context, data_dict: Dict[str, Any], is_org: bool = False
+        context: Context, data_dict: dict[str, Any], is_org: bool = False
 ) -> ActionResult.GroupOrOrgMemberCreate:
     # creator of group/org becomes an admin
     # this needs to be after the repo.commit or else revisions break
@@ -1449,7 +1450,7 @@ def _group_or_org_member_create(
         message = _(u'User {username} does not exist.').format(
             username=username)
         raise ValidationError({'message': message})
-    member_dict: Dict[str, Any] = {
+    member_dict: dict[str, Any] = {
         'id': group.id,
         'object': user_id,
         'object_type': 'user',

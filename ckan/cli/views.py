@@ -1,7 +1,8 @@
 # encoding: utf-8
+from __future__ import annotations
 
 import itertools
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import click
 import json
@@ -35,7 +36,7 @@ def views():
 @click.option(u"-s", u"--search")
 @click.option(u"-y", u"--yes", is_flag=True)
 @click.pass_context
-def create(ctx: Any, types: List[str], dataset: List[str],
+def create(ctx: Any, types: list[str], dataset: list[str],
            no_default_filters: bool, search: str, yes: bool):
     """Create views on relevant resources. You can optionally provide
     specific view types (eg `recline_view`, `image_view`). If no types
@@ -119,7 +120,7 @@ def create(ctx: Any, types: List[str], dataset: List[str],
 @views.command()
 @click.argument(u"types", nargs=-1)
 @click.option(u"-y", u"--yes", is_flag=True)
-def clear(types: List[str], yes: bool):
+def clear(types: list[str], yes: bool):
     """Permanently delete all views or the ones with the provided types.
 
     """
@@ -174,7 +175,7 @@ def clean(ctx: Any, yes: bool):
     click.secho(u"Deleted resource views.", fg=u"green")
 
 
-def _get_view_plugins(view_plugin_types: List[str],
+def _get_view_plugins(view_plugin_types: list[str],
                       get_datastore_views: bool = False):
     """Returns the view plugins that were succesfully loaded
 
@@ -221,8 +222,8 @@ def _get_view_plugins(view_plugin_types: List[str],
 
 
 def _search_datasets(
-        page: int = 1, view_types: Optional[List[str]] = None,
-        dataset: Optional[List[str]] = None, search: str = u"",
+        page: int = 1, view_types: Optional[list[str]] = None,
+        dataset: Optional[list[str]] = None, search: str = u"",
         no_default_filters: bool = False
 ):
     """
@@ -271,8 +272,8 @@ def _search_datasets(
     return query
 
 
-def _add_default_filters(search_data_dict: Dict[str, Any],
-                         view_types: List[str]):
+def _add_default_filters(search_data_dict: dict[str, Any],
+                         view_types: list[str]):
     """
     Adds extra filters to the `package_search` dict for common view types
 
@@ -338,7 +339,7 @@ def _add_default_filters(search_data_dict: Dict[str, Any],
 
 
 def _update_search_params(
-        search_data_dict: Dict[str, Any], search: str):
+        search_data_dict: dict[str, Any], search: str):
     """
     Update the `package_search` data dict with the user provided parameters
 

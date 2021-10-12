@@ -1,9 +1,10 @@
 # encoding: utf-8
+from __future__ import annotations
 
 from ckan.common import CKANConfig
 from ckan.types import Action, AuthFunction, Context
 import logging
-from typing import Any, Callable, Dict, cast
+from typing import Any, Callable, cast
 
 import ckan.logic as logic
 import ckan.model as model
@@ -83,11 +84,11 @@ class DatapusherPlugin(p.SingletonPlugin):
 
     # IResourceController
 
-    def after_create(self, context: Context, resource_dict: Dict[str, Any]):
+    def after_create(self, context: Context, resource_dict: dict[str, Any]):
 
         self._submit_to_datapusher(resource_dict)
 
-    def _submit_to_datapusher(self, resource_dict: Dict[str, Any]):
+    def _submit_to_datapusher(self, resource_dict: dict[str, Any]):
         context = cast(Context, {
             u'model': model,
             u'ignore_auth': True,
@@ -141,20 +142,20 @@ class DatapusherPlugin(p.SingletonPlugin):
             log.critical(e)
             pass
 
-    def get_actions(self) -> Dict[str, Action]:
+    def get_actions(self) -> dict[str, Action]:
         return {
             u'datapusher_submit': action.datapusher_submit,
             u'datapusher_hook': action.datapusher_hook,
             u'datapusher_status': action.datapusher_status
         }
 
-    def get_auth_functions(self) -> Dict[str, AuthFunction]:
+    def get_auth_functions(self) -> dict[str, AuthFunction]:
         return {
             u'datapusher_submit': auth.datapusher_submit,
             u'datapusher_status': auth.datapusher_status
         }
 
-    def get_helpers(self) -> Dict[str, Callable[..., Any]]:
+    def get_helpers(self) -> dict[str, Callable[..., Any]]:
         return {
             u'datapusher_status': helpers.datapusher_status,
             u'datapusher_status_description': helpers.
