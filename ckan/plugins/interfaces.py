@@ -1978,7 +1978,8 @@ class IApiToken(Interface):
         """
         return None
 
-    def preprocess_api_token(self, data: Mapping[str, Any]) -> Mapping[str, Any]:
+    def preprocess_api_token(
+            self, data: Mapping[str, Any]) -> Mapping[str, Any]:
         """Handle additional info from API Token.
 
         Allows decoding or extracting any kind of additional

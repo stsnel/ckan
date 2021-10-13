@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     MutableMapping = MutableMapping[str, Any]
 
 
-
 current_app = flask.current_app
 
 
