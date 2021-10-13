@@ -617,8 +617,7 @@ def member_create(context: Context,
         filter(model.Member.state == 'active').first()
     if member:
         user_obj = model.User.get(user)
-        assert user_obj
-        if member.table_name == u'user' and \
+        if user_obj and member.table_name == u'user' and \
                 member.table_id == user_obj.id and \
                 member.capacity == u'admin' and \
                 capacity != u'admin':
