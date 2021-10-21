@@ -149,8 +149,7 @@ def datastore_create(context: Context, data_dict: dict[str, Any]):
             _check_read_only(context, resource_id)
 
     # validate aliases
-    aliases = datastore_helpers.get_list(data_dict.get('aliases', []))
-    assert aliases is not None
+    aliases = datastore_helpers.get_list(data_dict.get('aliases', [])) or []
     for alias in aliases:
         if not datastore_helpers.is_valid_table_name(alias):
             raise p.toolkit.ValidationError({

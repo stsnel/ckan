@@ -488,9 +488,10 @@ def default_update_user_schema(
 
 @validator_args
 def default_user_invite_schema(
-        not_empty: Validator, unicode_safe: Validator):
+        not_empty: Validator, email_validator: Validator,
+        email_is_unique: Validator, unicode_safe: Validator):
     return cast(Schema, {
-        'email': [not_empty, unicode_safe],
+        'email': [not_empty, email_validator, email_is_unique, unicode_safe],
         'group_id': [not_empty],
         'role': [not_empty],
     })
