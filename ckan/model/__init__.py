@@ -277,7 +277,7 @@ class Repository():
         self.reset_alembic_output()
         alembic_config = AlembicConfig(self._alembic_ini)
         alembic_config.set_main_option(
-            "sqlalchemy.url", config.get("sqlalchemy.url")
+            "sqlalchemy.url", str(config.get("sqlalchemy.url"))
         )
         try:
             sqlalchemy_migrate_version = self.metadata.bind.execute(
@@ -305,7 +305,7 @@ class Repository():
         is the newest one, ` (head)` suffix added to the result
 
         """
-        from alembic.util import CommandError
+        from alembic.util.exc import CommandError
         try:
             alembic_current(self.alembic_config)
             return self.take_alembic_output()[0][0]

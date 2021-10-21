@@ -101,7 +101,7 @@ def index() -> str:
     q = request.args.get(u'q', u'')
     order_by = request.args.get(u'order_by', u'name')
     limit = int(
-        request.args.get(u'limit', config.get(u'ckan.user_list_limit', 20)))
+        request.args.get(u'limit', config.get(u'ckan.user_list_limit')) or 20)
     context: Context = {
         u'return_query': True,
         u'user': g.user,

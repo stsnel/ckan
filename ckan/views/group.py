@@ -369,7 +369,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> dict[str, Any]:
         for facet in g.search_facets.keys():
             limit = int(
                 request.args.get(u'_%s_limit' % facet,
-                                 config.get(u'search.facets.default', 10)))
+                                 config.get(u'search.facets.default')) or 10)
             g.search_facets_limits[facet] = limit
         extra_vars["page"].items = query['results']
 

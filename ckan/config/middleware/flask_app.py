@@ -15,7 +15,6 @@ from typing import Any, Iterable, Optional, Union, cast
 from flask import Blueprint, send_from_directory
 from flask.ctx import _AppCtxGlobals
 from flask.sessions import SessionInterface
-from flask.typing import BeforeRequestCallable
 from flask_multistatic import MultiStaticFlask
 
 import webob
@@ -231,7 +230,7 @@ def make_flask_stack(conf: Union[Config, CKANConfig]) -> CKANApp:
     #
     # flask types do not mention that it's possible to return a response from
     # the `before_request` callback
-    app.before_request(cast(BeforeRequestCallable, ckan_before_request))
+    app.before_request(ckan_before_request)
     app.after_request(ckan_after_request)
 
     # Template context processors
