@@ -11,8 +11,6 @@ from typing import Any, Iterable, Optional
 
 from urllib.parse import urlparse
 
-from ckan.common import config
-
 import ckan.plugins as p
 from ckan import logic
 from ckan.common import _, config

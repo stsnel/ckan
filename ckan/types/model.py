@@ -7,7 +7,7 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.orm import Query
 
 if TYPE_CHECKING:
-    import ckan.model as _model
+    import ckan.model as _model  # noqa
 
 
 AlchemySession = ScopedSession

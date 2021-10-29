@@ -6,7 +6,6 @@ from ckan.types import Action, AuthFunction, Context
 import logging
 from typing import Any, Callable, cast
 
-import ckan.logic as logic
 import ckan.model as model
 import ckan.plugins as p
 import ckan.plugins.toolkit as toolkit
@@ -84,7 +83,8 @@ class DatapusherPlugin(p.SingletonPlugin):
 
     # IResourceController
 
-    def after_resource_create(self, context: Context, resource_dict: dict[str, Any]):
+    def after_resource_create(
+            self, context: Context, resource_dict: dict[str, Any]):
 
         self._submit_to_datapusher(resource_dict)
 

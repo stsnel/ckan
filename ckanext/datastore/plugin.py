@@ -7,7 +7,6 @@ import logging
 from typing import Any
 
 import ckan.plugins as p
-import ckan.logic as logic
 from ckan.model.core import State
 
 import ckanext.datastore.helpers as datastore_helpers

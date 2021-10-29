@@ -25,7 +25,7 @@ import ckan.authz as authz
 from ckan.lib.webassets_tools import webassets_init
 from ckan.lib.i18n import build_js_translations
 
-from ckan.common import CKANConfig, _, config
+from ckan.common import CKANConfig, config
 from ckan.exceptions import CkanConfigurationException
 from ckan.types import Config
 

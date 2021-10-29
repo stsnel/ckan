@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from ckan.common import CKANConfig
 from typing import cast
-from ckan.types import Context, Schema, Validator, ValidatorFactory
+from ckan.types import Context, Schema, ValidatorFactory
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 

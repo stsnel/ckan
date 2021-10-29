@@ -18,13 +18,15 @@ class ExampleIResourceControllerPlugin(plugins.SingletonPlugin):
     def after_resource_create(self, context: Any, resource: Any):
         self.counter['after_resource_create'] += 1
 
-    def before_resource_update(self, context: Any, current: Any, resource: Any):
+    def before_resource_update(
+            self, context: Any, current: Any, resource: Any):
         self.counter['before_resource_update'] += 1
 
     def after_resource_update(self, context: Any, resource: Any):
         self.counter['after_resource_update'] += 1
 
-    def before_resource_delete(self, context: Any, resource: Any, resources: Any):
+    def before_resource_delete(
+            self, context: Any, resource: Any, resources: Any):
         self.counter['before_resource_delete'] += 1
 
     def after_resource_delete(self, context: Any, resources: Any):

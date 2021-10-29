@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 from typing import Any
-from ckan.types import Context
 import logging
 import os
 

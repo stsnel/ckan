@@ -5,6 +5,7 @@ from functools import partial
 from typing import (
     Any,
     Callable,
+    Dict,
     Iterable,
     Mapping,
     Optional,
@@ -13,16 +14,15 @@ from typing import (
 
 from typing_extensions import Protocol, TypeAlias, TypedDict
 from blinker import Signal
-from flask.wrappers import Response, Request  # re-export
+from flask.wrappers import Response, Request  # noqa: re-export
 
-from .logic import (
-    ActionResult
-)  # re-export
-from .model import (
-    Model, AlchemySession, Query
+from .logic import ActionResult  # noqa: re-export
+from .model import (  # noqa
+    Model, AlchemySession,
+    Query,
 )  # re-export
 
-Config: TypeAlias = "dict[str, Union[str, Mapping[str, str]]]"
+Config: TypeAlias = Dict[str, Union[str, Mapping[str, str]]]
 CKANApp = Any
 
 # dictionary passed to actions
@@ -36,7 +36,7 @@ FlattenKey: TypeAlias = "tuple[Any, ...]"
 FlattenDataDict: TypeAlias = "dict[FlattenKey, Any]"
 FlattenErrorDict: TypeAlias = "dict[FlattenKey, list[str]]"
 
-SignalMapping: TypeAlias = "dict[Signal, Iterable[Union[Any, dict[str, Any]]]]"
+SignalMapping: TypeAlias = Dict[Signal, Iterable[Union[Any, Dict[str, Any]]]]
 
 
 class Context(TypedDict, total=False):

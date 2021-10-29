@@ -42,7 +42,7 @@ def main(url: str, user: str):
 
     app = _get_test_app()
 
-    def profile_url(url):  # noqa
+    def profile_url(url: str):  # type: ignore # noqa
         try:
             app.get(
                 url, status=[200], extra_environ={u"REMOTE_USER": str(user)}

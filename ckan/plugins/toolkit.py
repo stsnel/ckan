@@ -565,7 +565,6 @@ For example: ``bar = toolkit.aslist(config.get('ckan.foo.bar', []))``
 sys.modules[__name__] = cast(ModuleType, _Toolkit())
 
 if TYPE_CHECKING:
-    import ckan
     import ckan.lib.base as base
     import ckan.plugins.blanket as _blanket
     import ckan.logic as logic

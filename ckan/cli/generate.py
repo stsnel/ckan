@@ -4,7 +4,7 @@ import contextlib
 import os
 import json
 import shutil
-from typing import Type, Any, cast
+from typing import Optional, Any, cast
 
 import alembic.command
 import click
@@ -231,7 +231,8 @@ _factories = {
 @click.option("-n", "--fake-count", type=int, default=1,
               help="Number of entities to create")
 @click.pass_context
-def fake_data(ctx, category, factory_class, fake_count):
+def fake_data(ctx: click.Context, category: Optional[str],
+              factory_class: Optional[str], fake_count: int):
     """Generate random entities of the given category.
 
     Either positional `category` or named `--factory-class`/`-f` argument must
@@ -265,7 +266,6 @@ def fake_data(ctx, category, factory_class, fake_count):
         error_shout("\tpip install -r dev-requirements.txt")
         raise click.Abort()
 
-    factory: Type[CKANFactory]
     if not factory_class:
         if not category:
             error_shout(
