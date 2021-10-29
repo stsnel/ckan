@@ -356,8 +356,8 @@ def dataset_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
         package_dicts = get_action(
             u'package_autocomplete')(context, data_dict)
 
-    resultSet = {u'ResultSet': {u'Result': package_dicts}}
-    return _finish_ok(resultSet)
+    result_set = {u'ResultSet': {u'Result': package_dicts}}
+    return _finish_ok(result_set)
 
 
 def tag_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
@@ -377,12 +377,12 @@ def tag_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
 
         tag_names = get_action(u'tag_autocomplete')(context, data_dict)
 
-    resultSet = {
+    result_set = {
         u'ResultSet': {
             u'Result': [{u'Name': tag} for tag in tag_names]
         }
     }
-    return _finish_ok(resultSet)
+    return _finish_ok(result_set)
 
 
 def format_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
@@ -397,12 +397,12 @@ def format_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:
         data_dict = {u'q': q, u'limit': limit}
         formats = get_action(u'format_autocomplete')(context, data_dict)
 
-    resultSet = {
+    result_set = {
         u'ResultSet': {
             u'Result': [{u'Format': format} for format in formats]
         }
     }
-    return _finish_ok(resultSet)
+    return _finish_ok(result_set)
 
 
 def user_autocomplete(ver: int = API_REST_DEFAULT_VERSION) -> Response:

@@ -100,7 +100,7 @@ def _recent_views(engine: Any, measure_from: Any):
 
 def export_tracking(engine: Any, output_filename: str):
     u'''Write tracking summary to a csv file.'''
-    HEADINGS = [
+    headings = [
         u'dataset id',
         u'dataset name',
         u'total views',
@@ -113,7 +113,7 @@ def export_tracking(engine: Any, output_filename: str):
 
     with open(output_filename, u'w') as fh:
         f_out = csv.writer(fh)
-        f_out.writerow(HEADINGS)
+        f_out.writerow(headings)
         recent_views_for_id = dict((r.id, r.count) for r in recent_views)
         f_out.writerows([(r.id,
                         r.name,
@@ -123,7 +123,7 @@ def export_tracking(engine: Any, output_filename: str):
 
 
 def update_tracking(engine: Any, summary_date: datetime.datetime):
-    PACKAGE_URL = u'/dataset/'
+    package_url = u'/dataset/'
     # clear out existing data before adding new
     sql = u'''DELETE FROM tracking_summary
                 WHERE tracking_date='%s'; ''' % summary_date
@@ -154,7 +154,7 @@ def update_tracking(engine: Any, summary_date: datetime.datetime):
                     ,'~~not~found~~')
                 WHERE t.package_id IS NULL
                 AND tracking_type = 'page';'''
-    engine.execute(sql, PACKAGE_URL)
+    engine.execute(sql, package_url)
 
     # update summary totals for resources
     sql = u'''UPDATE tracking_summary t1

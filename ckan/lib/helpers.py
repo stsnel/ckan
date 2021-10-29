@@ -52,7 +52,7 @@ import ckan.authz as authz
 import ckan.plugins as p
 import ckan
 
-from ckan.lib.pagination import Page  # re-export
+from ckan.lib.pagination import Page  # noqa: re-export
 from ckan.common import _, ungettext, c, g, request, session, json
 from ckan.lib.webassets_tools import include_asset, render_assets
 from markupsafe import Markup, escape
@@ -113,7 +113,7 @@ _builtin_functions: dict[str, Callable[..., Any]] = {}
 helper_functions = HelperAttributeDict()
 
 
-class literal(Markup):
+class literal(Markup):  # noqa
     """Represents an HTML literal.
 
     """
@@ -499,8 +499,8 @@ def url_for_static(*args: Any, **kw: Any) -> str:
         url = urlparse(args[0])
         url_is_external = (url.scheme != '' or url.netloc != '')
         if url_is_external:
-            CkanUrlException = ckan.exceptions.CkanUrlException
-            raise CkanUrlException('External URL passed to url_for_static()')
+            raise ckan.exceptions.CkanUrlException(
+                'External URL passed to url_for_static()')
     return url_for_static_or_external(*args, **kw)
 
 
@@ -2351,7 +2351,7 @@ def html_auto_link(data: str) -> str:
     `http://` converted to a link
     '''
 
-    LINK_FNS: dict[str, Callable[[dict[str, str]], Markup]] = {
+    link_fns: dict[str, Callable[[dict[str, str]], Markup]] = {
         'tag': tag_link,
         'group': group_link,
         'dataset': dataset_link,
@@ -2362,7 +2362,7 @@ def html_auto_link(data: str) -> str:
         obj = matchobj.group(1)
         name = matchobj.group(2)
         title = '%s:%s' % (obj, name)
-        return LINK_FNS[obj]({'name': name.strip('"'), 'title': title})
+        return link_fns[obj]({'name': name.strip('"'), 'title': title})
 
     def link(matchobj: Match[str]):
         return '<a href="%s" target="_blank" rel="nofollow">%s</a>' \
@@ -2606,7 +2606,7 @@ def list_dict_filter(list_: list[dict[str, Any]],
 
 
 @core_helper
-def SI_number_span(number: int) -> Markup:
+def SI_number_span(number: int) -> Markup:  # noqa
     ''' outputs a span with the number in SI unit eg 14700 -> 14.7k '''
     number = int(number)
     if number < 1000:
@@ -2619,7 +2619,7 @@ def SI_number_span(number: int) -> Markup:
 
 # add some formatter functions
 localised_number = formatters.localised_number
-localised_SI_number = formatters.localised_SI_number
+localised_SI_number = formatters.localised_SI_number  # noqa
 localised_nice_date = formatters.localised_nice_date
 localised_filesize = formatters.localised_filesize
 

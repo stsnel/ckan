@@ -49,15 +49,12 @@ from babel import Locale
 from babel.core import (LOCALE_ALIASES,  # type: ignore
                         get_locale_identifier,
                         UnknownLocaleError)
-from babel.support import Translations
-
 import polib
 
-from ckan.common import config, aslist
 from ckan.plugins import PluginImplementations
 from ckan.plugins.interfaces import ITranslation
 from ckan.types import Request
-
+from ckan.common import config
 
 log = logging.getLogger(__name__)
 
@@ -306,7 +303,7 @@ def _build_js_translation(
                 plural = result[entry.msgid] = [entry.msgid_plural]
                 ordered_plural = sorted(
                     entry.msgstr_plural.items())  # type: ignore
-                for order, msgstr in ordered_plural:
+                for _, msgstr in ordered_plural:
                     plural.append(msgstr)
     with open(dest_filename, u'w', encoding='utf-8') as f:
         s = json.dumps(result, sort_keys=True, indent=2, ensure_ascii=False)

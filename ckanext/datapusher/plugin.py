@@ -84,7 +84,7 @@ class DatapusherPlugin(p.SingletonPlugin):
 
     # IResourceController
 
-    def after_create(self, context: Context, resource_dict: dict[str, Any]):
+    def after_resource_create(self, context: Context, resource_dict: dict[str, Any]):
 
         self._submit_to_datapusher(resource_dict)
 

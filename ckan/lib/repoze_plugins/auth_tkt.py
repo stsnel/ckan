@@ -6,8 +6,6 @@ import math
 import os
 from typing import Any, Optional, Union
 
-import six
-
 try:
     from http.cookies import SimpleCookie
 except ImportError:

@@ -131,7 +131,7 @@ def _sort_by(params_nosort: Params, package_type: str,
 
 def _pager_url(params_nopage: Params,
                package_type: str,
-               q: Any = None,
+               q: Any = None,  # noqa
                page: Optional[int] = None) -> str:
     params = list(params_nopage)
     params.append((u'page', page))
@@ -547,7 +547,7 @@ class CreateView(MethodView):
     def _is_save(self) -> bool:
         return u'save' in request.form
 
-    def _prepare(self) -> Context:
+    def _prepare(self) -> Context:  # noqa
 
         context = cast(Context, {
             u'model': model,
@@ -627,7 +627,7 @@ class CreateView(MethodView):
             )
         except NotAuthorized:
             return base.abort(403, _(u'Unauthorized to read package'))
-        except NotFound as e:
+        except NotFound:
             return base.abort(404, _(u'Dataset not found'))
         except SearchIndexError as e:
             try:
@@ -767,7 +767,7 @@ class EditView(MethodView):
             )
         except NotAuthorized:
             return base.abort(403, _(u'Unauthorized to read package %s') % id)
-        except NotFound as e:
+        except NotFound:
             return base.abort(404, _(u'Dataset not found'))
         except SearchIndexError as e:
             try:
@@ -1110,7 +1110,7 @@ class GroupView(MethodView):
         )
 
 
-def activity(package_type: str, id: str) -> Union[Response, str]:
+def activity(package_type: str, id: str) -> Union[Response, str]:  # noqa
     """Render this package's public activity stream page.
     """
     context = cast(Context, {
@@ -1149,7 +1149,7 @@ def activity(package_type: str, id: str) -> Union[Response, str]:
 
 
 def changes(id: str,
-            package_type: Optional[str] = None) -> Union[Response, str]:
+            package_type: Optional[str] = None) -> Union[Response, str]:  # noqa
     '''
     Shows the changes to a dataset in one particular activity stream item.
     '''
@@ -1191,7 +1191,7 @@ def changes(id: str,
 
 
 def changes_multiple(
-        package_type: Optional[str] = None) -> Union[Response, str]:
+        package_type: Optional[str] = None) -> Union[Response, str]:  # noqa
     '''
     Called when a user specifies a range of versions they want to look at
     changes between. Verifies that the range is valid and finds the set of
@@ -1273,7 +1273,7 @@ def changes_multiple(
     )
 
 
-def collaborators_read(package_type: str, id: str) -> Union[Response, str]:
+def collaborators_read(package_type: str, id: str) -> Union[Response, str]:  # noqa
     context = cast(Context, {u'model': model, u'user': g.user})
     data_dict = {u'id': id}
 
@@ -1291,7 +1291,7 @@ def collaborators_read(package_type: str, id: str) -> Union[Response, str]:
         u'pkg_dict': pkg_dict})
 
 
-def collaborator_delete(package_type: str, id: str, user_id: str) -> Response:
+def collaborator_delete(package_type: str, id: str, user_id: str) -> Response:  # noqa
     context = cast(Context, {u'model': model, u'user': g.user})
 
     try:
@@ -1312,7 +1312,7 @@ def collaborator_delete(package_type: str, id: str, user_id: str) -> Response:
 
 class CollaboratorEditView(MethodView):
 
-    def post(self, package_type: str, id: str) -> Response:
+    def post(self, package_type: str, id: str) -> Response:  # noqa
         context = cast(Context, {u'model': model, u'user': g.user})
 
         try:
@@ -1339,7 +1339,7 @@ class CollaboratorEditView(MethodView):
         except NotAuthorized:
             message = _(u'Unauthorized to edit collaborators {}').format(id)
             return base.abort(401, _(message))
-        except NotFound as e:
+        except NotFound:
             h.flash_error(_('User not found'))
             return h.redirect_to(u'dataset.new_collaborator', id=id)
         except ValidationError as e:
@@ -1350,7 +1350,7 @@ class CollaboratorEditView(MethodView):
 
         return h.redirect_to(u'dataset.collaborators_read', id=id)
 
-    def get(self, package_type: str, id: str) -> Union[Response, str]:
+    def get(self, package_type: str, id: str) -> Union[Response, str]:  # noqa
         context = cast(Context, {u'model': model, u'user': g.user})
         data_dict = {u'id': id}
 

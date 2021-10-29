@@ -110,7 +110,7 @@ class CKANFeed(FeedGenerator):
                 continue
             self.link(href=href, rel=rel)
 
-    def writeString(self, encoding: str) -> str:
+    def writeString(self, encoding: str) -> str:  # noqa
         return self.atom_str(encoding=encoding)
 
     def add_item(self, **kwargs: Any) -> None:

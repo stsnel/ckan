@@ -266,7 +266,7 @@ class ResourceUpload(object):
                     self.mimetype = magic.from_buffer(self.upload_file.read(),
                                                       mime=True)
                     self.upload_file.seek(0, os.SEEK_SET)
-                except IOError as e:
+                except IOError:
                     # Not that important if call above fails
                     self.mimetype = None
 
@@ -334,5 +334,5 @@ class ResourceUpload(object):
         if self.clear:
             try:
                 os.remove(filepath)
-            except OSError as e:
+            except OSError:
                 pass

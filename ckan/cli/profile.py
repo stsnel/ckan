@@ -1,9 +1,11 @@
 # encoding: utf-8
 
 import re
+import traceback
 from typing import Any
 
 import click
+from . import error_shout
 
 
 @click.group(
@@ -39,6 +41,16 @@ def main(url: str, user: str):
     from ckan.tests.helpers import _get_test_app
 
     app = _get_test_app()
+
+    def profile_url(url):  # noqa
+        try:
+            app.get(
+                url, status=[200], extra_environ={u"REMOTE_USER": str(user)}
+            )
+        except KeyboardInterrupt:
+            raise
+        except Exception:
+            error_shout(traceback.format_exc())
 
     output_filename = u"ckan%s.profile" % re.sub(
         u"[/?]", u".", url.replace(u"/", u".")

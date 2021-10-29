@@ -283,7 +283,7 @@ def _read(id: Optional[str], limit: int, group_type: str) -> dict[str, Any]:
 
     extra_vars["remove_field"] = remove_field
 
-    def pager_url(q: Any = None, page: Optional[int] = None):
+    def pager_url(q: Any = None, page: Optional[int] = None):  # noqa
         params: list[tuple[str, Any]] = list(params_nopage)
         params.append((u'page', page))
         return search_url(params)
@@ -394,7 +394,7 @@ def _update_facet_titles(
     return facets
 
 
-def _get_group_dict(id: str, group_type: str) -> dict[str, Any]:
+def _get_group_dict(id: str, group_type: str) -> dict[str, Any]:  # noqa
     u''' returns the result of group_show action or aborts if there is a
     problem '''
     context = cast(Context, {
@@ -755,7 +755,7 @@ def member_delete(id: str, group_type: str,
 
 
 # deprecated
-def history(id: str, group_type: str, is_organization: bool) -> Response:
+def history(id: str, group_type: str, is_organization: bool) -> Response:  # noqa
     return h.redirect_to(u'group.activity', id=id)
 
 
@@ -780,7 +780,7 @@ def follow(id: str, group_type: str, is_organization: bool) -> Response:
     return h.redirect_to(u'group.read', id=id)
 
 
-def unfollow(id: str, group_type: str, is_organization: bool) -> Response:
+def unfollow(id: str, group_type: str, is_organization: bool) -> Response:  # noqa
     u'''Stop following this group.'''
     set_org(is_organization)
     context = cast(
@@ -1025,12 +1025,7 @@ class CreateGroupView(MethodView):
         except dict_fns.DataError:
             base.abort(400, _(u'Integrity Error'))
 
-        data_dict['type'] = group_type or u'group'
-        context['message'] = data_dict.get(u'log_message', u'')
-        data_dict['users'] = [{u'name': g.user, u'capacity': u'admin'}]
-        try:
-            group = _action(u'group_create')(context, data_dict)
-        except (NotFound, NotAuthorized) as e:
+        except (NotFound, NotAuthorized):
             base.abort(404, _(u'Group not found'))
         except ValidationError as e:
             errors = e.error_dict
@@ -1131,7 +1126,8 @@ class EditGroupView(MethodView):
             group = _action(u'group_update')(context, data_dict)
             if id != group['name']:
                 _force_reindex(group)
-        except (NotFound, NotAuthorized) as e:
+
+        except (NotFound, NotAuthorized):
             base.abort(404, _(u'Group not found'))
         except ValidationError as e:
             errors = e.error_dict

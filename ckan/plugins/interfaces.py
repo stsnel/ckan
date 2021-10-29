@@ -6,6 +6,7 @@ extend CKAN.
 '''
 from __future__ import annotations
 
+import warnings
 from inspect import isclass
 from typing import (Any, Callable, Iterable, Mapping, Optional, Sequence,
                     TYPE_CHECKING, Type, Union)
@@ -15,7 +16,7 @@ from pyutilib.component.core import Interface as _pca_Interface
 from flask.blueprints import Blueprint
 from flask.wrappers import Response
 
-
+from ckan.exceptions import CkanDeprecationWarning
 from ckan.types import (
     Action, AuthFunction, Context, DataDict, PFeed,
     PUploader, PResourceUploader, Schema, SignalMapping, Validator)
@@ -576,9 +577,28 @@ class IPackageController(Interface):
     u'''
     Hook into the dataset view.
     '''
+    def __init__(self):
+        # Drop support by removing this __init__ function
+        for old_name, new_name in [
+            ["after_create", "after_dataset_create"],
+            ["after_update", "after_dataset_update"],
+            ["after_delete", "after_dataset_delete"],
+            ["after_show", "after_dataset_show"],
+            ["before_search", "before_dataset_search"],
+            ["after_search", "after_dataset_search"],
+            ["before_index", "before_dataset_index"],
+                ["before_view", "before_dataset_view"]]:
+            if hasattr(self, old_name):
+                warnings.warn(
+                    "The method 'IPackageController.{}' is ".format(old_name)
+                    + "deprecated. Please use '{}' instead!".format(new_name),
+                    CkanDeprecationWarning)
+                setattr(self, new_name, getattr(self, old_name))
 
     def read(self, entity: 'model.Package') -> None:
-        u'''Called after IPackageController.before_view inside package_show.
+        u'''
+        Called after IPackageController.before_dataset_view inside
+        package_show.
         '''
         pass
 
@@ -597,7 +617,7 @@ class IPackageController(Interface):
         '''
         pass
 
-    def after_create(self, context: Context, pkg_dict: dict[str, Any]) -> None:
+    def after_dataset_create(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the validated data dict after the dataset
         has been created (Note that the create method will return a dataset
@@ -606,28 +626,28 @@ class IPackageController(Interface):
         '''
         pass
 
-    def after_update(self, context: Context, pkg_dict: dict[str, Any]) -> None:
+    def after_dataset_update(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the validated data dict after the dataset
         has been updated.
         '''
         pass
 
-    def after_delete(self, context: Context, pkg_dict: dict[str, Any]) -> None:
+    def after_dataset_delete(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the data dict (typically containing
         just the dataset id) after the dataset has been deleted.
         '''
         pass
 
-    def after_show(self, context: Context, pkg_dict: dict[str, Any]) -> None:
+    def after_dataset_show(self, context: Context, pkg_dict: dict[str, Any]) -> None:
         u'''
         Extensions will receive the validated data dict after the dataset
         is ready for display.
         '''
         pass
 
-    def before_search(self, search_params: dict[str, Any]) -> dict[str, Any]:
+    def before_dataset_search(self, search_params: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive a dictionary with the query parameters,
         and should return a modified (or not) version of it.
@@ -638,7 +658,7 @@ class IPackageController(Interface):
         '''
         return search_params
 
-    def after_search(self,
+    def after_dataset_search(self,
                      search_results: dict[str, Any],
                      search_params: dict[str, Any]) -> dict[str, Any]:
         u'''
@@ -659,7 +679,7 @@ class IPackageController(Interface):
 
         return search_results
 
-    def before_index(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
+    def before_dataset_index(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive what will be given to Solr for
         indexing. This is essentially a flattened dict (except for
@@ -669,7 +689,7 @@ class IPackageController(Interface):
         '''
         return pkg_dict
 
-    def before_view(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
+    def before_dataset_view(self, pkg_dict: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive this before the dataset gets
         displayed. The dictionary passed will be the one that gets
@@ -682,9 +702,25 @@ class IResourceController(Interface):
     u'''
     Hook into the resource view.
     '''
+    def __init__(self):
+        # Drop support by removing this __init__ function
+        for old_name, new_name in [
+            ["before_create", "before_resource_create"],
+            ["after_create", "after_resource_create"],
+            ["before_update", "before_resource_update"],
+            ["after_update", "after_resource_update"],
+            ["before_delete", "before_resource_delete"],
+            ["after_delete", "after_resource_delete"],
+                ["before_show", "before_resource_show"]]:
+            if hasattr(self, old_name):
+                warnings.warn(
+                    "The method 'IResourceController.{}' is ".format(old_name)
+                    + "deprecated. Please use '{}' instead!".format(new_name),
+                    CkanDeprecationWarning)
+                setattr(self, new_name, getattr(self, old_name))
 
-    def before_create(
-            self, context: Context, resource: dict[str, Any]) -> None:
+
+    def before_resource_create( self, context: Context, resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this before a resource is created.
 
@@ -697,7 +733,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def after_create(self, context: Context, resource: dict[str, Any]) -> None:
+    def after_resource_create(self, context: Context, resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this after a resource is created.
 
@@ -713,7 +749,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def before_update(self, context: Context, current: dict[str, Any],
+    def before_resource_update(self, context: Context, current: dict[str, Any],
                       resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this before a resource is updated.
@@ -729,7 +765,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def after_update(self, context: Context, resource: dict[str, Any]) -> None:
+    def after_resource_update(self, context: Context, resource: dict[str, Any]) -> None:
         u'''
         Extensions will receive this after a resource is updated.
 
@@ -738,14 +774,14 @@ class IResourceController(Interface):
         :type context: dictionary
         :param resource: An object representing the updated resource in
             the dataset (the one that was just updated). As with
-            ``after_create``, a noteworthy key in the resource dictionary
-            ``url_type`` which is set to ``upload`` when the resource file
-            is uploaded instead of linked.
+            ``after_resource_create``, a noteworthy key in the resource
+            dictionary ``url_type`` which is set to ``upload`` when the
+            resource file is uploaded instead of linked.
         :type resource: dictionary
         '''
         pass
 
-    def before_delete(self, context: Context, resource: dict[str, Any],
+    def before_resource_delete(self, context: Context, resource: dict[str, Any],
                       resources: list[dict[str, Any]]) -> None:
         u'''
         Extensions will receive this before a resource is deleted.
@@ -764,7 +800,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def after_delete(self,
+    def after_resource_delete(self,
                      context: Context,
                      resources: list[dict[str, Any]]) -> None:
         u'''
@@ -779,7 +815,7 @@ class IResourceController(Interface):
         '''
         pass
 
-    def before_show(self, resource_dict: dict[str, Any]) -> dict[str, Any]:
+    def before_resource_show(self, resource_dict: dict[str, Any]) -> dict[str, Any]:
         u'''
         Extensions will receive the validated data dict before the resource
         is ready for display.

@@ -104,7 +104,8 @@ def resource_update(context: Context, data_dict: DataDict) -> ActionResult.Resou
         data_dict['datastore_active'] = resource.extras['datastore_active']
 
     for plugin in plugins.PluginImplementations(plugins.IResourceController):
-        plugin.before_update(context, resources[n], data_dict)
+        plugin.before_resource_update(context, pkg_dict['resources'][n],
+                                      data_dict)
 
     resources[n] = data_dict
 
@@ -128,7 +129,7 @@ def resource_update(context: Context, data_dict: DataDict) -> ActionResult.Resou
              'resource': resource})
 
     for plugin in plugins.PluginImplementations(plugins.IResourceController):
-        plugin.after_update(context, resource)
+        plugin.after_resource_update(context, resource)
 
     return resource
 
@@ -345,7 +346,7 @@ def package_update(
     for item in plugins.PluginImplementations(plugins.IPackageController):
         item.edit(pkg)
 
-        item.after_update(context, data)
+        item.after_dataset_update(context, data)
 
     # Create activity
     if not pkg.private:

@@ -85,7 +85,7 @@ def localised_filesize(number: int) -> str:
         return _('{tebibytes} TiB').format(tebibytes=rnd(number, 1024 ** 4))
 
 
-def localised_SI_number(number: int) -> str:
+def localised_SI_number(number: int) -> str:  # noqa
     ''' Returns a localised unicode representation of a number in SI format
     eg 14700 becomes 14.7k '''
 

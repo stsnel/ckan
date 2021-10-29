@@ -42,9 +42,6 @@ def load_environment(conf: Union[Config, CKANConfig]):
     """
     os.environ['CKAN_CONFIG'] = cast(str, conf['__file__'])
 
-    # Pylons paths
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
     valid_base_public_folder_names = ['public']
     static_files: str = cast(
         str, conf.get('ckan.base_public_folder', 'public'))
@@ -57,10 +54,6 @@ def load_environment(conf: Union[Config, CKANConfig]):
         )
 
     log.info('Loading static files from %s' % static_files)
-    paths = dict(root=root,
-                 controllers=os.path.join(root, 'controllers'),
-                 static_files=os.path.join(root, static_files),
-                 templates=[])
 
     # Initialize main CKAN config object
     config.update(conf)

@@ -150,7 +150,7 @@ def _get_engine_from_url(connection_url: str, **kwargs: Any) -> Engine:
 def _dispose_engines():
     '''Dispose all database engines.'''
     global _engines
-    for url, engine in _engines.items():
+    for _, engine in _engines.items():
         engine.dispose()
     _engines = {}
 
@@ -443,7 +443,7 @@ def _update_where_clauses_on_q_dict(
         data_dict: dict[str, str], fields_types: dict[str, str],
         q: dict[str, str], clauses: list[tuple[str]]) -> None:
     lang = _fts_lang(data_dict.get('language'))
-    for field, value in q.items():
+    for field, _ in q.items():
         if field not in fields_types:
             continue
         query_field = _ts_query_alias(field)
@@ -654,7 +654,7 @@ def _get_fts_index_method() -> str:
 
 
 def _build_fts_indexes(
-        connection: Any, data_dict: dict[str, Any],
+        connection: Any, data_dict: dict[str, Any],  # noqa
         sql_index_str_method: str, fields: list[dict[str, Any]]):
     fts_indexes: list[str] = []
     resource_id = data_dict['resource_id']
@@ -1160,7 +1160,7 @@ def upsert_data(context: Context, data_dict: dict[str, Any]):
             VALUES ({values});'''.format(
             res_id=identifier(data_dict['resource_id']),
             columns=sql_columns.replace('%', '%%'),
-            values=', '.join(['%s' for field in field_names])
+            values=', '.join(['%s' for _ in field_names])
         )
 
         try:
@@ -1494,7 +1494,7 @@ def _execute_single_statement_copy_to(
 
 
 def format_results(context: Context, results: Any, data_dict: dict[str, Any],
-                   rows_max: int):
+                   rows_max: int):  # noqa
     result_fields = []
     for field in results.cursor.description:
         result_fields.append({
@@ -1627,7 +1627,7 @@ def upsert(context: Context, data_dict: dict[str, Any]):
                 'query': ['Query took too long']
             })
         raise
-    except Exception as e:
+    except Exception:
         trans.rollback()
         raise
     finally:
@@ -1887,13 +1887,13 @@ class DatastorePostgresqlBackend(DatastoreBackend):
             int(rows_max)
 
     def datastore_delete(
-            self, context: Context, data_dict: dict[str, Any],
+            self, context: Context, data_dict: dict[str, Any],  # noqa
             fields_types: dict[str, Any], query_dict: dict[str, Any]):
         query_dict['where'] += _where_clauses(data_dict, fields_types)
         return query_dict
 
     def datastore_search(
-            self, context: Context, data_dict: dict[str, Any],
+            self, context: Context, data_dict: dict[str, Any],  # noqa
             fields_types: dict[str, Any], query_dict: dict[str, Any]):
 
         fields: str = data_dict.get('fields', '')
@@ -2058,7 +2058,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
                     'query': ['Query took too long']
                 })
             raise
-        except Exception as e:
+        except Exception:
             trans.rollback()
             raise
         finally:
@@ -2146,7 +2146,7 @@ class DatastorePostgresqlBackend(DatastoreBackend):
 
             # DB_SIZE - size of database in bytes
             dbsize_sql = sqlalchemy.text(
-                u"SELECT pg_database_size(current_database())".format(id))
+                u"SELECT pg_database_size(current_database())")
             dbsize_results = engine.execute(dbsize_sql)
             info['meta']['db_size'] = \
                 dbsize_results.fetchone()[0]  # type: ignore
