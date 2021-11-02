@@ -162,10 +162,6 @@ def isodate(value: Any, context: Context) -> Any:
     return date
 
 def no_http(value: Any, context: Context) -> Any:
-
-    model = context['model']
-    session = context['session']
-
     if 'http:' in value:
         raise Invalid(_('No links are allowed in the log_message.'))
     return value
@@ -515,7 +511,6 @@ def ignore_not_package_admin(key: FlattenKey, data: FlattenDataDict,
                              context: Context) -> Any:
     '''Ignore if the user is not allowed to administer the package specified.'''
 
-    model = context['model']
     user = context.get('user')
 
     if 'ignore_auth' in context:
@@ -559,7 +554,6 @@ def ignore_not_group_admin(key: FlattenKey, data: FlattenDataDict,
                            errors: FlattenErrorDict, context: Context) -> Any:
     '''Ignore if the user is not allowed to administer for the group specified.'''
 
-    model = context['model']
     user = context.get('user')
 
     if user and authz.is_sysadmin(user):
