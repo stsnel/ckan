@@ -1235,8 +1235,7 @@ def activity_create(context: Context,
 
     _check_access('activity_create', context, data_dict)
 
-    if not ckan.common.asbool(
-            config.get('ckan.activity_streams_enabled', 'true')):
+    if not config.get_value('ckan.activity_streams_enabled'):
         return
 
     model = context['model']

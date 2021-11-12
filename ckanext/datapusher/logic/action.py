@@ -62,9 +62,11 @@ def datapusher_submit(context: Context, data_dict: dict[str, Any]):
     except logic.NotFound:
         return False
 
-    datapusher_url: str = config.get('ckan.datapusher.url', '')
+    datapusher_url: str = config.get_value('ckan.datapusher.url')
 
-    callback_url_base = config.get('ckan.datapusher.callback_url_base')
+    callback_url_base = config.get_value(
+        'ckan.datapusher.callback_url_base'
+    ) or config.get_value("ckan.site_url")
     if callback_url_base:
         site_url = callback_url_base
         callback_url = urljoin(
@@ -98,8 +100,9 @@ def datapusher_submit(context: Context, data_dict: dict[str, Any]):
             'task_type': 'datapusher',
             'key': 'datapusher'
         })
-        assume_task_stale_after = datetime.timedelta(seconds=int(
-            config.get('ckan.datapusher.assume_task_stale_after', 3600)))
+        assume_task_stale_after = datetime.timedelta(
+            seconds=config.get_value(
+                'ckan.datapusher.assume_task_stale_after'))
         if existing_task.get('state') == 'pending':
             updated = datetime.datetime.strptime(
                 existing_task['last_updated'], '%Y-%m-%dT%H:%M:%S.%f')
@@ -289,7 +292,7 @@ def datapusher_status(
         'key': 'datapusher'
     })
 
-    datapusher_url = config.get('ckan.datapusher.url')
+    datapusher_url = config.get_value('ckan.datapusher.url')
     if not datapusher_url:
         raise p.toolkit.ValidationError(
             {'configuration': ['ckan.datapusher.url not in config file']})

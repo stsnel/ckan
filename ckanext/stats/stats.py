@@ -12,14 +12,6 @@ import ckan.plugins as p
 import ckan.model as model
 
 log = logging.getLogger(__name__)
-cache_enabled = p.toolkit.asbool(
-    config.get("ckanext.stats.cache_enabled", False)
-)
-
-if cache_enabled:
-    log.warn(
-        "ckanext.stats does not support caching in current implementations"
-    )
 
 DATE_FORMAT = "%Y-%m-%d"
 

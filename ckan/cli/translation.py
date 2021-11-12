@@ -137,7 +137,8 @@ def sync_po_file_msgids(entries_to_change: dict[str, Any], path: str):
 
 
 def get_i18n_path() -> str:
-    return config.get(u'ckan.i18n_directory', os.path.join(ckan_path, u'i18n'))
+    return config.get_value(
+        u'ckan.i18n_directory') or os.path.join(ckan_path, u'i18n')
 
 
 def simple_conv_specs(s: str):

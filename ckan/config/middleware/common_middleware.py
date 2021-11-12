@@ -17,7 +17,7 @@ class TrackingMiddleware(object):
 
     def __init__(self, app: CKANApp, config: CKANConfig):
         self.app = app
-        self.engine = sa.create_engine(config.get('sqlalchemy.url'))
+        self.engine = sa.create_engine(config.get_value('sqlalchemy.url'))
 
     def __call__(self, environ: Any, start_response: Any) -> Any:
         path = environ['PATH_INFO']
@@ -63,7 +63,7 @@ class HostHeaderMiddleware(object):
         if path_info in ['/login_generic', '/user/login',
                          '/user/logout', '/user/logged_in',
                          '/user/logged_out']:
-            site_url = config.get('ckan.site_url')
+            site_url = config.get_value('ckan.site_url')
             parts = urlparse(site_url)
             environ['HTTP_HOST'] = str(parts.netloc)
         return self.app(environ, start_response)

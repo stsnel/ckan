@@ -8,7 +8,7 @@ from typing import (Any, Callable, Iterable, Optional,
 
 import six
 
-from ckan.common import config, _
+from ckan.common import _
 from ckan.types import (
     Context, FlattenDataDict, FlattenErrorDict, FlattenKey, Schema)
 
@@ -307,12 +307,10 @@ def validate(
     flat_data, errors = _validate(flattened, schema, validators_context)
     converted_data = unflatten(flat_data)
 
-    # check config for partial update fix option
-    if config.get('ckan.fix_partial_updates', True):
-        # repopulate the empty lists
-        for key in empty_lists:
-            if key not in converted_data:
-                converted_data[key] = []
+    # repopulate the empty lists
+    for key in empty_lists:
+        if key not in converted_data:
+            converted_data[key] = []
 
     errors_unflattened = unflatten(errors)
 

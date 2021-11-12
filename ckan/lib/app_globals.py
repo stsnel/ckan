@@ -12,7 +12,7 @@ from typing import Any, Union
 import ckan
 import ckan.model as model
 from ckan.logic.schema import update_configuration_schema
-from ckan.common import asbool, config
+from ckan.common import asbool, config, aslist
 
 
 log = logging.getLogger(__name__)
@@ -115,7 +115,7 @@ def process_app_global(
         elif data_type == 'int':
             new_value = int(value)
         elif data_type == 'split':
-            new_value = value.split()
+            new_value = aslist(value)
         else:
             new_value = value
     return key, new_value

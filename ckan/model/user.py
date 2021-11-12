@@ -16,12 +16,11 @@ from sqlalchemy import types, Column, Table, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 
-
-import ckan.model.meta as meta
-import ckan.model.core as core
-import ckan.model.types as _types
-import ckan.model.domain_object as domain_object
-from ckan.common import config, asbool
+from ckan.common import config
+from ckan.model import meta
+from ckan.model import core
+from ckan.model import types as _types
+from ckan.model import domain_object
 from ckan.types import Query
 
 if TYPE_CHECKING:
@@ -31,7 +30,7 @@ TUser = TypeVar("TUser", bound="User")
 
 
 def set_api_key() -> Optional[str]:
-    if asbool(config.get('ckan.auth.create_default_api_keys', False)):
+    if config.get_value('ckan.auth.create_default_api_keys'):
         return _types.make_uuid()
     return None
 

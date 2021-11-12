@@ -51,7 +51,7 @@ def escape_xml_illegal_chars(val: str, replacement: str='') -> str:
 
 def clear_index() -> None:
     conn = make_connection()
-    query = "+site_id:\"%s\"" % (config.get('ckan.site_id'))
+    query = "+site_id:\"%s\"" % (config.get_value('ckan.site_id'))
     try:
         conn.delete(q=query)
     except socket.error as e:
@@ -119,7 +119,7 @@ class PackageSearchIndex(SearchIndex):
 
         data_dict_json = json.dumps(pkg_dict)
 
-        if config.get('ckan.cache_validated_datasets', True):
+        if config.get_value('ckan.cache_validated_datasets'):
             package_plugin = lib_plugins.lookup_package_plugin(
                 pkg_dict.get('type'))
 
@@ -271,7 +271,7 @@ class PackageSearchIndex(SearchIndex):
         pkg_dict['metadata_modified'] += 'Z'
 
         # mark this CKAN instance as data source:
-        pkg_dict['site_id'] = config.get('ckan.site_id')
+        pkg_dict['site_id'] = config.get_value('ckan.site_id')
 
         # Strip a selection of the fields.
         # These fields are possible candidates for sorting search results on,
@@ -286,7 +286,7 @@ class PackageSearchIndex(SearchIndex):
 
         # add a unique index_id to avoid conflicts
         import hashlib
-        pkg_dict['index_id'] = hashlib.md5(six.b('%s%s' % (pkg_dict['id'],config.get('ckan.site_id')))).hexdigest()
+        pkg_dict['index_id'] = hashlib.md5(six.b('%s%s' % (pkg_dict['id'],config.get_value('ckan.site_id')))).hexdigest()
 
         for item in PluginImplementations(IPackageController):
             pkg_dict = item.before_dataset_index(pkg_dict)
@@ -305,7 +305,7 @@ class PackageSearchIndex(SearchIndex):
         try:
             conn = make_connection()
             commit = not defer_commit
-            if not asbool(config.get('ckan.search.solr_commit', 'true')):
+            if not config.get_value('ckan.search.solr_commit'):
                 commit = False
             conn.add(docs=[pkg_dict], commit=commit)
         except pysolr.SolrError as e:
@@ -334,9 +334,9 @@ class PackageSearchIndex(SearchIndex):
     def delete_package(self, pkg_dict: dict[str, Any]) -> None:
         conn = make_connection()
         query = "+%s:%s AND +(id:\"%s\" OR name:\"%s\") AND +site_id:\"%s\"" % \
-                (TYPE_FIELD, PACKAGE_TYPE, pkg_dict.get('id'), pkg_dict.get('id'), config.get('ckan.site_id'))
+                (TYPE_FIELD, PACKAGE_TYPE, pkg_dict.get('id'), pkg_dict.get('id'), config.get_value('ckan.site_id'))
         try:
-            commit = asbool(config.get('ckan.search.solr_commit', 'true'))
+            commit = config.get_value('ckan.search.solr_commit')
             conn.delete(q=query, commit=commit)
         except Exception as e:
             log.exception(e)

@@ -659,7 +659,7 @@ def set_datastore_active_flag(model: Any, data_dict: dict[str, Any],
         'q': 'id:"{0}"'.format(package_id),
         'fl': 'data_dict',
         'wt': 'json',
-        'fq': 'site_id:"%s"' % config.get('ckan.site_id'),
+        'fq': 'site_id:"%s"' % config.get_value('ckan.site_id'),
         'rows': 1
     }
     for record in solr_query.run(q)['results']:

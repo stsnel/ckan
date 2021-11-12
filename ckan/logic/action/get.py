@@ -337,8 +337,7 @@ def _group_or_org_list(
             data_dict, ckan.logic.schema.default_pagination_schema(), context)
         if errors:
             raise ValidationError(errors)
-    sort = data_dict.get('sort') or config.get('ckan.default_group_sort') \
-        or 'title'
+    sort = data_dict.get('sort') or config.get_value('ckan.default_group_sort')
     q = data_dict.get('q')
 
     all_fields = asbool(data_dict.get('all_fields', None))
@@ -346,14 +345,13 @@ def _group_or_org_list(
     if all_fields:
         # all_fields is really computationally expensive, so need a tight limit
         try:
-            max_limit = int(config.get(
-                'ckan.group_and_organization_list_all_fields_max', 25))
+            max_limit = config.get_value(
+                'ckan.group_and_organization_list_all_fields_max')
         except ValueError:
             max_limit = 25
     else:
         try:
-            max_limit = int(
-                config.get('ckan.group_and_organization_list_max', 1000))
+            max_limit = config.get_value('ckan.group_and_organization_list_max')
         except ValueError:
             max_limit = 1000
 
@@ -1186,7 +1184,7 @@ def _group_or_org_show(
 
     try:
         include_tags = asbool(data_dict.get('include_tags', True))
-        if asbool(config.get('ckan.auth.public_user_details', True)):
+        if config.get_value('ckan.auth.public_user_details'):
             include_users = asbool(data_dict.get('include_users', True))
         else:
             include_users = asbool(data_dict.get('include_users', False))
@@ -1870,8 +1868,7 @@ def package_search(context: Context, data_dict: DataDict) -> ActionResult.Packag
     abort = data_dict.get('abort_search', False)
 
     if data_dict.get('sort') in (None, 'rank'):
-        data_dict['sort'] = config.get('ckan.search.default_package_sort') \
-            or 'score desc, metadata_modified desc'
+        data_dict['sort'] = config.get_value('ckan.search.default_package_sort')
 
     results: list[dict[str, Any]] = []
     facets: dict[str, Any] = {}
@@ -2431,7 +2428,7 @@ def get_site_user(context: Context, data_dict: DataDict) -> ActionResult.GetSite
     '''
     _check_access('get_site_user', context, data_dict)
     model = context['model']
-    site_id = config.get('ckan.site_id', 'ckan_site_user')
+    site_id = config.get_value('ckan.site_id')
     user = model.User.get(site_id)
     if not user:
         apikey = str(uuid.uuid4())
@@ -2455,17 +2452,15 @@ def status_show(context: Context, data_dict: DataDict) -> ActionResult.StatusSho
     :rtype: dictionary
 
     '''
-
-    plugins = config.get('ckan.plugins')
-    extensions = plugins.split() if plugins else []
+    extensions = config.get_value('ckan.plugins')
 
     return {
-        'site_title': config.get('ckan.site_title'),
-        'site_description': config.get('ckan.site_description'),
-        'site_url': config.get('ckan.site_url'),
+        'site_title': config.get_value('ckan.site_title'),
+        'site_description': config.get_value('ckan.site_description'),
+        'site_url': config.get_value('ckan.site_url'),
         'ckan_version': ckan.__version__,
-        'error_emails_to': config.get('email_to'),
-        'locale_default': config.get('ckan.locale_default'),
+        'error_emails_to': config.get_value('email_to'),
+        'locale_default': config.get_value('ckan.locale_default'),
         'extensions': extensions,
     }
 

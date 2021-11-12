@@ -543,18 +543,9 @@ def check_config_permission(permission: str) -> Union[list[str], bool]:
     if key not in CONFIG_PERMISSIONS_DEFAULTS:
         return False
 
-    default_value = CONFIG_PERMISSIONS_DEFAULTS.get(key)
-
     config_key = 'ckan.auth.' + key
 
-    value = config.get(config_key, default_value)
-
-    if key == 'roles_that_cascade_to_sub_groups':
-        # This permission is set as a list of strings (space separated)
-        assert isinstance(value, str)
-        value = value.split() if value else []
-    else:
-        value = asbool(value)
+    value = config.get_value(config_key)
 
     return value
 

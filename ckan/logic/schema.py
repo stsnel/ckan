@@ -878,3 +878,47 @@ def package_revise_schema(ignore_missing: Validator,
         u'match__': [],
         u'update__': [],
     })
+
+
+@validator_args
+def config_declaration_v1(
+        ignore_missing: Validator, unicode_safe: Validator,
+        not_empty: Validator, default: ValidatorFactory,
+        boolean_validator: Validator,
+        dict_only: Validator, one_of: ValidatorFactory,
+        ignore_empty: Validator):
+    from ckan.config.declaration import Key
+    from ckan.config.declaration.load import option_types
+
+    def key_from_string(s: str):
+        return Key.from_string(s)
+
+    def importable_string(value: str):
+        from werkzeug.utils import import_string, ImportStringError
+        from ckan.logic.validators import Invalid
+        try:
+            return import_string(value)
+        except ImportStringError as e:
+            raise Invalid(str(e))
+
+    return cast(Schema, {
+        "groups": {
+            "annotation": [default(""), unicode_safe],
+            "options": {
+                "key": [not_empty, key_from_string],
+                "default": [ignore_missing],
+                "default_callable": [ignore_empty, importable_string],
+                "placeholder_callable": [ignore_empty, importable_string],
+                "callable_args": [ignore_empty, dict_only],
+                "description": [default(""), unicode_safe],
+                "placeholder": [default(""), unicode_safe],
+                "validators": [default(""), unicode_safe],
+                "type": [default("base"), one_of(list(option_types))],
+
+                "ignored": [default(False), boolean_validator],
+                "experimental": [default(False), boolean_validator],
+                "internal": [default(False), boolean_validator],
+                "required": [default(False), boolean_validator],
+            }
+        }
+    })

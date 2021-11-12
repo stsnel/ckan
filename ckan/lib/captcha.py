@@ -9,7 +9,7 @@ from ckan.types import Request
 def check_recaptcha(request: Request) -> None:
     '''Check a user\'s recaptcha submission is valid, and raise CaptchaError
     on failure.'''
-    recaptcha_private_key = config.get('ckan.recaptcha.privatekey', '')
+    recaptcha_private_key = config.get_value('ckan.recaptcha.privatekey')
     if not recaptcha_private_key:
         # Recaptcha not enabled
         return

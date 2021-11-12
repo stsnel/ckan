@@ -6,12 +6,11 @@ from typing import Any
 import ckan.plugins as p
 from ckan.types import Context
 from ckan.common import CKANConfig
+from ckan.config.declaration import Declaration, Key
 
 
 ignore_empty = p.toolkit.get_validator('ignore_empty')
 unicode_safe = p.toolkit.get_validator('unicode_safe')
-
-DEFAULT_VIDEO_FORMATS = 'mp4 ogg webm'
 
 
 class VideoView(p.SingletonPlugin):
@@ -19,12 +18,11 @@ class VideoView(p.SingletonPlugin):
 
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.IResourceView, inherit=True)
+    p.implements(p.IConfigDeclaration)
 
     def update_config(self, config: CKANConfig):
         p.toolkit.add_template_directory(config, 'theme/templates')
-        self.formats = config.get(
-            'ckan.preview.video_formats',
-            DEFAULT_VIDEO_FORMATS).split()
+        self.formats = config.get_value('ckan.preview.video_formats').split()
 
     def info(self) -> dict[str, Any]:
         return {'name': 'video_view',
@@ -46,3 +44,9 @@ class VideoView(p.SingletonPlugin):
 
     def form_template(self, context: Context, data_dict: dict[str, Any]):
         return 'video_form.html'
+
+    # IConfigDeclaration
+
+    def declare_config_options(self, declaration: Declaration, key: Key):
+        declaration.annotate("video_view settings")
+        declaration.declare(key.ckan.preview.video_formats, "mp4 ogg webm")

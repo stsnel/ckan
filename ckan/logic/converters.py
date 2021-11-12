@@ -10,7 +10,7 @@ import ckan.model as model
 import ckan.lib.navl.dictization_functions as df
 import ckan.logic.validators as validators
 
-from ckan.common import _
+from ckan.common import _, aslist
 from ckan.types import (
     Context, DataValidator, FlattenDataDict, FlattenErrorDict, FlattenKey)
 
@@ -198,6 +198,10 @@ def convert_to_json_if_string(value: Any, context: Context) -> Any:
             raise df.Invalid(_('Could not parse as valid JSON'))
     else:
         return value
+
+
+def as_list(value: Any):
+    return aslist(value)
 
 
 def convert_to_list_if_string(value: Any) -> Any:
