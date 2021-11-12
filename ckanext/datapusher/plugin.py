@@ -8,7 +8,6 @@ from typing import Any, Callable, cast
 
 import ckan.model as model
 import ckan.plugins as p
-import ckan.plugins.toolkit as toolkit
 import ckanext.datapusher.views as views
 import ckanext.datapusher.helpers as helpers
 import ckanext.datapusher.logic.action as action
@@ -46,7 +45,7 @@ class DatapusherPlugin(p.SingletonPlugin):
 
     def update_config(self, config: CKANConfig):
         templates_base = config.get_value(u'ckan.base_templates_folder')
-        toolkit.add_template_directory(config, templates_base)
+        p.toolkit.add_template_directory(config, templates_base)
 
     def configure(self, config: CKANConfig):
         self.config = config
@@ -70,7 +69,7 @@ class DatapusherPlugin(p.SingletonPlugin):
             u'model': model,
             u'ignore_auth': True,
         })
-        resource_dict = toolkit.get_action(u'resource_show')(
+        resource_dict = p.toolkit.get_action(u'resource_show')(
             context, {
                 u'id': resource.id,
             }
@@ -103,7 +102,7 @@ class DatapusherPlugin(p.SingletonPlugin):
             return
 
         try:
-            task = toolkit.get_action(u'task_status_show')(
+            task = p.toolkit.get_action(u'task_status_show')(
                 context, {
                     u'entity_id': resource_dict['id'],
                     u'task_type': u'datapusher',
@@ -119,7 +118,7 @@ class DatapusherPlugin(p.SingletonPlugin):
                     u'resource {0}'.format(resource_dict['id'])
                 )
                 return
-        except toolkit.ObjectNotFound:
+        except p.toolkit.ObjectNotFound:
             pass
 
         try:
@@ -127,12 +126,12 @@ class DatapusherPlugin(p.SingletonPlugin):
                 u'Submitting resource {0}'.format(resource_dict['id']) +
                 u' to DataPusher'
             )
-            toolkit.get_action(u'datapusher_submit')(
+            p.toolkit.get_action(u'datapusher_submit')(
                 context, {
                     u'resource_id': resource_dict['id']
                 }
             )
-        except toolkit.ValidationError as e:
+        except p.toolkit.ValidationError as e:
             # If datapusher is offline want to catch error instead
             # of raising otherwise resource save will fail with 500
             log.critical(e)

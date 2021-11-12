@@ -13,10 +13,11 @@ from ckan import logic
 from ckan import plugins
 import ckan.authz
 import ckan.logic.schema
-import ckan.plugins.toolkit as toolkit
 from ckan.model.user import User
 from ckan.model.package import Package
 from ckan.types import Context, DataDict, Schema
+from ckan.lib.navl.dictization_functions import validate
+from . import signals
 
 if TYPE_CHECKING:
     from ckan.config.middleware.flask_app import CKANFlask
@@ -162,7 +163,7 @@ def register_package_blueprints(app: 'CKANFlask') -> None:
                     dataset_blueprint)
             register_dataset_plugin_rules(dataset_blueprint)
 
-            toolkit.signals.register_blueprint.send(
+            signals.register_blueprint.send(
                 u"dataset", blueprint=dataset_blueprint)
             app.register_blueprint(dataset_blueprint)
 
@@ -176,7 +177,7 @@ def register_package_blueprints(app: 'CKANFlask') -> None:
                     package_type,
                     resource_blueprint)
             dataset_resource_rules(resource_blueprint)
-            toolkit.signals.register_blueprint.send(
+            signals.register_blueprint.send(
                 u"resource", blueprint=resource_blueprint)
             app.register_blueprint(resource_blueprint)
             log.debug(
@@ -290,7 +291,7 @@ def register_group_blueprints(app: 'CKANFlask') -> None:
                 blueprint = plugin.prepare_group_blueprint(
                     group_type, blueprint)
             register_group_plugin_rules(blueprint)
-            toolkit.signals.register_blueprint.send(
+            signals.register_blueprint.send(
                 u"organization" if is_organization else u"group",
                 blueprint=blueprint)
             app.register_blueprint(blueprint)
@@ -325,7 +326,7 @@ def plugin_validate(
         if result is not None:
             return result
 
-    return toolkit.navl_validate(data_dict, schema, context)
+    return validate(data_dict, schema, context)
 
 
 def get_permission_labels() -> Any:

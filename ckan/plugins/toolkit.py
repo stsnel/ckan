@@ -4,7 +4,9 @@ from __future__ import annotations
 import sys
 from typing import Any, Optional, TYPE_CHECKING, Union, cast
 from types import ModuleType
-from ckan.common import CKANConfig
+
+if TYPE_CHECKING:
+    from ckan.common import CKANConfig
 
 
 class _Toolkit(object):

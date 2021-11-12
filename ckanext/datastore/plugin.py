@@ -31,8 +31,6 @@ _SQL_FUNCTIONS_ALLOWLIST_FILE = os.path.join(
 
 DEFAULT_FORMATS = []
 
-ValidationError = p.toolkit.ValidationError
-
 
 class DatastorePlugin(p.SingletonPlugin):
     p.implements(p.IConfigurable, inherit=True)
