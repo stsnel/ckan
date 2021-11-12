@@ -372,12 +372,13 @@ def search(package_type: str) -> str:
 
     # FIXME: try to avoid using global variables
     g.search_facets_limits = {}
+    default_limit: int = config.get_value(u'search.facets.default')
     for facet in extra_vars[u'search_facets'].keys():
         try:
             limit = int(
                 request.args.get(
                     u'_%s_limit' % facet,
-                    config.get_value(u'search.facets.default')
+                    default_limit
                 )
             )
         except ValueError:

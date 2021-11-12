@@ -97,11 +97,11 @@ def before_request() -> None:
 
 
 def index() -> str:
-    page_number = h.get_page_number(request.params)
-    q = request.params.get(u'q', u'')
-    order_by = request.params.get(u'order_by', u'name')
-    limit = int(request.params.get(
-        u'limit', config.get_value(u'ckan.user_list_limit')))
+    page_number = h.get_page_number(request.args)
+    q = request.args.get(u'q', u'')
+    order_by = request.args.get(u'order_by', u'name')
+    default_limit: int = config.get_value(u'ckan.user_list_limit')
+    limit = int(request.args.get(u'limit', default_limit))
     context: Context = {
         u'return_query': True,
         u'user': g.user,

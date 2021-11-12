@@ -24,8 +24,6 @@ MB = 1 << 20
 log = logging.getLogger(__name__)
 
 _storage_path: Optional[str] = None
-_max_resource_size: Optional[int] = None
-_max_image_size: Optional[int] = None
 
 
 def _copy_file(input_file: IO[bytes],
@@ -100,17 +98,11 @@ def get_storage_path() -> str:
 
 
 def get_max_image_size() -> int:
-    global _max_image_size
-    if _max_image_size is None:
-        _max_image_size = config.get_value('ckan.max_image_size')
-    return _max_image_size
+    return config.get_value('ckan.max_image_size')
 
 
 def get_max_resource_size() -> int:
-    global _max_resource_size
-    if _max_resource_size is None:
-        _max_resource_size = config.get_value('ckan.max_resource_size')
-    return _max_resource_size
+    return config.get_value('ckan.max_resource_size')
 
 
 class Upload(object):

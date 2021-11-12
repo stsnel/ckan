@@ -128,7 +128,7 @@ def set_org(is_organization: bool) -> None:
 def index(group_type: str, is_organization: bool) -> str:
     extra_vars: dict[str, Any] = {}
     set_org(is_organization)
-    page = h.get_page_number(request.params) or 1
+    page = h.get_page_number(request.args) or 1
     items_per_page = config.get_value(u'ckan.datasets_per_page')
 
     context = cast(Context, {
@@ -366,11 +366,9 @@ def _read(id: Optional[str], limit: int, group_type: str) -> dict[str, Any]:
 
         extra_vars["search_facets"] = g.search_facets = query['search_facets']
         extra_vars["search_facets_limits"] = g.search_facets_limits = {}
+        default_limit: int = config.get_value(u'search.facets.default')
         for facet in g.search_facets.keys():
-            limit = int(
-                request.params.get(
-                    u'_%s_limit' % facet,
-                    config.get_value(u'search.facets.default')))
+            limit = int(request.args.get(u'_%s_limit' % facet, default_limit))
             g.search_facets_limits[facet] = limit
         extra_vars["page"].items = query['results']
 

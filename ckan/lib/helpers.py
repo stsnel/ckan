@@ -128,12 +128,12 @@ def core_helper(f: Helper, name: Optional[str] = None) -> Helper:
     """
     Register a function as a builtin helper method.
     """
-    def _get_name(func_or_class: Union[Callable[..., Any], type]):
+    def _get_name(func_or_class: Union[Callable[..., Any], type]) -> str:
         # Handles both methods and class instances.
         try:
             return func_or_class.__name__
         except AttributeError:
-            return func_or_class.__class__.__name__
+            return cast(type, func_or_class.__class__).__name__
 
     _builtin_functions[name or _get_name(f)] = f
     return f

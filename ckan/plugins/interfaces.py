@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from collections import OrderedDict
     from ckan.common import CKANConfig
     from ckan.config.middleware.flask_app import CKANFlask
+    from ckan.config.declaration import Declaration, Key
     from .core import SingletonPlugin
 
 
@@ -903,7 +904,7 @@ class IConfigDeclaration(Interface):
 
     """
 
-    def declare_config_options(self, declaration, key):
+    def declare_config_options(self, declaration: Declaration, key: Key):
         """Register extra config options.
 
         Example::

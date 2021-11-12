@@ -139,7 +139,6 @@ def output_feed(
     author_name = config.get_value(u'ckan.feeds.author_name').strip() or \
         config.get_value(u'ckan.site_id').strip()
 
-
     def remove_control_characters(s: str):
         if not s:
             return ""
@@ -404,7 +403,7 @@ def custom() -> Response:
 
     atom_url = h._url_with_params(u'/feeds/custom.atom', search_params.items())
 
-    alternate_url = _alternate_url(request.params)
+    alternate_url = _alternate_url(request.args)
     site_title = config.get_value(u'ckan.site_title')
     return output_feed(
         results,

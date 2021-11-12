@@ -61,7 +61,7 @@ def set_cors_headers_for_response(response: Response) -> Response:
         whitelisted = request.headers.get(u'Origin') in config.get_value(
             u'ckan.cors.origin_whitelist')
         if allow_all:
-            cors_origin_allowed = b'*'
+            cors_origin_allowed = '*'
         elif whitelisted:
             # set var to the origin to allow it.
             cors_origin_allowed = request.headers.get(u'Origin')

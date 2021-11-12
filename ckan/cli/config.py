@@ -112,7 +112,7 @@ def search(
             continue
         option = decl[key]
         default = option.default
-        current = option._normalize(cfg.get(key, default))
+        current = option._normalize(cfg.get(str(key), default))
         if no_custom and default != current:
             continue
         if custom_only and default == current:

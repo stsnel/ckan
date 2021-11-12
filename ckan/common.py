@@ -116,7 +116,7 @@ class CKANConfig(MutableMapping):
         except RuntimeError:
             pass
 
-    def get_value(self, key: Union[str, Key]) -> Any:
+    def get_value(self, key: str) -> Any:
         if self.get("config.mode") == "strict":
             return self[key]
 
@@ -130,9 +130,10 @@ class CKANConfig(MutableMapping):
 
     def subset(
             self, pattern: Key,
-            exclude: Optional[Container[Union[str, Key]]] = frozenset()
+            exclude: Optional[Container[Union[str, Key]]] = None
     ) -> dict[str, Any]:
         subset = {}
+        exclude = exclude or set()
         for k, v in self.store.items():
             if k in exclude or pattern != k:
                 continue
@@ -157,10 +158,15 @@ class CKANRequest(LocalProxy):
     '''
 
     @property
+    @maintain.deprecated('Use `request.args` instead of `request.params`',
+                         since="2.10.0")
     def params(self):
-        u''' Special case as Pylons' request.params is used all over the place.
-        All new code meant to be run just in Flask (eg views) should always
-        use request.args
+        '''This property is deprecated.
+
+        Special case as Pylons' request.params is used all over the place.  All
+        new code meant to be run just in Flask (eg views) should always use
+        request.args
+
         '''
         return cast(flask.Request, self).args
 
@@ -257,10 +263,11 @@ local("config_declaration")
 config_declaration = local.config_declaration = Declaration()
 
 # Proxies to already thread-local safe objects
-request = CKANRequest(_get_request)
+request = cast(flask.Request, CKANRequest(_get_request))
 # Provide a `c`  alias for `g` for backwards compatibility
-g = c = LocalProxy(_get_c)
-session = LocalProxy(_get_session)
+g: Any = LocalProxy(_get_c)
+c = g
+session: Any = LocalProxy(_get_session)
 
 truthy = frozenset([u'true', u'yes', u'on', u'y', u't', u'1'])
 falsy = frozenset([u'false', u'no', u'off', u'n', u'f', u'0'])
