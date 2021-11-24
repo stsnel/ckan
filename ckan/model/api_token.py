@@ -10,16 +10,14 @@ from sqlalchemy import types, Column, Table, ForeignKey, orm
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 
-import ckan.plugins.toolkit as tk
-import ckan.model.meta as meta
-import ckan.model.user as user
-import ckan.model.domain_object as domain_object
+from ckan.model import meta, User, DomainObject
+from ckan.common import config
 
 __all__ = [u"ApiToken", u"api_token_table"]
 
 
 def _make_token() -> str:
-    nbytes = tk.config.get_value(u"api_token.nbytes")
+    nbytes = config.get_value(u"api_token.nbytes")
     return token_urlsafe(nbytes)
 
 
@@ -35,14 +33,14 @@ api_token_table = Table(
 )
 
 
-class ApiToken(domain_object.DomainObject):
+class ApiToken(DomainObject):
     id: str
     name: str
     user_id: Optional[str]
     created_at: datetime.datetime
     last_access: Optional[datetime.datetime]
     plugin_extras: dict[str, Any]
-    owner: Optional[user.User]
+    owner: Optional[User]
 
     def __init__(
             self, user_id: Optional[str] = None,
@@ -85,8 +83,8 @@ meta.mapper(
     api_token_table,
     properties={
         u"owner": orm.relation(
-            user.User, backref=orm.backref(u"api_tokens",
-                                           cascade=u"all, delete")
+            User, backref=orm.backref(u"api_tokens",
+                                      cascade=u"all, delete")
         )
     },
 )

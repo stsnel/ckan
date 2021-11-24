@@ -161,6 +161,8 @@ def source_read(app: Any, docname: str, source: Any) -> None:
 
     source_ = ''
     for name, thing in inspect.getmembers(toolkit):
+        if name not in toolkit.__all__:
+            continue
 
         # The plugins toolkit can override the docstrings of some of its
         # members (e.g. things that are imported from third-party libraries)

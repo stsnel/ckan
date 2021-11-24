@@ -10,11 +10,10 @@ import click
 
 import ckan.logic as logic
 import ckan.model as model
-import ckan.lib.helpers as h
 from ckan.cli import error_shout
 from ckan.common import json
 from ckan.types import Context
-
+from ckan.lib.helpers import helper_functions as h
 
 log = logging.getLogger(__name__)
 

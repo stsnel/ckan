@@ -6,7 +6,8 @@ from typing import Any
 
 import click
 import sqlalchemy as sa
-import ckan.plugins.toolkit as tk
+from ckan.common import config
+from . import error_shout
 
 
 @click.group(name=u'search-index', short_help=u'Search index commands')
@@ -46,7 +47,7 @@ def rebuild(
                 quiet=quiet,
                 clear=clear)
     except Exception as e:
-        tk.error_shout(e)
+        error_shout(e)
     if not commit_each:
         commit()
 
@@ -82,7 +83,7 @@ def clear(dataset_name: str):
 def rebuild_fast():
     from ckan.lib.search import commit
 
-    db_url = tk.config['sqlalchemy.url']
+    db_url = config['sqlalchemy.url']
     engine = sa.create_engine(db_url)
     package_ids = []
     result = engine.execute(u"select id from package where state = 'active';")
@@ -113,4 +114,4 @@ def rebuild_fast():
             process.join()
         commit()
     except Exception as e:
-        tk.error_shout(e)
+        error_shout(e)

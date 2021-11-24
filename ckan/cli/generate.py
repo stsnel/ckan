@@ -5,7 +5,7 @@ import contextlib
 import os
 import json
 import shutil
-from typing import Optional, Any, cast
+from typing import Optional
 
 import alembic.command
 import click
@@ -15,11 +15,10 @@ from werkzeug.utils import import_string
 import ckan
 from ckan import logic
 from ckan.cli.db import _resolve_alembic_config
-import ckan.plugins.toolkit as tk
 
 import string
 from ckan.cli import error_shout
-from ckan.common import config_declaration
+from ckan.common import config_declaration, config
 
 
 class CKANAlembicConfig(AlembicConfig):
@@ -186,26 +185,22 @@ def migration(plugin: str, message: str):
     """Create new alembic revision for DB migration.
     """
     import ckan.model
-    if not tk.config:
+    if not config:
         error_shout(u'Config is not loaded')
         raise click.Abort()
-    config = CKANAlembicConfig(_resolve_alembic_config(plugin))
-    migration_dir = os.path.dirname(cast(str, config.config_file_name))
-    config.set_main_option(
-        u"sqlalchemy.url",
-        # type_ignore_reason: incomplete SQLAlchemy type signatures
-        str(ckan.model.repo.metadata.bind.url))  # type: ignore
-    config.set_main_option(u'script_location', migration_dir)
+    alembic_config = CKANAlembicConfig(_resolve_alembic_config(plugin))
+    assert alembic_config.config_file_name
+    migration_dir = os.path.dirname(alembic_config.config_file_name)
+    alembic_config.set_main_option("sqlalchemy.url", "")
+    alembic_config.set_main_option(u'script_location', migration_dir)
 
     if not os.path.exists(os.path.join(migration_dir, u'script.py.mako')):
-        alembic.command.init(config, migration_dir)
+        alembic.command.init(alembic_config, migration_dir)
 
-    rev: Any = alembic.command.revision(config, message)
-
+    rev = alembic.command.revision(alembic_config, message)
+    rev_path = rev.path  # type: ignore
     click.secho(
-        u"Revision file created. Now, you need to update it: \n\t{}".format(
-            rev.path
-        ),
+        f"Revision file created. Now, you need to update it: \n\t{rev_path}",
         fg=u"green")
 
 

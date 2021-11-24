@@ -8,19 +8,16 @@ from typing import Any, Optional, TYPE_CHECKING, TypeVar, cast
 
 from flask import Blueprint
 
+import ckan.logic.schema as schema
 from ckan.common import c, g
-from ckan import logic
-from ckan import plugins
+from ckan import logic, model, plugins
 import ckan.authz
-import ckan.logic.schema
-from ckan.model.user import User
-from ckan.model.package import Package
 from ckan.types import Context, DataDict, Schema
-from ckan.lib.navl.dictization_functions import validate
 from . import signals
-
+from .navl.dictization_functions import validate
 if TYPE_CHECKING:
     from ckan.config.middleware.flask_app import CKANFlask
+
 
 log = logging.getLogger(__name__)
 
@@ -360,13 +357,13 @@ class DefaultDatasetForm(object):
 
     '''
     def create_package_schema(self) -> dict[str, Any]:
-        return ckan.logic.schema.default_create_package_schema()
+        return schema.default_create_package_schema()
 
     def update_package_schema(self) -> dict[str, Any]:
-        return ckan.logic.schema.default_update_package_schema()
+        return schema.default_update_package_schema()
 
     def show_package_schema(self) -> dict[str, Any]:
-        return ckan.logic.schema.default_show_package_schema()
+        return schema.default_show_package_schema()
 
     def setup_template_variables(self, context: Context,
                                  data_dict: dict[str, Any]) -> None:
@@ -418,8 +415,9 @@ class DefaultGroupForm(object):
      - it provides the fallback behaviour if no plugin is setup to
        provide the fallback behaviour.
 
-    Note - this isn't a plugin implementation. This is deliberate, as we
-           don't want this being registered.
+    .. note:: this isn't a plugin implementation. This is deliberate, as we
+        don't want this being registered.
+
     """
     def group_controller(self) -> str:
         return 'group'
@@ -505,13 +503,13 @@ class DefaultGroupForm(object):
             return self.form_to_db_schema()
 
     def form_to_db_schema_api_create(self) -> dict[str, Any]:
-        return ckan.logic.schema.default_group_schema()
+        return schema.default_group_schema()
 
     def form_to_db_schema_api_update(self) -> dict[str, Any]:
-        return ckan.logic.schema.default_update_group_schema()
+        return schema.default_update_group_schema()
 
     def form_to_db_schema(self) -> dict[str, Any]:
-        return ckan.logic.schema.group_form_schema()
+        return schema.group_form_schema()
 
     def db_to_form_schema(self) -> dict[str, Any]:
         '''This is an interface to manipulate data from the database
@@ -623,7 +621,7 @@ class DefaultTranslation(object):
         # assume plugin is called ckanext.<myplugin>.<...>.PluginClass
         extension_module_name = '.'.join(self.__module__.split('.')[:3])
         module = sys.modules[extension_module_name]
-        return os.path.join(os.path.dirname(module.__file__), 'i18n')
+        return os.path.join(os.path.dirname(str(module.__file__)), 'i18n')
 
     def i18n_locales(self) -> list[str]:
         '''Change the list of locales that this plugin handles
@@ -655,7 +653,7 @@ class DefaultPermissionLabels(object):
     - users can read datasets belonging to their orgs "member-(org id)"
     - users can read datasets where they are collaborators "collaborator-(dataset id)"
     '''
-    def get_dataset_labels(self, dataset_obj: Package) -> list[str]:
+    def get_dataset_labels(self, dataset_obj: model.Package) -> list[str]:
         if dataset_obj.state == u'active' and not dataset_obj.private:
             return [u'public']
 
@@ -672,7 +670,7 @@ class DefaultPermissionLabels(object):
 
         return labels
 
-    def get_user_dataset_labels(self, user_obj: User) -> list[str]:
+    def get_user_dataset_labels(self, user_obj: model.User) -> list[str]:
         labels = [u'public']
         if not user_obj:
             return labels

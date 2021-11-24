@@ -4,6 +4,8 @@ from __future__ import annotations
 import os
 import logging
 import html
+import io
+
 from typing import Any, Callable, Optional, cast, Union
 
 from flask import Blueprint, make_response
@@ -471,7 +473,7 @@ def i18n_js_translations(
                              u'base', u'i18n', u'{0}.js'.format(lang)))
     if not os.path.exists(source):
         return u'{}'
-    translations = json.load(open(source, u'r', encoding='utf-8'))
+    translations = json.load(io.open(source, u'r', encoding='utf-8'))
     return _finish_ok(translations)
 
 

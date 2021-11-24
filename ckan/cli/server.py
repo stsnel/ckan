@@ -9,8 +9,8 @@ from typing import Any, Optional
 import click
 from werkzeug.serving import run_simple
 
-import ckan.plugins.toolkit as tk
 from ckan.common import config
+from . import error_shout
 
 log = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ def run(ctx: Any, host: str, port: str, disable_reloader: bool, threaded: bool,
     threaded = threaded or config.get_value(u"ckan.devserver.threaded")
     processes = processes or config.get_value(u"ckan.devserver.multiprocess")
     if threaded and processes > 1:
-        tk.error_shout(u"Cannot have a multithreaded and multi process server")
+        error_shout(u"Cannot have a multithreaded and multi process server")
         raise click.Abort()
 
     # SSL
@@ -83,7 +83,7 @@ def run(ctx: Any, host: str, port: str, disable_reloader: bool, threaded: bool,
     try:
         port_int = int(port)
     except ValueError:
-        tk.error_shout(u"Server port must be an integer, not {}".format(port))
+        error_shout(u"Server port must be an integer, not {}".format(port))
         raise click.Abort()
 
     log.info(u"Running CKAN on {scheme}://{host}:{port}".format(
