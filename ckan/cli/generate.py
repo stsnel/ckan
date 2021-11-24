@@ -184,7 +184,6 @@ def make_config(output_path: str, include_plugin: list[str]):
 def migration(plugin: str, message: str):
     """Create new alembic revision for DB migration.
     """
-    import ckan.model
     if not config:
         error_shout(u'Config is not loaded')
         raise click.Abort()
