@@ -8,6 +8,8 @@ import inspect
 import itertools
 import pkgutil
 
+from coverage import Coverage
+
 from flask import Blueprint, send_from_directory
 from flask.ctx import _AppCtxGlobals
 from flask.sessions import SessionInterface
@@ -198,6 +200,8 @@ def make_flask_stack(conf):
     app.context_processor(helper_functions)
     app.context_processor(c_object)
 
+    setup_testar_routes(app)
+
     @app.context_processor
     def ungettext_alias():
         u'''
@@ -362,6 +366,11 @@ def ckan_before_request():
     '''
     response = None
 
+    g.cov = Coverage(data_file="/coverage/coverage.dat")
+    # Need to start before load in order to preserve contexts across requests
+    g.cov.start()
+    g.cov.load(init=False)
+
     # Update app_globals
     app_globals.app_globals._check_uptodate()
 
@@ -399,7 +408,22 @@ def ckan_after_request(response):
 
     log.info(' %s render time %.3f seconds' % (url, r_time))
 
+    g.cov.stop()
+    g.cov.save()
+
     return response
+
+
+def setup_testar_routes(app):
+    @app.route('/testar-covcontext/<context>')
+    def set_testar_covcontext(context = "" ):
+        g.cov.switch_context(context)
+        return "Coverage context switched."
+
+    @app.route('/testar-logcontext/<context>')
+    def set_testar_logcontext(context = "" ):
+        g.cov.switch_log_context(context)
+        return "Log context switched."
 
 
 def helper_functions():
