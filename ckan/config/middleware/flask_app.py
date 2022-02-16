@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import json
 import os
 import sys
 import re
@@ -9,6 +10,7 @@ import itertools
 import pkgutil
 
 from coverage import Coverage
+from string_extractor import StringExtractor
 
 from flask import Blueprint, send_from_directory
 from flask.ctx import _AppCtxGlobals
@@ -425,6 +427,13 @@ def setup_testar_routes(app):
         g.cov.switch_log_context(context)
         return "Log context switched."
 
+    @app.route("/testar-extractstrings/<context>")
+    def extract_strings(context = ""):
+        extractor = StringExtractor(True, "/coverage/stringextractor_cache.dat")
+        lines = g.cov.export_execution_path(context)
+        strings = extractor.get_batch(lines, True)
+        extractor.save()
+        return(json.dumps(strings))
 
 def helper_functions():
     u'''Make helper functions (`h`) available to Flask templates'''
