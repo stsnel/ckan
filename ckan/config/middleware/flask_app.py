@@ -368,7 +368,7 @@ def ckan_before_request():
     '''
     response = None
 
-    g.cov = Coverage(data_file="/coverage/coverage.dat")
+    g.cov = Coverage(data_file="/coverage/coverage.dat", cover_pylib=True)
     # Need to start before load in order to preserve contexts across requests
     g.cov.start()
     g.cov.load(init=False)
