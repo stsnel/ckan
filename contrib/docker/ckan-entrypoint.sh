@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+# This is a modified version of the official CKAN entrypoint script
+
 # URL for the primary database, in the format expected by sqlalchemy (required
 # unless linked to a container called 'db')
 : ${CKAN_SQLALCHEMY_URL:=}
@@ -39,6 +41,7 @@ set_environment () {
 write_config () {
   echo "Generating config at ${CONFIG}..."
   ckan generate config "$CONFIG"
+  perl -pi.bak -e 's/^ckan.plugins = stats text_view image_view recline_view/ckan.plugins = stats text_view image_view recline_view showcase hierarchy_display hierarchy_form/' "$CONFIG"
 }
 
 # Wait for PostgreSQL
@@ -70,4 +73,10 @@ fi
 
 set_environment
 ckan --config "$CONFIG" db init
+
+# Create test users and data
+ckan -c "$CONFIG" seed basic
+ckan -c "$CONFIG" seed user
+ckan -c "$CONFIG" sysadmin add tester
+
 exec "$@"

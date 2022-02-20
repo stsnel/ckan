@@ -429,11 +429,14 @@ def setup_testar_routes(app):
 
     @app.route("/testar-extractstrings/<context>")
     def extract_strings(context = ""):
+        g.cov.stop()
         extractor = StringExtractor(True, "/coverage/stringextractor_cache.dat")
         lines = g.cov.export_execution_path(context)
         strings = extractor.get_batch(lines, True)
         extractor.save()
-        return(json.dumps(strings))
+        result = json.dumps(strings)
+        g.cov.start()
+        return(result)
 
 def helper_functions():
     u'''Make helper functions (`h`) available to Flask templates'''
