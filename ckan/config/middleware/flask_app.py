@@ -427,6 +427,20 @@ def setup_testar_routes(app):
         g.cov.switch_log_context(context)
         return "Log context switched."
 
+    @app.route("/testar-clearlog-exportdata")
+    def testar_clearlog_exportdata():
+        g.cov.clear_log_data()
+        return app.response_class(
+            response=g.cov.export_data(),
+            status=200,
+            mimetype='text/plain'
+        )
+
+    @app.route("/testar-importdata", methods = ['POST'])
+    def testar_importdata():
+        g.cov.import_data(request.form)
+        return "Data imported: " + request.form
+
     @app.route("/testar-extractstrings/<context>")
     def extract_strings(context = ""):
         g.cov.stop()
