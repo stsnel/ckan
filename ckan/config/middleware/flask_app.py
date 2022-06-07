@@ -438,8 +438,9 @@ def setup_testar_routes(app):
 
     @app.route("/testar-importdata", methods = ['POST'])
     def testar_importdata():
-        g.cov.import_data(request.form)
-        return "Data imported: " + request.form
+        dumpdata = request.get_data().decode('utf-8')
+        g.cov.import_data(dumpdata)
+        return "Data imported."
 
     @app.route("/testar-extractstrings/<context>")
     def extract_strings(context = ""):
