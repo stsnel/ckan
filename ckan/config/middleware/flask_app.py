@@ -436,6 +436,14 @@ def setup_testar_routes(app):
             mimetype='text/plain'
         )
 
+    @app.route("/testar-exportdata")
+    def testar_exportdata():
+        return app.response_class(
+            response=g.cov.export_data(),
+            status=200,
+            mimetype='text/plain'
+        )
+
     @app.route("/testar-importdata", methods = ['POST'])
     def testar_importdata():
         dumpdata = request.get_data().decode('utf-8')
