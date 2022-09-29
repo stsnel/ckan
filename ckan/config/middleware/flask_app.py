@@ -368,6 +368,8 @@ def ckan_before_request():
     '''
     response = None
 
+    g.__timer = time.time()
+
     g.cov = Coverage(data_file="/coverage/coverage.dat", cover_pylib=True)
     # Need to start before load in order to preserve contexts across requests
     g.cov.start()
@@ -385,7 +387,6 @@ def ckan_before_request():
     set_controller_and_action()
 
     set_ckan_current_url(request.environ)
-    g.__timer = time.time()
 
     return response
 
