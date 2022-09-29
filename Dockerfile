@@ -82,6 +82,10 @@ RUN ckan-pip3 install -U pip && \
     chmod +x /ckan-entrypoint.sh && \
     chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH $COVERAGE_DIR
 
+# Add extract strings scripts
+COPY extract-strings.py /tmp
+RUN install -m 0755 /tmp/extract-strings.py /usr/local/bin/extract-strings.py
+
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 
 VOLUME /coverage
